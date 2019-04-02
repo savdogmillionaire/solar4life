@@ -16,10 +16,10 @@ def create_SLD(fname, name, address):
     c.setLineWidth(.3)
     c.setFont('Helvetica', 12)
 
-    #establish connecttion to database
+    # establish connecttion to database
     conn = sqlite3.connect('VRCtable.db')
     cur = conn.cursor()
-    
+
     ## main meat of the program. uses classes and arrays to somwhat efficiently calculate values
     def calcs():
 
@@ -49,7 +49,7 @@ def create_SLD(fname, name, address):
         if cable_params.Type_of_Service == 'underground':
             cc_poa_ccc = [0.]
         else:
-            cc_poa_ccc = ((a *cable_params.CC_to_POA_Distance_m) / b1)
+            cc_poa_ccc = ((a * cable_params.CC_to_POA_Distance_m) / b1)
 
         ##poa to mb
         cur.execute('SELECT single_phase FROM cccarray where conductor_size = %d'
@@ -65,12 +65,10 @@ def create_SLD(fname, name, address):
 
         ## saves value to a dict so the name of each value is saved, then does basic
         ## operations to find total VRC and where the VRC for a portiun is maximum
-        cccdict = {'cc_poa_ccc':cc_poa_ccc,'poa_mb_ccc':poa_mb_ccc,'mb_inv_ccc':mb_inv_ccc}
+        cccdict = {'cc_poa_ccc': cc_poa_ccc, 'poa_mb_ccc': poa_mb_ccc, 'mb_inv_ccc': mb_inv_ccc}
         totalrun = (cc_poa_ccc + poa_mb_ccc + mb_inv_ccc)
         highestccc = max(cccdict.values())
         maxname = (max(cccdict, key=locals().get))
-
-
 
         ##other drawing stuff
         c.drawCentredString(150, 620, '%s' % cable_params.material)
@@ -83,31 +81,27 @@ def create_SLD(fname, name, address):
         else:
             c.drawCentredString(300, 320, 'Note: no single run is greater than 2%')
         if highestccc > 2:
-            c.drawCentredString(300,300, 'A single run, %s, is greater than 2%% . please change something' % maxname)
+            c.drawCentredString(300, 300, 'A single run, %s, is greater than 2%% . please change something' % maxname)
         else:
             c.drawCentredString(300, 300, ' and the total is not greater than 3%')
-
-
-
-
 
         ##cc to POA drawing
 
         c.drawCentredString(150, 520, '%dm x %dmm^2' %
-                            (cable_params.CC_to_POA_Distance_m,cable_params.CC_to_POA_Cable_Thickness_mm2))
+                            (cable_params.CC_to_POA_Distance_m, cable_params.CC_to_POA_Cable_Thickness_mm2))
         c.drawCentredString(150, 480, '%dA x %dm' %
-                            (a,cable_params.CC_to_POA_Distance_m)  )
-        c.line(100,475,200,475)
-        c.drawCentredString(150, 460, '%d' %a)
+                            (a, cable_params.CC_to_POA_Distance_m))
+        c.line(100, 475, 200, 475)
+        c.drawCentredString(150, 460, '%d' % a)
         c.drawCentredString(150, 430, '= %.3f%% VR' % cc_poa_ccc)
 
         ##POA to MB drawing
         c.drawCentredString(300, 520, '%dm x %dmm^2' %
-                            (cable_params.POA_to_MB_Distance_m,cable_params.POA_to_MB_Cable_Thickness_mm2))
+                            (cable_params.POA_to_MB_Distance_m, cable_params.POA_to_MB_Cable_Thickness_mm2))
         c.drawCentredString(300, 480, '%dA x %dm' %
-                            (a,cable_params.POA_to_MB_Distance_m)  )
-        c.line(250,475,350,475)
-        c.drawCentredString(300, 460, '%d' %a)
+                            (a, cable_params.POA_to_MB_Distance_m))
+        c.line(250, 475, 350, 475)
+        c.drawCentredString(300, 460, '%d' % a)
         c.drawCentredString(300, 430, '= %.3f%% VR' % poa_mb_ccc)
 
         ##MB to inv drawing
@@ -120,26 +114,23 @@ def create_SLD(fname, name, address):
         c.drawCentredString(450, 430, '= %.3f%% VR' % mb_inv_ccc)
         ##
 
-
-
     def draw_background(name, address):
 
         ##Title
         c.drawCentredString(300, 750, 'Voltage Rise Calculations for %s - %s' % (name, address))
-        c.circle(75,650,10,stroke = 1,fill = 1)
-        c.circle(225,650,10,stroke = 1,fill = 1)
-        c.circle(375,650,10,stroke = 1,fill = 1)
-        c.circle(525,650,10,stroke = 1,fill = 1)
+        c.circle(75, 650, 10, stroke=1, fill=1)
+        c.circle(225, 650, 10, stroke=1, fill=1)
+        c.circle(375, 650, 10, stroke=1, fill=1)
+        c.circle(525, 650, 10, stroke=1, fill=1)
 
         c.drawCentredString(75, 600, 'CC')
         c.drawCentredString(225, 600, 'P.O.A')
         c.drawCentredString(375, 600, 'M.B')
         c.drawCentredString(525, 600, 'INV')
 
-        c.line(75,650,525,650)
-        c.line(225,575,225,400)
-        c.line(375,575,375,400)
-
+        c.line(75, 650, 525, 650)
+        c.line(225, 575, 225, 400)
+        c.line(375, 575, 375, 400)
 
     draw_background(name, address)
     calcs()
@@ -147,7 +138,7 @@ def create_SLD(fname, name, address):
     url = r'file:///C:\Users\Solar4Life\Desktop\solar4life\sld generator files\VRC diagram.pdf'
     chrome_path = 'C:/Program Files (x86)/Google/Chrome/Application/chrome.exe %s'
     webbrowser.get(chrome_path).open(url)
-    #make sure to close connection to database at end of program
+    # make sure to close connection to database at end of program
     conn.close()
 
 
