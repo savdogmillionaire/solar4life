@@ -11,14 +11,16 @@ from reportlab.lib.colors import yellow, red, black, white
 import sqlite3
 
 ##must run this import pytohn file to get inputs from calculations.
-#from designgui import array_1_model_input,array_1_length,array_1_strings,array_2_length,array_2_strings,inverter_1_input
+# from designgui import array_1_model_input,array_1_length,array_1_strings,array_2_length,array_2_strings,inverter_1_input
 from input_from_main import *
-#from SLDGUI import inverterno, battery, arrays, phase, current, reposit
 
-def create_SLD(fname, inverterno, battery, array, phase,customer_ID,current,reposit):
+
+# from SLDGUI import inverterno, battery, arrays, phase, current, reposit
+
+def create_SLD(fname, inverterno, battery, array, phase, customer_ID, current, reposit):
     """"""
 
-    #establish connecttion to database
+    # establish connecttion to database
     conn = sqlite3.connect('VRCtable.db')
     cur = conn.cursor()
 
@@ -34,9 +36,7 @@ def create_SLD(fname, inverterno, battery, array, phase,customer_ID,current,repo
     cur.execute('SELECT Postcode FROM customer_details WHERE CustomerID =?', customer_ID)
     postoode = cur.fetchone()[0]
     ## string concatenation to create title.
-    address = street + ', ' + suburb + ' ' + state + ' ' +  str(postoode)
-
-
+    address = street + ', ' + suburb + ' ' + state + ' ' + str(postoode)
 
     # TODO change this whole part arraymodules,string,arrayisc etc so that the values are just accessed in the program itself.
 
@@ -44,17 +44,14 @@ def create_SLD(fname, inverterno, battery, array, phase,customer_ID,current,repo
     arrayvoc = system_1.array_Voc()[0]
     arrayvocminus10 = system_1.array_Voc_minus_10()[0]
 
-
     ## these values should be taken from the design tool. for now they will be entered manually.
-    #inverterno = 1
-    #battery = 0
-    #arrays = 1
-    #phase = 1
-    #current = 'DC'
-    #reposit = 1
-    #customer_ID = (123456,)
-
-
+    # inverterno = 1
+    # battery = 0
+    # arrays = 1
+    # phase = 1
+    # current = 'DC'
+    # reposit = 1
+    # customer_ID = (123456,)
 
     ## where images of some shapes in the program used. cahgne if required.
     trianglepath = r"C:\Users\Solar4Life\Desktop\solar4life\sld generator files\sava assets\triangle.png"
@@ -69,14 +66,12 @@ def create_SLD(fname, inverterno, battery, array, phase,customer_ID,current,repo
     meter1 = ('LG Meter',)
     meter2 = ('',)
 
-    Inverter1ACIsolator     =('250V 1P 32A 6kA Suntree SUKF',)
-    Inverter2ACIsolator     =('1P 10A 6kA NHP mod6 AC Breaker',)
-    SolarSupplyMainSwitch   =('250V 1P 25A 6kA Suntree SL7-63',)
-    BatteryACIsolator       =('1P 25A 6kA NHP mod6 AC Breaker',)
-    BatteryDCIsolator       =('1P 25A 6kA NHP mod6 AC Breaker',)
-    EPSACIsolator           =('3P 32A 6kA NHP mod6 AC Breaker',)
-
-
+    Inverter1ACIsolator = ('250V 1P 32A 6kA Suntree SUKF',)
+    Inverter2ACIsolator = ('1P 10A 6kA NHP mod6 AC Breaker',)
+    SolarSupplyMainSwitch = ('250V 1P 25A 6kA Suntree SL7-63',)
+    BatteryACIsolator = ('1P 25A 6kA NHP mod6 AC Breaker',)
+    BatteryDCIsolator = ('1P 25A 6kA NHP mod6 AC Breaker',)
+    EPSACIsolator = ('3P 32A 6kA NHP mod6 AC Breaker',)
 
     filename = os.path.join(fname + ".pdf")
     c = canvas.Canvas(filename)
@@ -229,7 +224,7 @@ def create_SLD(fname, inverterno, battery, array, phase,customer_ID,current,repo
         c.drawString(x - 120, y + 70, "1 x Battery")
         c.setFont('Helvetica', 10)
 
-        cur.execute('SELECT make FROM Batteryspecifications where Battery=?',  battery)
+        cur.execute('SELECT make FROM Batteryspecifications where Battery=?', battery)
         bmake = cur.fetchone()[0]
         c.drawString(x - 120, y + 55, "Make: %s" % bmake)
 
@@ -272,7 +267,7 @@ def create_SLD(fname, inverterno, battery, array, phase,customer_ID,current,repo
 
         cur.execute('SELECT Manufacturer FROM Panelspecifications where Panel=?', panelspec)
         arraymanufacturer = cur.fetchone()[0]
-        c.drawString(x + 5, y + 95, '%d/ String/s of %s' % (strings,arraymanufacturer))
+        c.drawString(x + 5, y + 95, '%d/ String/s of %s' % (strings, arraymanufacturer))
 
         draw_switch(x + 65, array_height - 50, 180)
         draw_switch(x + 95, array_height - 50, 180)
@@ -337,7 +332,7 @@ def create_SLD(fname, inverterno, battery, array, phase,customer_ID,current,repo
 
         cur.execute('SELECT Manufacturer FROM Panelspecifications where Panel=?', panelspec)
         arraymanufacturer = cur.fetchone()[0]
-        c.drawString(x + 5, y + 95, '%d/ String/s of %s' % (strings1,arraymanufacturer))
+        c.drawString(x + 5, y + 95, '%d/ String/s of %s' % (strings1, arraymanufacturer))
 
         draw_switch(x + 35, y - 40, 180)
         draw_switch(x + 65, y - 40, 180)
@@ -406,7 +401,7 @@ def create_SLD(fname, inverterno, battery, array, phase,customer_ID,current,repo
 
         cur.execute('SELECT Manufacturer FROM Panelspecifications where Panel=?', panelspec)
         arraymanufacturer = cur.fetchone()[0]
-        c.drawString(x + 5, y + 95, '%d/ String/s of %s' % (strings2,arraymanufacturer))
+        c.drawString(x + 5, y + 95, '%d/ String/s of %s' % (strings2, arraymanufacturer))
 
         draw_switch(x + 35, y - 40, 180)
         draw_switch(x + 65, y - 40, 180)
@@ -454,7 +449,6 @@ def create_SLD(fname, inverterno, battery, array, phase,customer_ID,current,repo
             iseries = cur.fetchone()[0]
             c.drawString(x - 120, y + 50, "Series: %s" % iseries)
 
-
             c.drawString(x - 120, y + 35, "Model:")
             cur.execute('SELECT Model FROM Inverterspecifications where Inverter =?', inverter)
             imodel = cur.fetchone()[0]
@@ -463,11 +457,11 @@ def create_SLD(fname, inverterno, battery, array, phase,customer_ID,current,repo
 
             c.setFont('Times-Italic', 6)
             if inverterno == 1 and current == 'DC' and battery > 0:
-                c.drawString(x - 45, y + 80,"When network is down inverter")
-                c.drawString(x - 45, y + 72,"isolates from the grid and")
-                c.drawString(x - 45, y + 64,"can only power essential loads")
+                c.drawString(x - 45, y + 80, "When network is down inverter")
+                c.drawString(x - 45, y + 72, "isolates from the grid and")
+                c.drawString(x - 45, y + 64, "can only power essential loads")
             if inverterno == 1 and current == 'AC' and battery > 0:
-                c.drawString(x - 45, y + 80,"*Inverter isolates in ")
+                c.drawString(x - 45, y + 80, "*Inverter isolates in ")
                 c.drawString(x - 45, y + 72, "the event of blackout")
 
     ## draw most of the wriing and components that are common to all systems
@@ -552,7 +546,7 @@ def create_SLD(fname, inverterno, battery, array, phase,customer_ID,current,repo
                     c.line(x + 77.5, array_height - 129.5, x + 77.5, array_height - 178)
                     c.line(x + 77.5, array_height - 129.5, x + 95, array_height - 129.5)
                     c.line(x + 95, array_height - 129.5, x + 95, array_height - 117)
-                    draw_inverter(75, 375, inverter1, inverterno,'N')
+                    draw_inverter(75, 375, inverter1, inverterno, 'N')
 
                     ##BOTTOM
                     draw_switch(250, 310, 0)
@@ -562,9 +556,10 @@ def create_SLD(fname, inverterno, battery, array, phase,customer_ID,current,repo
                     cur.execute('SELECT ACBreaker FROM ACbreakerspecifications where ACBreaker =?', Inverter1ACIsolator)
                     i1iso = cur.fetchone()[0]
                     c.drawString(260, 305, "%s" % i1iso)
-                    
+
                     c.drawString(260, 260, 'Solar Supply Main Switch')
-                    cur.execute('SELECT ACBreaker FROM ACbreakerspecifications where ACBreaker =?', SolarSupplyMainSwitch)
+                    cur.execute('SELECT ACBreaker FROM ACbreakerspecifications where ACBreaker =?',
+                                SolarSupplyMainSwitch)
                     SSiso = cur.fetchone()[0]
                     c.drawString(260, 245, "%s" % SSiso)
 
@@ -617,7 +612,7 @@ def create_SLD(fname, inverterno, battery, array, phase,customer_ID,current,repo
 
                     c.circle(x + 95, array_height - 180, 2, stroke=1, fill=1)
 
-                    draw_inverter(75, 375, inverter1,inverterno,'N')
+                    draw_inverter(75, 375, inverter1, inverterno, 'N')
                     c.circle(x + 105, array_height - 180, 2, stroke=1, fill=1)
                     c.line(x + 415, array_height - 90, x + 415, array_height - 165)
                     c.line(x + 415, array_height - 165, x + 280, array_height - 165)
@@ -644,7 +639,8 @@ def create_SLD(fname, inverterno, battery, array, phase,customer_ID,current,repo
                     c.drawString(235, 305, '%s' % i1iso)
 
                     c.drawString(235, 260, 'Solar Supply Main Switch')
-                    cur.execute('SELECT ACBreaker FROM ACbreakerspecifications where ACBreaker =?', SolarSupplyMainSwitch)
+                    cur.execute('SELECT ACBreaker FROM ACbreakerspecifications where ACBreaker =?',
+                                SolarSupplyMainSwitch)
                     SSiso = cur.fetchone()[0]
                     c.drawString(235, 245, '%s' % SSiso)
 
@@ -710,9 +706,6 @@ def create_SLD(fname, inverterno, battery, array, phase,customer_ID,current,repo
                     c.drawCentredString(470, 110, 'L1')
                     c.drawCentredString(500, 110, 'L1')
 
-
-
-
                 if battery == 1 and current == 'AC':
                     x = 25
                     c.circle(x + 65, array_height - 180, 2, stroke=1, fill=1)
@@ -725,10 +718,10 @@ def create_SLD(fname, inverterno, battery, array, phase,customer_ID,current,repo
                     c.line(x + 77.5, array_height - 129.5, x + 77.5, array_height - 178)
                     c.line(x + 77.5, array_height - 129.5, x + 95, array_height - 129.5)
                     c.line(x + 95, array_height - 129.5, x + 95, array_height - 117)
-                    draw_inverter(75, 375, inverter1,inverterno,'N')
+                    draw_inverter(75, 375, inverter1, inverterno, 'N')
 
-                    draw_battery(430, 540,  batteryl)
-                    draw_inverter(420, 455, inverter2,inverterno,'Y')
+                    draw_battery(430, 540, batteryl)
+                    draw_inverter(420, 455, inverter2, inverterno, 'Y')
 
                     ##BOTTOM
                     draw_switch(225, 310, 0)
@@ -738,9 +731,10 @@ def create_SLD(fname, inverterno, battery, array, phase,customer_ID,current,repo
                     cur.execute('SELECT ACBreaker FROM ACbreakerspecifications where ACBreaker =?', Inverter1ACIsolator)
                     i1iso = cur.fetchone()[0]
                     c.drawString(235, 305, '%s' % i1iso)
-                    
+
                     c.drawString(235, 260, 'Solar Supply Main Switch')
-                    cur.execute('SELECT ACBreaker FROM ACbreakerspecifications where ACBreaker =?', SolarSupplyMainSwitch)
+                    cur.execute('SELECT ACBreaker FROM ACbreakerspecifications where ACBreaker =?',
+                                SolarSupplyMainSwitch)
                     SSiso = cur.fetchone()[0]
                     c.drawString(235, 245, '%s' % SSiso)
 
@@ -779,7 +773,6 @@ def create_SLD(fname, inverterno, battery, array, phase,customer_ID,current,repo
 
                     ##reposit
 
-
                     ##battery inverter wiring
                     c.circle(275, 185, 2, stroke=1, fill=1)
                     c.line(275, 185, 380, 185)
@@ -801,8 +794,8 @@ def create_SLD(fname, inverterno, battery, array, phase,customer_ID,current,repo
 
             if array == 2:
                 if battery == 0:
-                    draw_array(20, array_height, 1, array_1_length, panelspec,array_1_strings)
-                    draw_array(320, array_height, 2, array_2_length, panelspec,array_2_strings)
+                    draw_array(20, array_height, 1, array_1_length, panelspec, array_1_strings)
+                    draw_array(320, array_height, 2, array_2_length, panelspec, array_2_strings)
 
                     # inverter circles
                     x = 20
@@ -843,7 +836,7 @@ def create_SLD(fname, inverterno, battery, array, phase,customer_ID,current,repo
 
                     c.line(x + 365, y - 48, x + 365, y - 2)
                     c.line(x + 395, y - 48, x + 395, y - 2)
-                    draw_inverter(75, 375, inverter1,inverterno,'N')
+                    draw_inverter(75, 375, inverter1, inverterno, 'N')
 
                     ##BOTTOM
                     draw_switch(250, 310, 0)
@@ -853,9 +846,10 @@ def create_SLD(fname, inverterno, battery, array, phase,customer_ID,current,repo
                     cur.execute('SELECT ACBreaker FROM ACbreakerspecifications where ACBreaker =?', Inverter1ACIsolator)
                     i1iso = cur.fetchone()[0]
                     c.drawString(260, 305, '%s' % i1iso)
-                    
+
                     c.drawString(260, 260, 'Solar Supply Main Switch')
-                    cur.execute('SELECT ACBreaker FROM ACbreakerspecifications where ACBreaker =?', SolarSupplyMainSwitch)
+                    cur.execute('SELECT ACBreaker FROM ACbreakerspecifications where ACBreaker =?',
+                                SolarSupplyMainSwitch)
                     SSiso = cur.fetchone()[0]
                     c.drawString(260, 245, '%s' % SSiso)
 
@@ -889,10 +883,10 @@ def create_SLD(fname, inverterno, battery, array, phase,customer_ID,current,repo
                 if battery == 1 and current == 'DC':
                     x = 20
                     y = array_height
-                    draw_array(x, array_height, 1, array_1_length, panelspec,array_1_strings)
-                    draw_array(x + 200, array_height, 2, array_2_length, panelspec,array_2_strings)
-                    draw_battery(x + 430, 550,  batteryl)
-                    draw_inverter(x + 60, 350, inverter1,inverterno,'N')
+                    draw_array(x, array_height, 1, array_1_length, panelspec, array_1_strings)
+                    draw_array(x + 200, array_height, 2, array_2_length, panelspec, array_2_strings)
+                    draw_battery(x + 430, 550, batteryl)
+                    draw_inverter(x + 60, 350, inverter1, inverterno, 'N')
                     c.circle(x + 65, y - 205, 2, stroke=1, fill=1)
                     c.circle(x + 77.5, y - 205, 2, stroke=1, fill=1)
                     c.circle(x + 90, y - 205, 2, stroke=1, fill=1)
@@ -961,9 +955,10 @@ def create_SLD(fname, inverterno, battery, array, phase,customer_ID,current,repo
                     cur.execute('SELECT ACBreaker FROM ACbreakerspecifications where ACBreaker =?', Inverter1ACIsolator)
                     i1iso = cur.fetchone()[0]
                     c.drawString(235, 275, '%s' % i1iso)
-                    
+
                     c.drawString(235, 250, 'Solar Supply Main Switch')
-                    cur.execute('SELECT ACBreaker FROM ACbreakerspecifications where ACBreaker =?', SolarSupplyMainSwitch)
+                    cur.execute('SELECT ACBreaker FROM ACbreakerspecifications where ACBreaker =?',
+                                SolarSupplyMainSwitch)
                     SSiso = cur.fetchone()[0]
                     c.drawString(235, 235, '%s' % SSiso)
 
@@ -1029,15 +1024,14 @@ def create_SLD(fname, inverterno, battery, array, phase,customer_ID,current,repo
 
                     ##reposit
 
-
                 if battery == 1 and current == 'AC':
                     x = 20
                     y = array_height
-                    draw_array(x, array_height, 1, array_1_length, panelspec,array_1_strings)
-                    draw_array(x + 200, array_height, 2, array_2_length, panelspec,array_2_strings)
-                    draw_inverter(x + 60, 350, inverter1,inverterno,'N')
-                    draw_battery(430, 540,  batteryl)
-                    draw_inverter(420, 455, inverter2,inverterno,'Y')
+                    draw_array(x, array_height, 1, array_1_length, panelspec, array_1_strings)
+                    draw_array(x + 200, array_height, 2, array_2_length, panelspec, array_2_strings)
+                    draw_inverter(x + 60, 350, inverter1, inverterno, 'N')
+                    draw_battery(430, 540, batteryl)
+                    draw_inverter(420, 455, inverter2, inverterno, 'Y')
 
                     c.circle(x + 65, y - 205, 2, stroke=1, fill=1)
                     c.circle(x + 77.5, y - 205, 2, stroke=1, fill=1)
@@ -1076,9 +1070,10 @@ def create_SLD(fname, inverterno, battery, array, phase,customer_ID,current,repo
                     cur.execute('SELECT ACBreaker FROM ACbreakerspecifications where ACBreaker =?', Inverter1ACIsolator)
                     i1iso = cur.fetchone()[0]
                     c.drawString(235, 305, '%s' % i1iso)
-                    
-                    c.drawString(235, 260, 'Solar Supply Main Switch') 
-                    cur.execute('SELECT ACBreaker FROM ACbreakerspecifications where ACBreaker =?', SolarSupplyMainSwitch)
+
+                    c.drawString(235, 260, 'Solar Supply Main Switch')
+                    cur.execute('SELECT ACBreaker FROM ACbreakerspecifications where ACBreaker =?',
+                                SolarSupplyMainSwitch)
                     SSiso = cur.fetchone()[0]
                     c.drawString(235, 245, '%s' % SSiso)
 
@@ -1115,8 +1110,6 @@ def create_SLD(fname, inverterno, battery, array, phase,customer_ID,current,repo
                     c.line(275, 185, 275, 100)
                     c.line(275, 100, 430, 100)
 
-
-
                     ##battery inverter wiring
                     c.circle(275, 185, 2, stroke=1, fill=1)
                     c.line(275, 185, 380, 185)
@@ -1138,7 +1131,7 @@ def create_SLD(fname, inverterno, battery, array, phase,customer_ID,current,repo
 
         if phase == 3:
             if array == 1:
-                draw_array(25, array_height, 1, array_1_length, panelspec,array_1_strings)
+                draw_array(25, array_height, 1, array_1_length, panelspec, array_1_strings)
                 if battery == 0:
                     ##top
                     x = 25
@@ -1152,7 +1145,7 @@ def create_SLD(fname, inverterno, battery, array, phase,customer_ID,current,repo
                     c.line(x + 77.5, array_height - 129.5, x + 77.5, array_height - 178)
                     c.line(x + 77.5, array_height - 129.5, x + 95, array_height - 129.5)
                     c.line(x + 95, array_height - 129.5, x + 95, array_height - 117)
-                    draw_inverter(75, 375, inverter1,inverterno,'N')
+                    draw_inverter(75, 375, inverter1, inverterno, 'N')
 
                     ##BOTTOM
                     draw_switch(145, 195, 270)
@@ -1174,9 +1167,10 @@ def create_SLD(fname, inverterno, battery, array, phase,customer_ID,current,repo
                     cur.execute('SELECT ACBreaker FROM ACbreakerspecifications where ACBreaker =?', Inverter1ACIsolator)
                     i1iso = cur.fetchone()[0]
                     c.drawRightString(230, 275, '%s' % i1iso)
-                    
+
                     c.drawRightString(230, 245, 'Solar Supply Main Switch')
-                    cur.execute('SELECT ACBreaker FROM ACbreakerspecifications where ACBreaker =?', SolarSupplyMainSwitch)
+                    cur.execute('SELECT ACBreaker FROM ACbreakerspecifications where ACBreaker =?',
+                                SolarSupplyMainSwitch)
                     SSiso = cur.fetchone()[0]
                     c.drawRightString(230, 230, '%s' % SSiso)
                     draw_switch(265, 290, 0)
@@ -1256,8 +1250,6 @@ def create_SLD(fname, inverterno, battery, array, phase,customer_ID,current,repo
                     c.line(232.5, 170, 370, 170)
                     c.line(370, 170, 370, 100)
 
-
-
                     # ball to repo
                     c.line(185, 167.5, 185, 30)
                     c.line(205, 177.5, 205, 40)
@@ -1291,7 +1283,7 @@ def create_SLD(fname, inverterno, battery, array, phase,customer_ID,current,repo
                     c.line(x + 77.5, array_height - 129.5, x + 77.5, array_height - 178)
                     c.line(x + 77.5, array_height - 129.5, x + 95, array_height - 129.5)
                     c.line(x + 95, array_height - 129.5, x + 95, array_height - 117)
-                    draw_battery(400, 550,  batteryl)
+                    draw_battery(400, 550, batteryl)
 
                     c.line(410, array_height - 90, 410, array_height - 145)
                     c.line(410, array_height - 145, x + 280, array_height - 145)
@@ -1301,7 +1293,7 @@ def create_SLD(fname, inverterno, battery, array, phase,customer_ID,current,repo
 
                     c.circle(x + 95, array_height - 180, 2, stroke=1, fill=1)
 
-                    draw_inverter(75, 375, inverter1,inverterno,'N')
+                    draw_inverter(75, 375, inverter1, inverterno, 'N')
                     c.circle(x + 105, array_height - 180, 2, stroke=1, fill=1)
                     c.line(x + 415, array_height - 90, x + 415, array_height - 165)
                     c.line(x + 415, array_height - 165, x + 280, array_height - 165)
@@ -1338,9 +1330,10 @@ def create_SLD(fname, inverterno, battery, array, phase,customer_ID,current,repo
                     cur.execute('SELECT ACBreaker FROM ACbreakerspecifications where ACBreaker =?', Inverter1ACIsolator)
                     i1iso = cur.fetchone()[0]
                     c.drawRightString(230, 275, '%s' % i1iso)
-                    
+
                     c.drawRightString(230, 245, 'Solar Supply Main Switch')
-                    cur.execute('SELECT ACBreaker FROM ACbreakerspecifications where ACBreaker =?', SolarSupplyMainSwitch)
+                    cur.execute('SELECT ACBreaker FROM ACbreakerspecifications where ACBreaker =?',
+                                SolarSupplyMainSwitch)
                     SSiso = cur.fetchone()[0]
                     c.drawRightString(230, 230, '%s' % SSiso)
                     draw_switch(265, 290, 0)
@@ -1452,7 +1445,6 @@ def create_SLD(fname, inverterno, battery, array, phase,customer_ID,current,repo
 
                     ##reposit
 
-
                     # ball to repo
                     c.line(185, 167.5, 185, 30)
                     c.line(205, 177.5, 205, 40)
@@ -1486,10 +1478,10 @@ def create_SLD(fname, inverterno, battery, array, phase,customer_ID,current,repo
                     c.line(x + 77.5, array_height - 129.5, x + 77.5, array_height - 178)
                     c.line(x + 77.5, array_height - 129.5, x + 95, array_height - 129.5)
                     c.line(x + 95, array_height - 129.5, x + 95, array_height - 117)
-                    draw_inverter(75, 375, inverter1,inverterno,'N')
+                    draw_inverter(75, 375, inverter1, inverterno, 'N')
 
                     draw_battery(430, 540, batteryl)
-                    draw_inverter(420, 455, inverter2,inverterno,'Y')
+                    draw_inverter(420, 455, inverter2, inverterno, 'Y')
 
                     ##BOTTOM
                     draw_switch(145, 195, 270)
@@ -1511,9 +1503,10 @@ def create_SLD(fname, inverterno, battery, array, phase,customer_ID,current,repo
                     cur.execute('SELECT ACBreaker FROM ACbreakerspecifications where ACBreaker =?', Inverter1ACIsolator)
                     i1iso = cur.fetchone()[0]
                     c.drawRightString(230, 275, '%s' % i1iso)
-                    
+
                     c.drawRightString(230, 245, 'Solar Supply Main Switch')
-                    cur.execute('SELECT ACBreaker FROM ACbreakerspecifications where ACBreaker =?', SolarSupplyMainSwitch)
+                    cur.execute('SELECT ACBreaker FROM ACbreakerspecifications where ACBreaker =?',
+                                SolarSupplyMainSwitch)
                     SSiso = cur.fetchone()[0]
                     c.drawRightString(230, 230, '%s' % SSiso)
                     draw_switch(265, 290, 0)
@@ -1596,7 +1589,6 @@ def create_SLD(fname, inverterno, battery, array, phase,customer_ID,current,repo
 
                     ##reposit
 
-
                     # ball to repo
                     c.line(185, 167.5, 185, 30)
                     c.line(205, 177.5, 205, 40)
@@ -1638,8 +1630,8 @@ def create_SLD(fname, inverterno, battery, array, phase,customer_ID,current,repo
             if array == 2:
                 if battery == 0:
                     # top
-                    draw_array(20, array_height, 1, array_1_length, panelspec,array_1_strings)
-                    draw_array(320, array_height, 2, array_2_length, panelspec,array_2_strings)
+                    draw_array(20, array_height, 1, array_1_length, panelspec, array_1_strings)
+                    draw_array(320, array_height, 2, array_2_length, panelspec, array_2_strings)
                     # inverter circles
                     x = 20
                     y = array_height
@@ -1679,7 +1671,7 @@ def create_SLD(fname, inverterno, battery, array, phase,customer_ID,current,repo
 
                     c.line(x + 365, y - 48, x + 365, y - 2)
                     c.line(x + 395, y - 48, x + 395, y - 2)
-                    draw_inverter(75, 375, inverter1,inverterno,'N')
+                    draw_inverter(75, 375, inverter1, inverterno, 'N')
 
                     ##BOTTOM
                     draw_switch(145, 195, 270)
@@ -1701,9 +1693,10 @@ def create_SLD(fname, inverterno, battery, array, phase,customer_ID,current,repo
                     cur.execute('SELECT ACBreaker FROM ACbreakerspecifications where ACBreaker =?', Inverter1ACIsolator)
                     i1iso = cur.fetchone()[0]
                     c.drawRightString(230, 275, '%s' % i1iso)
-                    
+
                     c.drawRightString(230, 245, 'Solar Supply Main Switch')
-                    cur.execute('SELECT ACBreaker FROM ACbreakerspecifications where ACBreaker =?', SolarSupplyMainSwitch)
+                    cur.execute('SELECT ACBreaker FROM ACbreakerspecifications where ACBreaker =?',
+                                SolarSupplyMainSwitch)
                     SSiso = cur.fetchone()[0]
                     c.drawRightString(230, 230, '%s' % SSiso)
                     draw_switch(265, 290, 0)
@@ -1785,7 +1778,6 @@ def create_SLD(fname, inverterno, battery, array, phase,customer_ID,current,repo
 
                     ##reposit
 
-
                     # ball to repo
                     c.line(185, 167.5, 185, 30)
                     c.line(205, 177.5, 205, 40)
@@ -1810,10 +1802,10 @@ def create_SLD(fname, inverterno, battery, array, phase,customer_ID,current,repo
                 if battery == 1 and current == 'DC':
                     x = 20
                     y = array_height
-                    draw_array(x, array_height, 1, array_1_length, panelspec,array_1_strings)
-                    draw_array(x + 200, array_height, 2, array_2_length, panelspec,array_2_strings)
+                    draw_array(x, array_height, 1, array_1_length, panelspec, array_1_strings)
+                    draw_array(x + 200, array_height, 2, array_2_length, panelspec, array_2_strings)
                     draw_battery(x + 430, 550, batteryl)
-                    draw_inverter(x + 60, 350, inverter1,inverterno,'N')
+                    draw_inverter(x + 60, 350, inverter1, inverterno, 'N')
                     c.circle(x + 65, y - 205, 2, stroke=1, fill=1)
                     c.circle(x + 77.5, y - 205, 2, stroke=1, fill=1)
                     c.circle(x + 90, y - 205, 2, stroke=1, fill=1)
@@ -1892,9 +1884,10 @@ def create_SLD(fname, inverterno, battery, array, phase,customer_ID,current,repo
                     cur.execute('SELECT ACBreaker FROM ACbreakerspecifications where ACBreaker =?', Inverter1ACIsolator)
                     i1iso = cur.fetchone()[0]
                     c.drawRightString(230, 260, '%s' % i1iso)
-                    
+
                     c.drawRightString(230, 240, 'Solar Supply Main Switch')
-                    cur.execute('SELECT ACBreaker FROM ACbreakerspecifications where ACBreaker =?', SolarSupplyMainSwitch)
+                    cur.execute('SELECT ACBreaker FROM ACbreakerspecifications where ACBreaker =?',
+                                SolarSupplyMainSwitch)
                     SSiso = cur.fetchone()[0]
                     c.drawRightString(230, 225, '%s' % SSiso)
                     draw_switch(265, 275, 0)
@@ -2006,7 +1999,6 @@ def create_SLD(fname, inverterno, battery, array, phase,customer_ID,current,repo
 
                     ##reposit
 
-
                     # ball to repo
                     c.line(185, 167.5, 185, 30)
                     c.line(205, 177.5, 205, 40)
@@ -2031,12 +2023,12 @@ def create_SLD(fname, inverterno, battery, array, phase,customer_ID,current,repo
                 if battery == 1 and current == 'AC':
                     x = 20
                     y = array_height
-                    draw_array(x, array_height, 1, array_1_length, panelspec,array_1_strings)
-                    draw_array(x + 200, array_height, 2, array_2_length, panelspec,array_2_strings)
-                    draw_inverter(x + 60, 350, inverter1,inverterno,'N')
+                    draw_array(x, array_height, 1, array_1_length, panelspec, array_1_strings)
+                    draw_array(x + 200, array_height, 2, array_2_length, panelspec, array_2_strings)
+                    draw_inverter(x + 60, 350, inverter1, inverterno, 'N')
 
                     draw_battery(430, 540, batteryl)
-                    draw_inverter(420, 455, inverter2,inverterno,'Y')
+                    draw_inverter(420, 455, inverter2, inverterno, 'Y')
                     c.circle(x + 65, y - 205, 2, stroke=1, fill=1)
                     c.circle(x + 77.5, y - 205, 2, stroke=1, fill=1)
                     c.circle(x + 90, y - 205, 2, stroke=1, fill=1)
@@ -2086,9 +2078,10 @@ def create_SLD(fname, inverterno, battery, array, phase,customer_ID,current,repo
                     cur.execute('SELECT ACBreaker FROM ACbreakerspecifications where ACBreaker =?', Inverter1ACIsolator)
                     i1iso = cur.fetchone()[0]
                     c.drawRightString(230, 275, '%s' % i1iso)
-                    
+
                     c.drawRightString(230, 245, 'Solar Supply Main Switch')
-                    cur.execute('SELECT ACBreaker FROM ACbreakerspecifications where ACBreaker =?', SolarSupplyMainSwitch)
+                    cur.execute('SELECT ACBreaker FROM ACbreakerspecifications where ACBreaker =?',
+                                SolarSupplyMainSwitch)
                     SSiso = cur.fetchone()[0]
                     c.drawRightString(230, 230, '%s' % SSiso)
                     draw_switch(265, 290, 0)
@@ -2162,7 +2155,6 @@ def create_SLD(fname, inverterno, battery, array, phase,customer_ID,current,repo
 
                     ##reposit
 
-
                     # ball to repo
                     c.line(185, 167.5, 185, 30)
                     c.line(205, 177.5, 205, 40)
@@ -2202,10 +2194,12 @@ def create_SLD(fname, inverterno, battery, array, phase,customer_ID,current,repo
                     draw_arc(380, 210)
 
             if array == 4:
-                draw_small_array(10, 660, 1, array_1_length,array_2_length, panelspec,array_1_strings,array_2_strings)
-                draw_small_array(335, 660, 3, array_3_length,array_4_length, panelspec,array_3_strings,array_4_strings)
-                draw_inverter(75, 400, inverter1,inverterno,'N')
-                draw_inverter(400, 400, inverter2,inverterno,'N')
+                draw_small_array(10, 660, 1, array_1_length, array_2_length, panelspec, array_1_strings,
+                                 array_2_strings)
+                draw_small_array(335, 660, 3, array_3_length, array_4_length, panelspec, array_3_strings,
+                                 array_4_strings)
+                draw_inverter(75, 400, inverter1, inverterno, 'N')
+                draw_inverter(400, 400, inverter2, inverterno, 'N')
                 if battery == 1 and current == 'DC':
                     draw_battery(270, 520, batteryl)
 
@@ -2264,9 +2258,10 @@ def create_SLD(fname, inverterno, battery, array, phase,customer_ID,current,repo
                     cur.execute('SELECT ACBreaker FROM ACbreakerspecifications where ACBreaker =?', Inverter1ACIsolator)
                     i1iso = cur.fetchone()[0]
                     c.drawString(135, 325, '%s' % i1iso)
-                    
+
                     c.drawString(135, 295, 'Solar Supply Main Switch')
-                    cur.execute('SELECT ACBreaker FROM ACbreakerspecifications where ACBreaker =?', SolarSupplyMainSwitch)
+                    cur.execute('SELECT ACBreaker FROM ACbreakerspecifications where ACBreaker =?',
+                                SolarSupplyMainSwitch)
                     SSiso = cur.fetchone()[0]
                     c.drawString(135, 280, '%s' % SSiso)
                     draw_switch(125, 327, 0)
@@ -2315,7 +2310,6 @@ def create_SLD(fname, inverterno, battery, array, phase,customer_ID,current,repo
 
                     ##reposit
 
-
                     # ball to repo
                     c.line(185, 167.5, 185, 30)
                     c.line(205, 177.5, 205, 40)
@@ -2350,9 +2344,10 @@ def create_SLD(fname, inverterno, battery, array, phase,customer_ID,current,repo
                     i1iso = cur.fetchone()[0]
                     c.drawString(470, 315, '%s' % i1iso)
                     draw_switch(460, 280, 0)
-                    
+
                     c.drawString(470, 290, 'Solar Supply Main Switch')
-                    cur.execute('SELECT ACBreaker FROM ACbreakerspecifications where ACBreaker =?', SolarSupplyMainSwitch)
+                    cur.execute('SELECT ACBreaker FROM ACbreakerspecifications where ACBreaker =?',
+                                SolarSupplyMainSwitch)
                     SSiso = cur.fetchone()[0]
                     c.drawString(470, 275, '%s' % SSiso)
                     c.circle(355, 210, 2, stroke=1, fill=1)
@@ -2399,7 +2394,7 @@ def create_SLD(fname, inverterno, battery, array, phase,customer_ID,current,repo
 
                 if battery == 1 and current == 'AC':
                     draw_battery(270, 400, batteryl)
-                    draw_inverter(250, 315, inverter1,inverterno,'Y')
+                    draw_inverter(250, 315, inverter1, inverterno, 'Y')
                     x = 15
                     y = 680
                     c.circle(x + 65, y - 205, 2, stroke=1, fill=1)
@@ -2433,9 +2428,10 @@ def create_SLD(fname, inverterno, battery, array, phase,customer_ID,current,repo
                     cur.execute('SELECT ACBreaker FROM ACbreakerspecifications where ACBreaker =?', Inverter1ACIsolator)
                     i1iso = cur.fetchone()[0]
                     c.drawString(135, 325, '%s' % i1iso)
-                    
+
                     c.drawString(135, 295, 'Solar Supply Main Switch')
-                    cur.execute('SELECT ACBreaker FROM ACbreakerspecifications where ACBreaker =?', SolarSupplyMainSwitch)
+                    cur.execute('SELECT ACBreaker FROM ACbreakerspecifications where ACBreaker =?',
+                                SolarSupplyMainSwitch)
                     SSiso = cur.fetchone()[0]
                     c.drawString(135, 280, '%s' % SSiso)
                     draw_switch(125, 327, 0)
@@ -2493,7 +2489,6 @@ def create_SLD(fname, inverterno, battery, array, phase,customer_ID,current,repo
 
                     ##reposit
 
-
                     # ball to repo
                     c.line(185, 167.5, 185, 30)
                     c.line(205, 177.5, 205, 40)
@@ -2529,7 +2524,8 @@ def create_SLD(fname, inverterno, battery, array, phase,customer_ID,current,repo
                     c.drawString(470, 315, '%s' % i1iso)
                     draw_switch(460, 280, 0)
                     c.drawString(470, 290, 'Solar Supply Main Switch')
-                    cur.execute('SELECT ACBreaker FROM ACbreakerspecifications where ACBreaker =?', SolarSupplyMainSwitch)
+                    cur.execute('SELECT ACBreaker FROM ACbreakerspecifications where ACBreaker =?',
+                                SolarSupplyMainSwitch)
                     SSiso = cur.fetchone()[0]
                     c.drawString(470, 275, '%s' % SSiso)
                     c.circle(355, 210, 2, stroke=1, fill=1)
@@ -2558,7 +2554,4 @@ def create_SLD(fname, inverterno, battery, array, phase,customer_ID,current,repo
     # make sure to close connection to database at end of program
     conn.close()
 
-
-#create_SLD('SLD', name, address, inverterno, battery, arrays, phase,current,reposit,customer_ID)
-
-
+# create_SLD('SLD', name, address, inverterno, battery, arrays, phase,current,reposit,customer_ID)
