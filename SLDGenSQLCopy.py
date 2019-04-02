@@ -13,11 +13,19 @@ import sqlite3
 
 ##must run this import pytohn file to get inputs from calculations.
 #from designgui import array_1_model_input,array_1_length,array_1_strings,array_2_length,array_2_strings,inverter_1_input
-from input_from_main import *
-from SLDGUI import inverterno, battery, arrays, phase, current, reposit
+#from input_from_main import *
+
+
+#from SLDGUI import inverterno, battery, arrays, phase, current, reposit
 
 def create_SLD(fname, name, address, inverterno, battery, array, phase):
     """"""
+
+
+    #establish connecttion to database
+    conn = sqlite3.connect('VRCtable.db')
+    cur = conn.cursor()
+
     filename = os.path.join(fname + ".pdf")
     c = canvas.Canvas(filename)
     c.setLineWidth(.3)
@@ -25,10 +33,6 @@ def create_SLD(fname, name, address, inverterno, battery, array, phase):
 
     ##Title
     c.drawCentredString(300, 820, 'Single Line Diagram for %s - %s' % (name, address))
-
-    #establish connecttion to database
-    conn = sqlite3.connect('VRCtable.db')
-    cur = conn.cursor()
 
     def draw_arc(x, y):
         x += -7.5
