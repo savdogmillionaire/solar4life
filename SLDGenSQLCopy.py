@@ -1,8 +1,7 @@
-##
 ## This Program creates the sLD
 ##
 ## TODO clear up from where the tool takes values from for each sld scenario
-##
+## TODO run through array panel configurations, as well as reposit or not.
 ##
 ##
 import os
@@ -13,18 +12,71 @@ import sqlite3
 
 ##must run this import pytohn file to get inputs from calculations.
 #from designgui import array_1_model_input,array_1_length,array_1_strings,array_2_length,array_2_strings,inverter_1_input
-#from input_from_main import *
-
-
+from input_from_main import *
 #from SLDGUI import inverterno, battery, arrays, phase, current, reposit
 
-def create_SLD(fname, name, address, inverterno, battery, array, phase):
+def create_SLD(fname, inverterno, battery, array, phase,customer_ID,current,reposit):
     """"""
-
 
     #establish connecttion to database
     conn = sqlite3.connect('VRCtable.db')
     cur = conn.cursor()
+
+    ##accessing databse to find customer details based on a unique customer ID
+    cur.execute('SELECT Name FROM customer_details WHERE CustomerID =?', customer_ID)
+    name = cur.fetchone()[0]
+    cur.execute('SELECT Street FROM customer_details WHERE CustomerID =?', customer_ID)
+    street = cur.fetchone()[0]
+    cur.execute('SELECT Suburb FROM customer_details WHERE CustomerID =?', customer_ID)
+    suburb = cur.fetchone()[0]
+    cur.execute('SELECT State FROM customer_details WHERE CustomerID =?', customer_ID)
+    state = cur.fetchone()[0]
+    cur.execute('SELECT Postcode FROM customer_details WHERE CustomerID =?', customer_ID)
+    postoode = cur.fetchone()[0]
+    ## string concatenation to create title.
+    address = street + ', ' + suburb + ' ' + state + ' ' +  str(postoode)
+
+
+
+    # TODO change this whole part arraymodules,string,arrayisc etc so that the values are just accessed in the program itself.
+
+    arrayisc = system_1.array_Isc()[0]
+    arrayvoc = system_1.array_Voc()[0]
+    arrayvocminus10 = system_1.array_Voc_minus_10()[0]
+
+
+    ## these values should be taken from the design tool. for now they will be entered manually.
+    #inverterno = 1
+    #battery = 0
+    #arrays = 1
+    #phase = 1
+    #current = 'DC'
+    #reposit = 1
+    #customer_ID = (123456,)
+
+
+
+    ## where images of some shapes in the program used. cahgne if required.
+    trianglepath = r"C:\Users\Solar4Life\Desktop\solar4life\sld generator files\sava assets\triangle.png"
+    sinepath = r"C:\Users\Solar4Life\Desktop\solar4life\sld generator files\sava assets\sine.png"
+
+    ## TODO might need to change how componenet attributes are assigned. like when there are 2 different panels
+    panelspec = ('%s' % array_1_model_input,)
+    batteryl = ('SolaX 3.3kWh Battery',)
+    battery2 = ('BYD Battery Box H 6.4',)
+    inverter1 = ('%s' % inverter_1_input,)
+    inverter2 = ('',)
+    meter1 = ('LG Meter',)
+    meter2 = ('',)
+
+    Inverter1ACIsolator     =('250V 1P 32A 6kA Suntree SUKF',)
+    Inverter2ACIsolator     =('1P 10A 6kA NHP mod6 AC Breaker',)
+    SolarSupplyMainSwitch   =('250V 1P 25A 6kA Suntree SL7-63',)
+    BatteryACIsolator       =('1P 25A 6kA NHP mod6 AC Breaker',)
+    BatteryDCIsolator       =('1P 25A 6kA NHP mod6 AC Breaker',)
+    EPSACIsolator           =('3P 32A 6kA NHP mod6 AC Breaker',)
+
+
 
     filename = os.path.join(fname + ".pdf")
     c = canvas.Canvas(filename)
@@ -482,7 +534,7 @@ def create_SLD(fname, name, address, inverterno, battery, array, phase):
         draw_reposit()
 
     ## main meat of the wiring. depends on variables taken from main design tool.
-    def complex_wiring(phase, arrays, battery, inverterno, array_height, current):
+    def complex_wiring(phase, array, battery, inverterno, array_height, current):
 
         if phase == 1:
             if array == 1:
@@ -2498,7 +2550,7 @@ def create_SLD(fname, name, address, inverterno, battery, array, phase):
 
     array_height = 630
     basic_wiring(25, 100)
-    complex_wiring(phase, arrays, battery, inverterno, array_height, current)
+    complex_wiring(phase, array, battery, inverterno, array_height, current)
     c.save()
     url = r'file:///C:\Users\Solar4Life\Desktop\solar4life\sld generator files\SLD.pdf'
     chrome_path = 'C:/Program Files (x86)/Google/Chrome/Application/chrome.exe %s'
@@ -2507,67 +2559,6 @@ def create_SLD(fname, name, address, inverterno, battery, array, phase):
     conn.close()
 
 
-# ----------------------------------------------------------------------
-if __name__ == "__main__":
-
-    #establish connecttion to database
-    conn = sqlite3.connect('VRCtable.db')
-    cur = conn.cursor()
-
-    ## these values should be taken from the design tool. for now they will be entered manually.
-    #inverterno = 1
-    #battery = 0
-    #arrays = 1
-    #phase = 1
-    #current = 'DC'
-    #reposit = 1
-    customer_ID = (123456,)
-
-    ##accessing databse to find customer details based on a unique customer ID
-    cur.execute('SELECT Name FROM customer_details WHERE CustomerID =?', customer_ID)
-    name = cur.fetchone()[0]
-    cur.execute('SELECT Street FROM customer_details WHERE CustomerID =?', customer_ID)
-    street = cur.fetchone()[0]
-    cur.execute('SELECT Suburb FROM customer_details WHERE CustomerID =?', customer_ID)
-    suburb = cur.fetchone()[0]
-    cur.execute('SELECT State FROM customer_details WHERE CustomerID =?', customer_ID)
-    state = cur.fetchone()[0]
-    cur.execute('SELECT Postcode FROM customer_details WHERE CustomerID =?', customer_ID)
-    postoode = cur.fetchone()[0]
-
-    ## string concatenation to create title.
-    address = street + ', ' + suburb + ' ' + state + ' ' +  str(postoode)
-
-    ## where images of some shapes in the program used. cahgne if required.
-    trianglepath = r"C:\Users\Solar4Life\Desktop\solar4life\sld generator files\sava assets\triangle.png"
-    sinepath = r"C:\Users\Solar4Life\Desktop\solar4life\sld generator files\sava assets\sine.png"
-
-    ## TODO might need to change how componenet attributes are assigned. like when there are 2 different panels
-    panelspec = ('%s' % array_1_model_input,)
-    batteryl = ('SolaX 3.3kWh Battery',)
-    battery2 = ('BYD Battery Box H 6.4',)
-    inverter1 = ('%s' % inverter_1_input,)
-    inverter2 = ('',)
-    meter1 = ('LG Meter',)
-    meter2 = ('',)
-
-    Inverter1ACIsolator     =('250V 1P 32A 6kA Suntree SUKF',)
-    Inverter2ACIsolator     =('1P 10A 6kA NHP mod6 AC Breaker',)
-    SolarSupplyMainSwitch   =('250V 1P 25A 6kA Suntree SL7-63',)
-    BatteryACIsolator       =('1P 25A 6kA NHP mod6 AC Breaker',)
-    BatteryDCIsolator       =('1P 25A 6kA NHP mod6 AC Breaker',)
-    EPSACIsolator           =('3P 32A 6kA NHP mod6 AC Breaker',)
-
-    # TODO change this whole part arraymodules,string,arrayisc etc so that the values are just accessed in the program itself.
-
-    arrayisc = system_1.array_Isc()[0]
-    arrayvoc = system_1.array_Voc()[0]
-    arrayvocminus10 = system_1.array_Voc_minus_10()[0]
-
-    ##SLDtitle = "single Line Diagram for %s - %s" % (name,address)
-    create_SLD('SLD', name, address, inverterno, battery, arrays, phase)
-
-    # make sure to close connection to database at end of program
-    conn.close()
+#create_SLD('SLD', name, address, inverterno, battery, arrays, phase,current,reposit,customer_ID)
 
 
