@@ -6,7 +6,6 @@ import webbrowser
 from reportlab.pdfgen import canvas
 from reportlab.lib.colors import yellow, red, black, white
 
-
 def designgui():
     global array_1_model_input, array_1_length, array_1_strings, \
         array_2_length, array_2_strings, inverter_1_input, ac_breaker_current_limit
@@ -119,7 +118,6 @@ def designgui():
     array_2_strings = int(txt5.get())
     inverter_1_input = combo2.get()
     ac_breaker_current_limit = int(txt7.get())
-
 
 def input_from_main():
     class array:
@@ -307,43 +305,12 @@ def input_from_main():
     print(system_1.Even_Odd_string_length())
     print("")
 
-
 def SLDGUI():
     global inverterno, battery, arrays, phase, current, reposit
 
     window2 = tk.Tk()
     window2.title("SLD make tool")
     window2.geometry('550x500')
-
-    # lbl1 = tk.Label(window2, text="Panel model")
-    # lbl1.grid(column=0, row=0)
-    # txt1 = tk.Entry(window2,width=10)
-    # txt1.grid(column=1, row=0)
-    #
-    # lbl2 = tk.Label(window2, text="Array 1 length")
-    # lbl2.grid(column=0, row=1)
-    # txt2 = tk.Entry(window2,width=10)
-    # txt2.grid(column=1, row=1)
-    #
-    # lbl3 = tk.Label(window2, text="Array 1 strings")
-    # lbl3.grid(column=0, row=2)
-    # txt3 = tk.Entry(window2,width=10)
-    # txt3.grid(column=1, row=2)
-    #
-    # lbl4 = tk.Label(window2, text="Array 2 length")
-    # lbl4.grid(column=0, row=3)
-    # txt4 = tk.Entry(window2,width=10)
-    # txt4.grid(column=1, row=3)
-    #
-    # lbl5 = tk.Label(window2, text="Array 2 strings")
-    # lbl5.grid(column=0, row=4)
-    # txt5 = tk.Entry(window2,width=10)
-    # txt5.grid(column=1, row=4)
-    #
-    # lbl6 = tk.Label(window2, text="Inverter 1 model")
-    # lbl6.grid(column=0, row=5)
-    # txt6 = tk.Entry(window2,width=10)
-    # txt6.grid(column=1, row=5)
 
     lbl8 = tk.Label(window2, text="inverterno")
     lbl8.grid(column=0, row=7)
@@ -377,66 +344,11 @@ def SLDGUI():
     txt13 = tk.Entry(window2, width=10)
     txt13.grid(column=1, row=12)
 
-    def clicked1():
-        # res = "array 1 model :  " + txt1.get()
-        # lbl1.configure(text= res)
-        # txt1.get()
-        #
-        # res = "array 1 length :  " + txt2.get()
-        # lbl2.configure(text= res)
-        # txt2.get()
-        #
-        # res = "array 1 strings :  " + txt3.get()
-        # lbl3.configure(text=res)
-        # txt3.get()
-        #
-        # res = "array 2 length :  " + txt4.get()
-        # lbl4.configure(text= res)
-        # txt4.get()
-        #
-        # res = "array 2 strings :  " + txt5.get()
-        # lbl5.configure(text=res)
-        # txt5.get()
-        #
-        # res = "inverter 1 model :  " + txt6.get()
-        # lbl6.configure(text=res)
-        # txt6.get()
-
-        res = "inverterno" + txt8.get()
-        lbl8.configure(text=res)
-        txt8.get()
-
-        res = "battery" + txt9.get()
-        lbl9.configure(text=res)
-        txt9.get()
-
-        res = "arrays" + txt10.get()
-        lbl10.configure(text=res)
-        txt10.get()
-
-        res = "phase" + txt11.get()
-        lbl11.configure(text=res)
-        txt11.get()
-
-        res = "current" + var.get()
-        lbl12.configure(text=res)
-        var.get()
-
-        res = "reposit" + txt13.get()
-        lbl13.configure(text=res)
-        txt13.get()
-
     quit2 = tk.Button(window2, text='Create SLD', command=window2.quit)
     quit2.grid(column=4, row=8)
 
     window2.mainloop()
 
-    # array_1_model_input = txt1.get()
-    # array_1_length = int(txt2.get())
-    # array_1_strings = int(txt3.get())
-    # array_2_length = int(txt4.get())
-    # array_2_strings = int(txt5.get())
-    # inverter_1_input = txt6.get()
     inverterno = int(txt8.get())
     battery = int(txt9.get())
     arrays = int(txt10.get())
@@ -452,8 +364,10 @@ def SLDGUI():
     ##
 
 
-def create_SLD(fname, inverterno, battery, array, phase, current, reposit, customer_ID):
+def name_address(customer_ID):
     """"""
+
+    global name, address
 
     # establish connecttion to database
     conn = sqlite3.connect('VRCtable.db')
@@ -472,6 +386,15 @@ def create_SLD(fname, inverterno, battery, array, phase, current, reposit, custo
     postoode = cur.fetchone()[0]
     ## string concatenation to create title.
     address = street + ', ' + suburb + ' ' + state + ' ' + str(postoode)
+
+    conn.close()
+
+
+def create_SLD(fname, inverterno, battery, array, phase, current, reposit):
+
+    # establish connecttion to database
+    conn = sqlite3.connect('VRCtable.db')
+    cur = conn.cursor()
 
     # TODO change this whole part arraymodules,string,arrayisc etc so that the values are just accessed in the program itself.
 
@@ -3015,9 +2938,195 @@ def create_SLD(fname, inverterno, battery, array, phase, current, reposit, custo
     conn.close()
 
 
-designgui()
-print(array_1_model_input)
-input_from_main()
-SLDGUI()
-customer_ID = (123456,)
-create_SLD('SLD', inverterno, battery, arrays, phase, current, reposit, customer_ID)
+def create_VRC(fname, name, address):
+    """"""
+    # TODO needs a bit of updating for use with GUI
+    filename = os.path.join(fname + ".pdf")
+    c = canvas.Canvas(filename)
+    c.setLineWidth(.3)
+    c.setFont('Helvetica', 12)
+
+    # establish connecttion to database
+    conn = sqlite3.connect('VRCtable.db')
+    cur = conn.cursor()
+
+    ## main meat of the program. uses classes and arrays to somwhat efficiently calculate values
+    def calcs():
+
+        ## cable parameters
+        class cable_params:
+            CC_to_POA_Cable_Thickness_mm2 = 16
+            CC_to_POA_Distance_m = 10
+            POA_to_MB_Cable_Thickness_mm2 = 16
+            POA_to_MB_Distance_m = 15
+            MB_to_INV_Cable_Thickness_mm2 = 6
+            MB_to_INV_Distance_m = 5
+            MB_to_SB_Cable_Thickness_mm2 = 0
+            MB_to_SB_Distance_m = 0
+            Type_of_Service = 'overhead'
+            material = 'Cu'
+
+        ##finds ccc based on cable diameter and phase and calculates for each portion
+        ##cc to poa
+        invname = 'ABB PVI-20.0-TL-OUTD'
+        cur.execute("SELECT MaxACCurrent FROM Inverterspecifications where Inverter = '%s' " % invname)
+        a = cur.fetchone()[0]
+
+        cur.execute('SELECT single_phase FROM cccarray where conductor_size = %d'
+                    % cable_params.CC_to_POA_Cable_Thickness_mm2)
+        b1 = cur.fetchone()[0]
+
+        if cable_params.Type_of_Service == 'underground':
+            cc_poa_ccc = [0.]
+        else:
+            cc_poa_ccc = ((a * cable_params.CC_to_POA_Distance_m) / b1)
+
+        ##poa to mb
+        cur.execute('SELECT single_phase FROM cccarray where conductor_size = %d'
+                    % cable_params.POA_to_MB_Cable_Thickness_mm2)
+        b2 = cur.fetchone()[0]
+        poa_mb_ccc = ((a * cable_params.POA_to_MB_Distance_m) / b2)
+
+        ##mb to inverter
+        cur.execute('SELECT single_phase FROM cccarray where conductor_size = %d'
+                    % cable_params.POA_to_MB_Cable_Thickness_mm2)
+        b3 = cur.fetchone()[0]
+        mb_inv_ccc = ((a * cable_params.MB_to_INV_Distance_m) / b3)
+
+        ## saves value to a dict so the name of each value is saved, then does basic
+        ## operations to find total VRC and where the VRC for a portiun is maximum
+        cccdict = {'cc_poa_ccc': cc_poa_ccc, 'poa_mb_ccc': poa_mb_ccc, 'mb_inv_ccc': mb_inv_ccc}
+        totalrun = (cc_poa_ccc + poa_mb_ccc + mb_inv_ccc)
+        highestccc = max(cccdict.values())
+        maxname = (max(cccdict, key=locals().get))
+
+        ##other drawing stuff
+        c.drawCentredString(150, 620, '%s' % cable_params.material)
+        c.drawCentredString(300, 620, '%s' % cable_params.material)
+        c.drawCentredString(450, 620, '%s' % cable_params.material)
+
+        ## changes bottom note on VRC based on whether or not it has passed certain conditions
+        if totalrun > 3:
+            c.drawCentredString(300, 320, 'Total is greater than 3%, please change something')
+        else:
+            c.drawCentredString(300, 320, 'Note: no single run is greater than 2%')
+        if highestccc > 2:
+            c.drawCentredString(300, 300, 'A single run, %s, is greater than 2%% . please change something' % maxname)
+        else:
+            c.drawCentredString(300, 300, ' and the total is not greater than 3%')
+
+        ##cc to POA drawing
+
+        c.drawCentredString(150, 520, '%dm x %dmm^2' %
+                            (cable_params.CC_to_POA_Distance_m, cable_params.CC_to_POA_Cable_Thickness_mm2))
+        c.drawCentredString(150, 480, '%dA x %dm' %
+                            (a, cable_params.CC_to_POA_Distance_m))
+        c.line(100, 475, 200, 475)
+        c.drawCentredString(150, 460, '%d' % a)
+        c.drawCentredString(150, 430, '= %.3f%% VR' % cc_poa_ccc)
+
+        ##POA to MB drawing
+        c.drawCentredString(300, 520, '%dm x %dmm^2' %
+                            (cable_params.POA_to_MB_Distance_m, cable_params.POA_to_MB_Cable_Thickness_mm2))
+        c.drawCentredString(300, 480, '%dA x %dm' %
+                            (a, cable_params.POA_to_MB_Distance_m))
+        c.line(250, 475, 350, 475)
+        c.drawCentredString(300, 460, '%d' % a)
+        c.drawCentredString(300, 430, '= %.3f%% VR' % poa_mb_ccc)
+
+        ##MB to inv drawing
+        c.drawCentredString(450, 520, '%dm x %dmm^2' %
+                            (cable_params.MB_to_INV_Distance_m, cable_params.MB_to_INV_Cable_Thickness_mm2))
+        c.drawCentredString(450, 480, '%dA x %dm' %
+                            (a, cable_params.MB_to_INV_Distance_m))
+        c.line(400, 475, 500, 475)
+        c.drawCentredString(450, 460, '%d' % a)
+        c.drawCentredString(450, 430, '= %.3f%% VR' % mb_inv_ccc)
+        ##
+
+    def draw_background(name, address):
+
+        ##Title
+        c.drawCentredString(300, 750, 'Voltage Rise Calculations for %s - %s' % (name, address))
+        c.circle(75, 650, 10, stroke=1, fill=1)
+        c.circle(225, 650, 10, stroke=1, fill=1)
+        c.circle(375, 650, 10, stroke=1, fill=1)
+        c.circle(525, 650, 10, stroke=1, fill=1)
+
+        c.drawCentredString(75, 600, 'CC')
+        c.drawCentredString(225, 600, 'P.O.A')
+        c.drawCentredString(375, 600, 'M.B')
+        c.drawCentredString(525, 600, 'INV')
+
+        c.line(75, 650, 525, 650)
+        c.line(225, 575, 225, 400)
+        c.line(375, 575, 375, 400)
+
+    draw_background(name, address)
+    calcs()
+    c.save()
+    url = r'file:///C:\Users\Solar4Life\Desktop\solar4life\sld generator files\VRC diagram.pdf'
+    chrome_path = 'C:/Program Files (x86)/Google/Chrome/Application/chrome.exe %s'
+    webbrowser.get(chrome_path).open(url)
+    # make sure to close connection to database at end of program
+    conn.close()
+
+
+def start_screen():
+    class Application(tk.Frame):
+        def __init__(self, master=None):
+            super().__init__(master)
+            self.mainwindow = mainwindow
+            self.pack()
+            self.create_widgets()
+
+        def create_widgets(self):
+            self.hi_there = tk.Button(self)
+            self.hi_there["text"] = "Hello World\n(click me)"
+            self.hi_there["command"] = self.say_hi
+            self.hi_there.pack(side="top")
+
+            self.design1 = tk.Button(self)
+            self.design1["text"] = "design and test"
+            self.design1["command"] = self.design_tool
+            self.design1.pack(side="right")
+
+            self.makeSLD = tk.Button(self)
+            self.makeSLD["text"] = "SLD"
+            self.makeSLD["command"] = self.SLD
+            self.makeSLD.pack(side="right")
+
+            self.makeVRC = tk.Button(self)
+            self.makeVRC["text"] = "VRC"
+            self.makeVRC["command"] = self.VRC
+            self.makeVRC.pack(side="right")
+
+            self.quit = tk.Button(self, text="QUIT", fg="red",
+                                  command=self.master.destroy)
+            self.quit.pack(side="bottom")
+
+        def say_hi(self):
+            print("make the name")
+            customer_ID = (123456,)
+            name_address(customer_ID)
+
+        def design_tool(self):
+            designgui()
+            print(array_1_model_input)
+            input_from_main()
+
+        def SLD(self):
+            SLDGUI()
+            create_SLD('SLD', inverterno, battery, arrays, phase, current, reposit)
+
+        def VRC(self):
+            create_VRC("VRC diagram", name, address)
+
+    mainwindow = tk.Tk()
+    mainwindow.title("main engineering tool")
+    mainwindow.geometry('250x200')
+    app = Application(master=mainwindow)
+    app.mainloop()
+
+
+start_screen()

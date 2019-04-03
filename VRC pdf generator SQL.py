@@ -11,7 +11,7 @@ from reportlab.lib.colors import yellow, red, black, white
 
 # TODO needs a bit of updating for use with GUI
 
-def create_SLD(fname, name, address):
+def create_VRC(fname, name, address):
     """"""
     filename = os.path.join(fname + ".pdf")
     c = canvas.Canvas(filename)
@@ -151,4 +151,4 @@ if __name__ == "__main__":
     trianglepath = r"C:\Users\Solar4Life\Desktop\solar4life\sld generator files\sava assets\triangle.png"
     sinepath = r"C:\Users\Solar4Life\Desktop\solar4life\sld generator files\sava assets\sine.png"
 
-    create_SLD("VRC diagram", name, address)
+    create_VRC("VRC diagram", name, address)
