@@ -6,37 +6,32 @@ import webbrowser
 from reportlab.pdfgen import canvas
 from reportlab.lib.colors import yellow, red, black, white
 
+conn = sqlite3.connect('VRCtable.db')
+cur = conn.cursor()
+
+
 def designgui():
     global array_1_model_input, array_1_length, array_1_strings, \
         array_2_length, array_2_strings, inverter_1_input, ac_breaker_current_limit
 
     def combo_values_input():
-        conn = sqlite3.connect('VRCtable.db')
-        cur = conn.cursor()
+
         query = cur.execute('SELECT Panel FROM Panelspecifications')
         data = []
         for row in cur.fetchall():
             data.append(row[0])
-            data.append(row[0])
         return data
 
-        cur.close()
-        conn.close()
-
     def combo_values_input_inverter():
-        conn = sqlite3.connect('VRCtable.db')
-        cur = conn.cursor()
+
 
         query2 = cur.execute('SELECT Inverter FROM Inverterspecifications')
 
         data = []
         for row in cur.fetchall():
             data.append(row[0])
-            data.append(row[0])
         return data
 
-        cur.close()
-        conn.close()
 
     def clicked1():
         res = "array 1 model :  " + combo.get()
@@ -65,7 +60,7 @@ def designgui():
 
     window = tk.Tk()
     window.title("Design Tool")
-    window.geometry('950x900')
+    window.geometry('450x350')
 
     lbl1 = tk.Label(window, text="Panel model")
     lbl1.grid(column=0, row=0)
@@ -105,9 +100,9 @@ def designgui():
     txt7.grid(column=1, row=6)
 
     calculate = tk.Button(window, text='calc', command=clicked1)
-    calculate.grid(column=4, row=7)
+    calculate.grid(column=1, row=7)
     quit = tk.Button(window, text='GO', command=window.quit)
-    quit.grid(column=4, row=8)
+    quit.grid(column=1, row=8)
 
     window.mainloop()
 
@@ -122,25 +117,27 @@ def designgui():
     window.destroy()
 
 def input_from_main():
+    # establish connecttion to database
+
+
     class array:
-        def __init__(self, number, model, panel_Voc, Voctemperaturecoeffcient_pc_per_C, panel_isc, wattage, panels,
-                     strings):
+        def __init__(self, number, model, panels, strings):
             self.number = number
             self.model = model
-            self.panel_Voc = panel_Voc
-            self.Voctemperaturecoeffcient_pc_per_C = Voctemperaturecoeffcient_pc_per_C
-            self.panel_isc = panel_isc
-            self.wattage = wattage
+            cur.execute('SELECT VocV FROM Panelspecifications where Panel=?', (model,))
+            self.panel_Voc = cur.fetchone()
+            cur.execute('SELECT Voctemperaturecoeffcient_pc_per_C FROM Panelspecifications where Panel=?', (model,))
+            self.Voctemperaturecoeffcient_pc_per_C = cur.fetchone()
+            cur.execute('SELECT IscA FROM Panelspecifications where Panel=?', (model,))
+            self.panel_isc = cur.fetchone()
+            cur.execute('SELECT PmaxW FROM Panelspecifications where Panel=?', (model,))
+            self.wattage = cur.fetchone()
             self.panels = panels
             self.strings = strings
 
     class string(array):
-        def __init__(self, number, model, panel_Voc, Voctemperaturecoeffcient_pc_per_C, panel_isc, wattage, panels,
-                     strings,
-                     str_number, length):
-            array.__init__(self, number, model, panel_Voc, Voctemperaturecoeffcient_pc_per_C, panel_isc, wattage,
-                           panels,
-                           strings)
+        def __init__(self, number, model, panels, strings, str_number, length):
+            array.__init__(self, number, model, panels, strings)
             self.str_number = str_number
             self.length = length
 
@@ -172,21 +169,20 @@ def input_from_main():
 
         # calculates total open circuit voltage taking weather into account
         def array_Voc(self):
-            array_Voc_1 = self.array1.panels * self.array1.panel_Voc
-            array_Voc_2 = self.array2.panels * self.array2.panel_Voc
+            array_Voc_1 = self.array1.panels * self.array1.panel_Voc[0]
+            array_Voc_2 = self.array2.panels * self.array2.panel_Voc[0]
             return (array_Voc_1, array_Voc_2)
 
         # calculates total open circuit voltage taking weather into account
         def panel_Voc_minus_10(self):
-            panel_1_Voc_minus_10 = self.array1.panel_Voc + (
-                    ((self.array1.Voctemperaturecoeffcient_pc_per_C / 100) * -35) * self.array1.panel_Voc)
-            panel_2_Voc_minus_10 = self.array2.panel_Voc + (
-                    ((self.array2.Voctemperaturecoeffcient_pc_per_C / 100) * -35) * self.array2.panel_Voc)
+            panel_1_Voc_minus_10 = self.array1.panel_Voc[0] + (
+                    ((self.array1.Voctemperaturecoeffcient_pc_per_C[0] / 100) * -35) * self.array1.panel_Voc[0])
+            panel_2_Voc_minus_10 = self.array2.panel_Voc[0] + (
+                    ((self.array2.Voctemperaturecoeffcient_pc_per_C[0] / 100) * -35) * self.array2.panel_Voc[0])
             return (panel_1_Voc_minus_10, panel_2_Voc_minus_10)
 
         def array_Voc_minus_10(self):
-            array_1_Voc_minus_10 = (self.array1.panel_Voc + (((
-                                                                      self.array1.Voctemperaturecoeffcient_pc_per_C / 100) * -35) * self.array1.panel_Voc)) * self.array1.panels
+            array_1_Voc_minus_10 = self.panel_Voc_minus_10()[0] * self.array2.panels
             array_2_Voc_minus_10 = self.panel_Voc_minus_10()[1] * self.array2.panels
             # array_2_Voc_minus_10 =  (self.array_2.panel_Voc + (((self.array_2.Voctemperaturecoeffcient_pc_per_C / 100) * -35) * self.array_2.panel_Voc)) * self.array_2.panels
             return (array_1_Voc_minus_10, array_2_Voc_minus_10)
@@ -273,18 +269,18 @@ def input_from_main():
 
     ## this part will take vlaues that have been input from the main System design program. for now...
     ## TODO associate below value to the database values.
-    array_1 = array(1, array_1_model_input, 39.7, -0.03, 15, 330, array_1_length, array_1_strings)
-    array_2 = array(2, array_1_model_input, 39.7, -0.03, 5, 270, array_2_length, array_2_strings)
-    array_3 = array(3, array_1_model_input, 39.7, -0.03, 15, 330, 10, 2)
-    array_4 = array(4, array_1_model_input, 39.7, -0.03, 5, 270, 20, 2)
-    string_1 = string(1, 'model1', 39.7, -0.03, 5, 270, 15, 2, 1, array_1_length)
-    string_2 = string(1, 'model1', 39.7, -0.03, 5, 270, 5, 2, 2, array_1_length)
-    string_3 = string(2, 1, 1, 1, 1, 11, 1, 1, 1, array_2_strings)
-    string_4 = string(2, 1, 1, 1, 11, 1, 1, 1, 1, array_2_strings)
-    string_5 = string(3, 'model1', 39.7, -0.03, 5, 270, 15, 2, 1, 10)
-    string_6 = string(3, 'model1', 39.7, -0.03, 5, 270, 5, 2, 2, 10)
-    string_7 = string(4, 1, 1, 1, 1, 11, 1, 1, 1, 1)
-    string_8 = string(5, 1, 1, 1, 11, 1, 1, 1, 1, 1)
+    array_1 = array(1, array_1_model_input, array_1_length, array_1_strings)
+    array_2 = array(2, array_1_model_input, array_2_length, array_2_strings)
+    array_3 = array(3, array_1_model_input, 10, 2)
+    array_4 = array(4, array_1_model_input, 20, 2)
+    string_1 = string(1, 'model1', 15, 2, 1, array_1_length)
+    string_2 = string(1, 'model1', 5, 2, 2, array_1_length)
+    string_3 = string(2, array_1_model_input, 11, 1, 1, array_1_length)
+    string_4 = string(2, array_1_model_input, 1, 1, 1, array_1_length)
+    string_5 = string(3, array_1_model_input, 15, 2, 1, 10)
+    string_6 = string(3, array_1_model_input, 5, 2, 2, 10)
+    string_7 = string(4, 1, 1, 1, 1, 11)
+    string_8 = string(5, 1, 1, 1, 11, 1)
 
     inverter_1 = inverter(1, inverter_1_input, 25, 20, 150, 5000, 10, 18)
     inverter_2 = inverter(2, 'b', 25, 20, 150, 5000, 10, 18)
@@ -296,16 +292,12 @@ def input_from_main():
 
     print(system_1.string1.length)
     print(system_1.array_Voc())
-    print(system_1.array_Voc_minus_10())
-    print(system_1.array_Isc())
-    print(system_1.inverter_mppt_max_check())
-    print(system_1.CEC_Oversize_Check())
-    print(system_1.Max_panels())
-    print(system_1.Min_panels_startup())
-    print(system_1.Power_optimiser_limit())
-    print(system_1.Circuit_breaker_current_limit(ac_breaker_current_limit))
-    print(system_1.Even_Odd_string_length())
+    print(system_1.array_Voc_minus_10()[0])
+    print(array_1.panel_Voc)
     print("")
+
+    # make sure to close connection to database at end of program
+    conn.close()
 
 def SLDGUI():
     global inverterno, battery, arrays, phase, current, reposit
@@ -3112,7 +3104,7 @@ def start_screen():
 
         def design_tool(self):
             designgui()
-            print(array_1_model_input)
+            print(array_1_model_input, type(array_1_length), type(array_1_strings))
             input_from_main()
 
         def SLD(self):
@@ -3128,4 +3120,6 @@ def start_screen():
     app = Application(master=mainwindow)
     app.mainloop()
 
+
 start_screen()
+conn.close()
