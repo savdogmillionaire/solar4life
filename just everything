@@ -119,6 +119,8 @@ def designgui():
     inverter_1_input = combo2.get()
     ac_breaker_current_limit = int(txt7.get())
 
+    window.destroy()
+
 def input_from_main():
     class array:
         def __init__(self, number, model, panel_Voc, Voctemperaturecoeffcient_pc_per_C, panel_isc, wattage, panels,
@@ -356,13 +358,14 @@ def SLDGUI():
     current = var.get()
     reposit = int(txt13.get())
 
+    window2.destroy()
+
     ## This Program creates the sLD
     ##
     ## TODO clear up from where the tool takes values from for each sld scenario
     ## TODO run through array panel configurations, as well as reposit or not.
     ##
     ##
-
 
 def name_address(customer_ID):
     """"""
@@ -388,7 +391,6 @@ def name_address(customer_ID):
     address = street + ', ' + suburb + ' ' + state + ' ' + str(postoode)
 
     conn.close()
-
 
 def create_SLD(fname, inverterno, battery, array, phase, current, reposit):
 
@@ -2937,7 +2939,6 @@ def create_SLD(fname, inverterno, battery, array, phase, current, reposit):
     # make sure to close connection to database at end of program
     conn.close()
 
-
 def create_VRC(fname, name, address):
     """"""
     # TODO needs a bit of updating for use with GUI
@@ -3071,7 +3072,6 @@ def create_VRC(fname, name, address):
     # make sure to close connection to database at end of program
     conn.close()
 
-
 def start_screen():
     class Application(tk.Frame):
         def __init__(self, master=None):
@@ -3127,6 +3127,5 @@ def start_screen():
     mainwindow.geometry('250x200')
     app = Application(master=mainwindow)
     app.mainloop()
-
 
 start_screen()
