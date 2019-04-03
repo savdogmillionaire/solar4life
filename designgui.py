@@ -1,52 +1,48 @@
-from tkinter import *
+import tkinter as tk
+from tkinter import ttk
+import sqlite3
 
-window = Tk()
-window.title("Design Tool")
-window.geometry('550x400')
+global array_1_model_input, array_1_length, array_1_strings, \
+    array_2_length, array_2_strings, inverter_1_input, ac_breaker_current_limit
 
-lbl1 = Label(window, text="Panel model")
-lbl1.grid(column=0, row=0)
-txt1 = Entry(window, width=10)
-txt1.grid(column=1, row=0)
 
-lbl2 = Label(window, text="Array 1 length")
-lbl2.grid(column=0, row=1)
-txt2 = Entry(window, width=10)
-txt2.grid(column=1, row=1)
+def combo_values_input():
+    conn = sqlite3.connect('VRCtable.db')
+    cur = conn.cursor()
+    query = cur.execute('SELECT Panel FROM Panelspecifications')
+    data = []
+    for row in cur.fetchall():
+        data.append(row[0])
+        data.append(row[0])
+    return data
 
-lbl3 = Label(window, text="Array 1 strings")
-lbl3.grid(column=0, row=2)
-txt3 = Entry(window, width=10)
-txt3.grid(column=1, row=2)
+    cur.close()
+    conn.close()
 
-lbl4 = Label(window, text="Array 2 length")
-lbl4.grid(column=0, row=3)
-txt4 = Entry(window, width=10)
-txt4.grid(column=1, row=3)
 
-lbl5 = Label(window, text="Array 2 strings")
-lbl5.grid(column=0, row=4)
-txt5 = Entry(window, width=10)
-txt5.grid(column=1, row=4)
+def combo_values_input_inverter():
+    conn = sqlite3.connect('VRCtable.db')
+    cur = conn.cursor()
 
-lbl6 = Label(window, text="Inverter 1 model")
-lbl6.grid(column=0, row=5)
-txt6 = Entry(window, width=10)
-txt6.grid(column=1, row=5)
+    query2 = cur.execute('SELECT Inverter FROM Inverterspecifications')
 
-lbl7 = Label(window, text="AC Breaker Current limit")
-lbl7.grid(column=0, row=6)
-txt7 = Entry(window, width=10)
-txt7.grid(column=1, row=6)
+    data = []
+    for row in cur.fetchall():
+        data.append(row[0])
+        data.append(row[0])
+    return data
+
+    cur.close()
+    conn.close()
 
 
 def clicked1():
-    res = "array 1 model :  " + txt1.get()
+    res = "array 1 model :  " + combo.get()
     lbl1.configure(text=res)
-    txt1.get()
+    combo.get()
 
-    res = "array 1 length :  " + txt2.get()
-    lbl2.configure(text=res)
+    res = "array 1 model :  " + txt2.get()
+    lbl1.configure(text=res)
     txt2.get()
 
     res = "array 1 strings :  " + txt3.get()
@@ -61,24 +57,72 @@ def clicked1():
     lbl5.configure(text=res)
     txt5.get()
 
-    res = "inverter 1 model :  " + txt6.get()
+    res = "inverter 1 model :  " + combo2.get()
     lbl6.configure(text=res)
-    txt6.get()
-
-    res = "ac breaker current limit :  " + txt7.get()
-    lbl7.configure(text=res)
-    txt7.get()
+    combo2.get()
 
 
-Button(window, text='Calculate system', command=clicked1).grid(row=3, column=3, sticky=W, pady=4)
-Button(window, text='QUIT', command=window.quit).grid(row=4, column=3, sticky=W, pady=4)
+window = tk.Tk()
+window.title("Design Tool")
+window.geometry('950x900')
+
+lbl1 = tk.Label(window, text="Panel model")
+lbl1.grid(column=0, row=0)
+combo = ttk.Combobox(window, width=50, height=20)
+combo.grid(column=1, row=0)
+combo['values'] = combo_values_input()
+
+lbl2 = tk.Label(window, text="Array 1 length")
+lbl2.grid(column=0, row=1)
+txt2 = tk.Entry(window, width=10)
+txt2.grid(column=1, row=1)
+
+lbl3 = tk.Label(window, text="Array 1 strings")
+lbl3.grid(column=0, row=2)
+txt3 = tk.Entry(window, width=10)
+txt3.grid(column=1, row=2)
+
+lbl4 = tk.Label(window, text="Array 2 length")
+lbl4.grid(column=0, row=3)
+txt4 = tk.Entry(window, width=10)
+txt4.grid(column=1, row=3)
+
+lbl5 = tk.Label(window, text="Array 2 strings")
+lbl5.grid(column=0, row=4)
+txt5 = tk.Entry(window, width=10)
+txt5.grid(column=1, row=4)
+
+lbl6 = tk.Label(window, text="Inverter 1 model")
+lbl6.grid(column=0, row=5)
+combo2 = ttk.Combobox(window, width=50, height=20)
+combo2.grid(column=1, row=5)
+combo2['values'] = combo_values_input_inverter()
+
+lbl7 = tk.Label(window, text="AC Breaker Current limit")
+lbl7.grid(column=0, row=6)
+txt7 = tk.Entry(window, width=10)
+txt7.grid(column=1, row=6)
+
+calculate = tk.Button(window, text='calc', command=clicked1)
+calculate.grid(column=4, row=7)
+quit = tk.Button(window, text='GO', command=quit)
+quit.grid(column=4, row=8)
+
+
+
+
+
+
+
+
+
 
 window.mainloop()
 
-array_1_model_input = txt1.get()
+array_1_model_input = combo.get()
 array_1_length = int(txt2.get())
 array_1_strings = int(txt3.get())
 array_2_length = int(txt4.get())
 array_2_strings = int(txt5.get())
-inverter_1_input = txt6.get()
+inverter_1_input = combo2.get()
 ac_breaker_current_limit = int(txt7.get())
