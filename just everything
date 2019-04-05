@@ -60,7 +60,7 @@ def designgui():
 
     window = tk.Tk()
     window.title("Design Tool")
-    window.geometry('450x350')
+    window.geometry('500x350')
 
     lbl1 = tk.Label(window, text="Panel model")
     lbl1.grid(column=0, row=0)
@@ -304,7 +304,7 @@ def SLDGUI():
 
     window2 = tk.Tk()
     window2.title("SLD make tool")
-    window2.geometry('550x500')
+    window2.geometry('350x300')
 
     lbl8 = tk.Label(window2, text="inverterno")
     lbl8.grid(column=0, row=7)
@@ -2931,6 +2931,100 @@ def create_SLD(fname, inverterno, battery, array, phase, current, reposit):
     # make sure to close connection to database at end of program
     conn.close()
 
+
+def VRC_GUI():
+    conn = sqlite3.connect('VRCtable.db')
+    cur = conn.cursor()
+    ## cable parameters
+    window_vrc_gui = tk.Tk()
+    window_vrc_gui.title("VRC make tool")
+    window_vrc_gui.geometry('550x500')
+
+    def combo_values_cable_thick():
+        query = cur.execute('SELECT conductor_size FROM cccarray')
+        data = []
+        for row in cur.fetchall():
+            data.append(row[0])
+        return data
+
+    lbl_1_VRC = tk.Label(window_vrc_gui, text="CC to POA Cable Thickness")
+    lbl_1_VRC.grid(column=0, row=1)
+    combo_1 = ttk.Combobox(window_vrc_gui, width=50, height=20)
+    combo_1.grid(column=1, row=1)
+    combo_1['values'] = combo_values_cable_thick()
+
+    lbl_2 = tk.Label(window_vrc_gui, text="CC to POA distance")
+    lbl_2.grid(column=0, row=2)
+    txt_2 = tk.Entry(window_vrc_gui, width=10)
+    txt_2.grid(column=1, row=2)
+
+    lbl_3_VRC = tk.Label(window_vrc_gui, text="POA TO MB Cable Thickness")
+    lbl_3_VRC.grid(column=0, row=3)
+    combo_3 = ttk.Combobox(window_vrc_gui, width=50, height=20)
+    combo_3.grid(column=1, row=3)
+    combo_3['values'] = combo_values_cable_thick()
+
+    lbl_4 = tk.Label(window_vrc_gui, text="POA TO MB distance")
+    lbl_4.grid(column=0, row=4)
+    txt_4 = tk.Entry(window_vrc_gui, width=10)
+    txt_4.grid(column=1, row=4)
+
+    lbl_5_VRC = tk.Label(window_vrc_gui, text="MB to INV Cable Thickness")
+    lbl_5_VRC.grid(column=0, row=5)
+    combo_5 = ttk.Combobox(window_vrc_gui, width=50, height=20)
+    combo_5.grid(column=1, row=5)
+    combo_5['values'] = combo_values_cable_thick()
+
+    lbl_6 = tk.Label(window_vrc_gui, text="MB to INV distance")
+    lbl_6.grid(column=0, row=6)
+    txt_6 = tk.Entry(window_vrc_gui, width=10)
+    txt_6.grid(column=1, row=6)
+
+    lbl_9_VRC = tk.Label(window_vrc_gui, text="SB")
+    lbl_9_VRC.grid(column=0, row=7)
+    combo_9 = ttk.Combobox(window_vrc_gui, width=50, height=20)
+    combo_9.grid(column=1, row=7)
+    combo_9['values'] = combo_values_cable_thick()
+
+    lbl_10 = tk.Label(window_vrc_gui, text="SB")
+    lbl_10.grid(column=0, row=8)
+    txt_10 = tk.Entry(window_vrc_gui, width=10)
+    txt_10.grid(column=1, row=8)
+
+    lbl_7_VRC = tk.Label(window_vrc_gui, text="Type_of_Service")
+    lbl_7_VRC.grid(column=0, row=9)
+    combo_7 = ttk.Combobox(window_vrc_gui, width=50, height=20)
+    combo_7.grid(column=1, row=9)
+    combo_7['values'] = ['overhead', 'underground', 'overhead from underground']
+
+    lbl_8_VRC = tk.Label(window_vrc_gui, text="material")
+    lbl_8_VRC.grid(column=0, row=10)
+    combo_8 = ttk.Combobox(window_vrc_gui, width=50, height=20)
+    combo_8.grid(column=1, row=10)
+    combo_8['values'] = ['Cu', 'other thing']
+
+    quit = tk.Button(window_vrc_gui, text='GO', command=window_vrc_gui.quit)
+    quit.grid(column=1, row=11)
+
+    # make sure to close connection to database at end of program
+    conn.close()
+
+    window_vrc_gui.mainloop()
+
+    global cable_params
+
+    class cable_params:
+        CC_to_POA_Cable_Thickness_mm2 = float(combo_1.get())
+        CC_to_POA_Distance_m = float(txt_2.get())
+        POA_to_MB_Cable_Thickness_mm2 = float(combo_3.get())
+        POA_to_MB_Distance_m = float(txt_4.get())
+        MB_to_INV_Cable_Thickness_mm2 = float(combo_5.get())
+        MB_to_INV_Distance_m = float(txt_6.get())
+        MB_to_SB_Cable_Thickness_mm2 = float(combo_9.get())
+        MB_to_SB_Distance_m = float(txt_10.get())
+        Type_of_Service = combo_7.get()
+        material = combo_8.get()
+
 def create_VRC(fname, name, address):
     """"""
     # TODO needs a bit of updating for use with GUI
@@ -2946,22 +3040,9 @@ def create_VRC(fname, name, address):
     ## main meat of the program. uses classes and arrays to somwhat efficiently calculate values
     def calcs():
 
-        ## cable parameters
-        class cable_params:
-            CC_to_POA_Cable_Thickness_mm2 = 16
-            CC_to_POA_Distance_m = 10
-            POA_to_MB_Cable_Thickness_mm2 = 16
-            POA_to_MB_Distance_m = 15
-            MB_to_INV_Cable_Thickness_mm2 = 6
-            MB_to_INV_Distance_m = 5
-            MB_to_SB_Cable_Thickness_mm2 = 0
-            MB_to_SB_Distance_m = 0
-            Type_of_Service = 'overhead'
-            material = 'Cu'
-
         ##finds ccc based on cable diameter and phase and calculates for each portion
         ##cc to poa
-        invname = 'ABB PVI-20.0-TL-OUTD'
+        invname = inverter_1_input
         cur.execute("SELECT MaxACCurrent FROM Inverterspecifications where Inverter = '%s' " % invname)
         a = cur.fetchone()[0]
 
@@ -2970,7 +3051,7 @@ def create_VRC(fname, name, address):
         b1 = cur.fetchone()[0]
 
         if cable_params.Type_of_Service == 'underground':
-            cc_poa_ccc = [0.]
+            cc_poa_ccc = 0.
         else:
             cc_poa_ccc = ((a * cable_params.CC_to_POA_Distance_m) / b1)
 
@@ -2988,10 +3069,10 @@ def create_VRC(fname, name, address):
 
         ## saves value to a dict so the name of each value is saved, then does basic
         ## operations to find total VRC and where the VRC for a portiun is maximum
-        cccdict = {'cc_poa_ccc': cc_poa_ccc, 'poa_mb_ccc': poa_mb_ccc, 'mb_inv_ccc': mb_inv_ccc}
-        totalrun = (cc_poa_ccc + poa_mb_ccc + mb_inv_ccc)
+        cccdict = {'cc_poa': cc_poa_ccc, 'poa_mb': poa_mb_ccc, 'mb_inv': mb_inv_ccc}
+        totalrun = cc_poa_ccc + poa_mb_ccc + mb_inv_ccc
         highestccc = max(cccdict.values())
-        maxname = (max(cccdict, key=locals().get))
+        maxname = (max(cccdict, key=cccdict.get))
 
         ##other drawing stuff
         c.drawCentredString(150, 620, '%s' % cable_params.material)
@@ -3009,7 +3090,6 @@ def create_VRC(fname, name, address):
             c.drawCentredString(300, 300, ' and the total is not greater than 3%')
 
         ##cc to POA drawing
-
         c.drawCentredString(150, 520, '%dm x %dmm^2' %
                             (cable_params.CC_to_POA_Distance_m, cable_params.CC_to_POA_Cable_Thickness_mm2))
         c.drawCentredString(150, 480, '%dA x %dm' %
@@ -3093,6 +3173,7 @@ def start_screen():
             self.makeVRC["command"] = self.VRC
             self.makeVRC.pack(side="right")
 
+
             self.quit = tk.Button(self, text="QUIT", fg="red",
                                   command=self.master.destroy)
             self.quit.pack(side="bottom")
@@ -3112,6 +3193,7 @@ def start_screen():
             create_SLD('SLD', inverterno, battery, arrays, phase, current, reposit)
 
         def VRC(self):
+            VRC_GUI()
             create_VRC("VRC diagram", name, address)
 
     mainwindow = tk.Tk()
