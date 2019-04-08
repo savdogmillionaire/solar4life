@@ -32,31 +32,30 @@ def designgui():
             data.append(row[0])
         return data
 
-
-    def clicked1():
-        res = "array 1 model :  " + combo.get()
-        lbl1.configure(text=res)
-        combo.get()
-
-        res = "array 1 model :  " + txt2.get()
-        lbl1.configure(text=res)
-        txt2.get()
-
-        res = "array 1 strings :  " + txt3.get()
-        lbl3.configure(text=res)
-        txt3.get()
-
-        res = "array 2 length :  " + txt4.get()
-        lbl4.configure(text=res)
-        txt4.get()
-
-        res = "array 2 strings :  " + txt5.get()
-        lbl5.configure(text=res)
-        txt5.get()
-
-        res = "inverter 1 model :  " + combo2.get()
-        lbl6.configure(text=res)
-        combo2.get()
+    ##def clicked1():
+    ##res = "array 1 model :  " + combo.get()
+    ##lbl1.configure(text=res)
+    ##combo.get()
+    ##
+    ##res = "array 1 model :  " + txt2.get()
+    ##lbl1.configure(text=res)
+    ##txt2.get()
+    ##
+    ##res = "array 1 strings :  " + txt3.get()
+    ##lbl3.configure(text=res)
+    ##txt3.get()
+    ##
+    ##res = "array 2 length :  " + txt4.get()
+    ##lbl4.configure(text=res)
+    ##txt4.get()
+    ##
+    ##res = "array 2 strings :  " + txt5.get()
+    ##lbl5.configure(text=res)
+    ##txt5.get()
+    ##
+    ##res = "inverter 1 model :  " + combo2.get()
+    ##lbl6.configure(text=res)
+    ##combo2.get()
 
     window = tk.Tk()
     window.title("Design Tool")
@@ -64,7 +63,7 @@ def designgui():
 
     lbl1 = tk.Label(window, text="Panel model")
     lbl1.grid(column=0, row=0)
-    combo = ttk.Combobox(window, width=50, height=20)
+    combo = ttk.Combobox(window, width=30, height=20)
     combo.grid(column=1, row=0)
     combo['values'] = combo_values_input()
 
@@ -90,17 +89,19 @@ def designgui():
 
     lbl6 = tk.Label(window, text="Inverter 1 model")
     lbl6.grid(column=0, row=5)
-    combo2 = ttk.Combobox(window, width=50, height=20)
+    combo2 = ttk.Combobox(window, width=30, height=20)
     combo2.grid(column=1, row=5)
     combo2['values'] = combo_values_input_inverter()
 
+
     lbl7 = tk.Label(window, text="AC Breaker Current limit")
     lbl7.grid(column=0, row=6)
-    txt7 = tk.Entry(window, width=10)
+    txt7 = ttk.Combobox(window, width=30, height=20)
     txt7.grid(column=1, row=6)
+    txt7['values'] = ['10', '16', '25', '32', '40', '50', '63']
 
-    calculate = tk.Button(window, text='calc', command=clicked1)
-    calculate.grid(column=1, row=7)
+    ##calculate = tk.Button(window, text='calc', command=clicked1)
+    ##calculate.grid(column=1, row=7)
     quit = tk.Button(window, text='GO', command=window.quit)
     quit.grid(column=1, row=8)
 
@@ -118,7 +119,7 @@ def designgui():
 
 def input_from_main():
     # establish connecttion to database
-
+    ## TODO weird accessing 
 
     class array:
         def __init__(self, number, model, panels, strings):
@@ -191,24 +192,31 @@ def input_from_main():
         def array_Isc(self):
             array_1_Isc = self.array1.strings * self.array1.panel_isc
             array_2_Isc = self.array2.strings * self.array2.panel_isc
-            return (array_1_Isc, array_2_Isc)
+            return array_1_Isc, array_2_Isc
 
         # checks whether the array ISC will cause clipping but will still work, if it the configuration cant be used at all,
         # or if it is fine
-        def inverter_mppt_max_check(self):
+        def inverter_mppt_max_check_1(self):
 
-            array_isc1 = self.array_Isc()[0]
-            array_isc2 = self.array_Isc()[1]
+            array_isc1 = (self.array_Isc()[0])[0]
 
-            if (array_isc1 and array_isc2) < self.inverter1.I_DC_max and (
-                    array_isc1 and array_isc2) < self.inverter1.I_mppt_max:
-                return "GOOD"
-            if (array_isc1 and array_isc2) < self.inverter1.I_DC_max and (
-                    array_isc1 and array_isc2) > self.inverter1.I_mppt_max:
-                return "KINDA BAD"
-            if (array_isc1 and array_isc2) > self.inverter1.I_DC_max and (
-                    array_isc1 and array_isc2) > self.inverter1.I_mppt_max:
-                return "BAD"
+            if array_isc1 < self.inverter1.I_DC_max and array_isc1 < self.inverter1.I_mppt_max:
+                return "ARRAY ! GOOD"
+            if array_isc1 < self.inverter1.I_DC_max and array_isc1 > self.inverter1.I_mppt_max:
+                return "ARRAY ! KINDA BAD"
+            if array_isc1 > self.inverter1.I_DC_max and array_isc1 > self.inverter1.I_mppt_max:
+                raise ValueError('must lower ISC of array 1, configuration wont work')
+
+        def inverter_mppt_max_check_2(self):
+            array_isc2 = (self.array_Isc()[1])[0]
+
+            if array_isc2 < self.inverter1.I_DC_max and array_isc2 < self.inverter1.I_mppt_max:
+                return "ARRAY 2 GOOD"
+            if array_isc2 < self.inverter1.I_DC_max and array_isc2 > self.inverter1.I_mppt_max:
+                return "ARRAY 2 KINDA BAD"
+            if array_isc2 > self.inverter1.I_DC_max and array_isc2 > self.inverter1.I_mppt_max:
+                raise ValueError('must lower ISC of array 2, configuration wont work')
+            
 
         ##checks to see if the total array wattage is less than CEC mandated max wattage guideline.
         # based on nominal inverter output
@@ -290,10 +298,16 @@ def input_from_main():
     system_1 = systemspecs(array_1, array_2, inverter_1, string_1, string_2, string_3, string_4, 'Residential')
     system_2 = systemspecs(array_3, array_4, inverter_2, string_5, string_6, string_7, string_8, 'Commercial')
 
+    print(array_1.strings)
+    print(inverter_1.I_DC_max)
+    print((system_1.array_Isc()[1])[0])
+
     print(system_1.string1.length)
     print(system_1.array_Voc())
     print(system_1.array_Voc_minus_10()[0])
-    print(array_1.panel_Voc)
+    print(array_1.panel_Voc[0])
+    print(system_1.inverter_mppt_max_check_1())
+    print(system_1.inverter_mppt_max_check_2())
     print("")
 
     # make sure to close connection to database at end of program
@@ -395,15 +409,6 @@ def create_SLD(fname, inverterno, battery, array, phase, current, reposit):
     arrayisc = system_1.array_Isc()[0]
     arrayvoc = system_1.array_Voc()[0]
     arrayvocminus10 = system_1.array_Voc_minus_10()[0]
-
-    ## these values should be taken from the design tool. for now they will be entered manually.
-    # inverterno = 1
-    # battery = 0
-    # arrays = 1
-    # phase = 1
-    # current = 'DC'
-    # reposit = 1
-    # customer_ID = (123456,)
 
     ## where images of some shapes in the program used. cahgne if required.
     trianglepath = r"C:\Users\Solar4Life\Desktop\solar4life\sld generator files\sava assets\triangle.png"
@@ -619,7 +624,9 @@ def create_SLD(fname, inverterno, battery, array, phase, current, reposit):
 
         cur.execute('SELECT Manufacturer FROM Panelspecifications where Panel=?', panelspec)
         arraymanufacturer = cur.fetchone()[0]
-        c.drawString(x + 5, y + 95, '%d/ String/s of %s' % (strings, arraymanufacturer))
+        c.drawString(x + 5, y + 99, '%s' % arraymanufacturer)
+
+        c.drawString(x + 5, y + 110, '%d/ String/s of:' % strings)
 
         draw_switch(x + 65, array_height - 50, 180)
         draw_switch(x + 95, array_height - 50, 180)
@@ -2931,7 +2938,6 @@ def create_SLD(fname, inverterno, battery, array, phase, current, reposit):
     # make sure to close connection to database at end of program
     conn.close()
 
-
 def VRC_GUI():
     conn = sqlite3.connect('VRCtable.db')
     cur = conn.cursor()
@@ -2949,7 +2955,7 @@ def VRC_GUI():
 
     lbl_1_VRC = tk.Label(window_vrc_gui, text="CC to POA Cable Thickness")
     lbl_1_VRC.grid(column=0, row=1)
-    combo_1 = ttk.Combobox(window_vrc_gui, width=50, height=20)
+    combo_1 = ttk.Combobox(window_vrc_gui, width=30, height=20)
     combo_1.grid(column=1, row=1)
     combo_1['values'] = combo_values_cable_thick()
 
@@ -2960,7 +2966,7 @@ def VRC_GUI():
 
     lbl_3_VRC = tk.Label(window_vrc_gui, text="POA TO MB Cable Thickness")
     lbl_3_VRC.grid(column=0, row=3)
-    combo_3 = ttk.Combobox(window_vrc_gui, width=50, height=20)
+    combo_3 = ttk.Combobox(window_vrc_gui, width=30, height=20)
     combo_3.grid(column=1, row=3)
     combo_3['values'] = combo_values_cable_thick()
 
@@ -2971,7 +2977,7 @@ def VRC_GUI():
 
     lbl_5_VRC = tk.Label(window_vrc_gui, text="MB to INV Cable Thickness")
     lbl_5_VRC.grid(column=0, row=5)
-    combo_5 = ttk.Combobox(window_vrc_gui, width=50, height=20)
+    combo_5 = ttk.Combobox(window_vrc_gui, width=30, height=20)
     combo_5.grid(column=1, row=5)
     combo_5['values'] = combo_values_cable_thick()
 
@@ -2982,7 +2988,7 @@ def VRC_GUI():
 
     lbl_9_VRC = tk.Label(window_vrc_gui, text="SB")
     lbl_9_VRC.grid(column=0, row=7)
-    combo_9 = ttk.Combobox(window_vrc_gui, width=50, height=20)
+    combo_9 = ttk.Combobox(window_vrc_gui, width=30, height=20)
     combo_9.grid(column=1, row=7)
     combo_9['values'] = combo_values_cable_thick()
 
@@ -2993,13 +2999,13 @@ def VRC_GUI():
 
     lbl_7_VRC = tk.Label(window_vrc_gui, text="Type_of_Service")
     lbl_7_VRC.grid(column=0, row=9)
-    combo_7 = ttk.Combobox(window_vrc_gui, width=50, height=20)
+    combo_7 = ttk.Combobox(window_vrc_gui, width=30, height=20)
     combo_7.grid(column=1, row=9)
     combo_7['values'] = ['overhead', 'underground', 'overhead from underground']
 
     lbl_8_VRC = tk.Label(window_vrc_gui, text="material")
     lbl_8_VRC.grid(column=0, row=10)
-    combo_8 = ttk.Combobox(window_vrc_gui, width=50, height=20)
+    combo_8 = ttk.Combobox(window_vrc_gui, width=30, height=20)
     combo_8.grid(column=1, row=10)
     combo_8['values'] = ['Cu', 'other thing']
 
@@ -3024,6 +3030,8 @@ def VRC_GUI():
         MB_to_SB_Distance_m = float(txt_10.get())
         Type_of_Service = combo_7.get()
         material = combo_8.get()
+
+    window_vrc_gui.destroy()
 
 def create_VRC(fname, name, address):
     """"""
@@ -3153,30 +3161,31 @@ def start_screen():
             self.create_widgets()
 
         def create_widgets(self):
+            ## TODO turn this first button into an entry for customer ID
             self.hi_there = tk.Button(self)
             self.hi_there["text"] = "Hello World\n(click me)"
             self.hi_there["command"] = self.say_hi
-            self.hi_there.pack(side="top")
+            self.hi_there.grid(column=1, row=3)
 
             self.design1 = tk.Button(self)
             self.design1["text"] = "design and test"
             self.design1["command"] = self.design_tool
-            self.design1.pack(side="right")
+            self.design1.grid(column=1, row=4)
 
             self.makeSLD = tk.Button(self)
             self.makeSLD["text"] = "SLD"
             self.makeSLD["command"] = self.SLD
-            self.makeSLD.pack(side="right")
+            self.makeSLD.grid(column=1, row=5)
 
             self.makeVRC = tk.Button(self)
             self.makeVRC["text"] = "VRC"
             self.makeVRC["command"] = self.VRC
-            self.makeVRC.pack(side="right")
+            self.makeVRC.grid(column=1, row=6)
 
 
             self.quit = tk.Button(self, text="QUIT", fg="red",
                                   command=self.master.destroy)
-            self.quit.pack(side="bottom")
+            self.quit.grid(column=1, row=7)
 
         def say_hi(self):
             print("make the name")
