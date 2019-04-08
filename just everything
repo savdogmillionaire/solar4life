@@ -581,6 +581,8 @@ def create_SLD(fname, inverterno, battery, array, phase, current, reposit):
         c.drawString(x - 120, y + 70, "1 x Battery")
         c.setFont('Helvetica', 10)
 
+        ## TODO BMU label
+
         cur.execute('SELECT make FROM Batteryspecifications where Battery=?', battery)
         bmake = cur.fetchone()[0]
         c.drawString(x - 120, y + 55, "Make: %s" % bmake)
