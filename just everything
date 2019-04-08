@@ -119,7 +119,7 @@ def designgui():
 
 def input_from_main():
     # establish connecttion to database
-    ## TODO weird accessing 
+    ## TODO weird accessing
 
     class array:
         def __init__(self, number, model, panels, strings):
