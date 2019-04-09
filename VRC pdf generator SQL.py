@@ -9,7 +9,6 @@ from reportlab.platypus import SimpleDocTemplate, Paragraph, Image, PageBreak
 from reportlab.lib.colors import yellow, red, black, white
 
 
-# TODO needs a bit of updating for use with GUI
 
 def create_VRC(fname, name, address):
     """"""

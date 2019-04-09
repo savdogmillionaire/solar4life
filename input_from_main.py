@@ -153,7 +153,6 @@ class systemspecs:
 
 
 ## this part will take vlaues that have been input from the main System design program. for now...
-## TODO associate below value to the database values.
 array_1 = array(1, array_1_model_input, 39.7, -0.03, 15, 330, array_1_length, array_1_strings)
 array_2 = array(2, array_1_model_input, 39.7, -0.03, 5, 270, array_2_length, array_2_strings)
 array_3 = array(3, array_1_model_input, 39.7, -0.03, 15, 330, 10, 2)

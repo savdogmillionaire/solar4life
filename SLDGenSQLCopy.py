@@ -1,7 +1,6 @@
 ## This Program creates the sLD
 ##
-## TODO clear up from where the tool takes values from for each sld scenario
-## TODO run through array panel configurations, as well as reposit or not.
+
 ##
 ##
 import os
@@ -38,8 +37,6 @@ def create_SLD(fname, inverterno, battery, array, phase, customer_ID, current, r
     ## string concatenation to create title.
     address = street + ', ' + suburb + ' ' + state + ' ' + str(postoode)
 
-    # TODO change this whole part arraymodules,string,arrayisc etc so that the values are just accessed in the program itself.
-
     arrayisc = system_1.array_Isc()[0]
     arrayvoc = system_1.array_Voc()[0]
     arrayvocminus10 = system_1.array_Voc_minus_10()[0]
@@ -57,7 +54,6 @@ def create_SLD(fname, inverterno, battery, array, phase, customer_ID, current, r
     trianglepath = r"C:\Users\Solar4Life\Desktop\solar4life\sld generator files\sava assets\triangle.png"
     sinepath = r"C:\Users\Solar4Life\Desktop\solar4life\sld generator files\sava assets\sine.png"
 
-    ## TODO might need to change how componenet attributes are assigned. like when there are 2 different panels
     panelspec = ('%s' % array_1_model_input,)
     batteryl = ('SolaX 3.3kWh Battery',)
     battery2 = ('BYD Battery Box H 6.4',)
