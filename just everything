@@ -216,24 +216,23 @@ def input_from_main():
         # checks whether the array ISC will cause clipping but will still work, if it the configuration cant be used at all,
         # or if it is fine
         def inverter_mppt_max_check_1(self):
-
             array_isc1 = (self.array_Isc()[0])
 
-            if array_isc1 < self.inverter1.I_DC_max and array_isc1 < self.inverter1.I_mppt_max:
+            if array_isc1 < self.inverter1.I_DC_max and array_isc1 <= self.inverter1.I_mppt_max:
                 return "ARRAY ! GOOD"
-            if array_isc1 < self.inverter1.I_DC_max and array_isc1 > self.inverter1.I_mppt_max:
-                return "ARRAY ! KINDA BAD"
-            if array_isc1 > self.inverter1.I_DC_max and array_isc1 > self.inverter1.I_mppt_max:
+            if array_isc1 > self.inverter1.I_DC_max and array_isc1 < self.inverter1.I_mppt_max:
+                return "ARRAY ! GONNA CLIP"
+            if array_isc1 >= self.inverter1.I_DC_max and array_isc1 > self.inverter1.I_mppt_max:
                 raise ValueError('must lower ISC of array 1, configuration wont work')
 
         def inverter_mppt_max_check_2(self):
             array_isc2 = (self.array_Isc()[1])
 
-            if array_isc2 < self.inverter1.I_DC_max and array_isc2 < self.inverter1.I_mppt_max:
+            if array_isc2 < self.inverter1.I_DC_max and array_isc2 <= self.inverter1.I_mppt_max:
                 return "ARRAY 2 GOOD"
-            if array_isc2 < self.inverter1.I_DC_max and array_isc2 > self.inverter1.I_mppt_max:
-                return "ARRAY 2 KINDA BAD"
-            if array_isc2 > self.inverter1.I_DC_max and array_isc2 > self.inverter1.I_mppt_max:
+            if array_isc2 > self.inverter1.I_DC_max and array_isc2 < self.inverter1.I_mppt_max:
+                return "ARRAY 2 GONNA CLIP"
+            if array_isc2 >= self.inverter1.I_DC_max and array_isc2 > self.inverter1.I_mppt_max:
                 raise ValueError('must lower ISC of array 2, configuration wont work')
 
         ##checks to see if the total array wattage is less than CEC mandated max wattage guideline.
