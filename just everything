@@ -12,7 +12,8 @@ cur = conn.cursor()
 
 def designgui():
     global array_1_model_input, array_1_length, array_1_strings, \
-        array_2_length, array_2_strings, inverter_1_input, ac_breaker_current_limit
+        array_2_length, array_2_strings, inverter_1_input, inverter_2_input, \
+        ac_breaker_current_limit, battery_input, SS_Switch
 
     def combo_values_input():
 
@@ -35,6 +36,15 @@ def designgui():
     def combo_values_input_battery():
 
         query3 = cur.execute('SELECT Battery FROM Batteryspecifications')
+
+        data = []
+        for row in cur.fetchall():
+            data.append(row[0])
+        return data
+
+    def combo_values_input_breaker():
+
+        query2 = cur.execute('SELECT ACBreaker FROM ACBreakerspecifications')
 
         data = []
         for row in cur.fetchall():
@@ -75,9 +85,16 @@ def designgui():
     lbl6 = tk.Label(window, text="Inverter 1 model")
     lbl6.grid(column=0, row=5)
     combo2 = ttk.Combobox(window, width=30, height=20)
-    combo2.set('Fronius Galvo 1.5kW')
+    combo2.set('Fronius Symo 10.0kW -M')
     combo2.grid(column=1, row=5)
     combo2['values'] = combo_values_input_inverter()
+
+    lbl_inv_2 = tk.Label(window, text="Inverter 2 model")
+    lbl_inv_2.grid(column=0, row=6)
+    combo_inv_2 = ttk.Combobox(window, width=30, height=20)
+    combo_inv_2.set('None')
+    combo_inv_2.grid(column=1, row=6)
+    combo_inv_2['values'] = combo_values_input_inverter()
 
     lbl8 = tk.Label(window, text="Battery model")
     lbl8.grid(column=0, row=7)
@@ -86,19 +103,26 @@ def designgui():
     combo4.grid(column=1, row=7)
     combo4['values'] = combo_values_input_battery()
 
-
-    lbl7 = tk.Label(window, text="AC Breaker Current limit")
-    lbl7.grid(column=0, row=6)
+    lbl7 = tk.Label(window, text="AC Breaker")
+    lbl7.grid(column=0, row=8)
     txt7 = ttk.Combobox(window, width=30, height=20)
-    txt7.set('32')
-    txt7.grid(column=1, row=6)
-    txt7['values'] = ['10', '16', '25', '32', '40', '50', '63']
+    txt7.set('250V 1P 25A 6kA Suntree SL7-63')
+    txt7.grid(column=1, row=8)
+    txt7['values'] = combo_values_input_breaker()
+
+    lbl9 = tk.Label(window, text="Solar Supply Main Switch")
+    lbl9.grid(column=0, row=9)
+    txt9 = ttk.Combobox(window, width=30, height=20)
+    txt9.set('250V 1P 32A 6kA Suntree SUKF')
+    txt9.grid(column=1, row=9)
+    txt9['values'] = combo_values_input_breaker()
+
 
 
     ##calculate = tk.Button(window, text='calc', command=clicked1)
     ##calculate.grid(column=1, row=7)
     quit = tk.Button(window, text='GO', command=window.quit)
-    quit.grid(column=1, row=8)
+    quit.grid(column=1, row=13)
 
     window.mainloop()
 
@@ -108,7 +132,10 @@ def designgui():
     array_2_length = int(txt4.get())
     array_2_strings = int(txt5.get())
     inverter_1_input = combo2.get()
-    ac_breaker_current_limit = int(txt7.get())
+    inverter_2_input = combo_inv_2.get()
+    ac_breaker_current_limit = txt7.get()
+    SS_Switch = txt9.get()
+    battery_input = combo4.get()
 
     window.destroy()
 
@@ -138,12 +165,10 @@ def input_from_main():
             self.length = length
 
     class inverter:
-        def __init__(self, number, model, ac_breaker_current_limit, Max_AC_inverter_current,
-                     panel_startup_input_voltage,
+        def __init__(self, number, model, Max_AC_inverter_current, panel_startup_input_voltage,
                      nominal_output, I_mppt_max, I_DC_max):
             self.number = number
             self.model = model
-            self.ac_breaker_current_limit = ac_breaker_current_limit
             self.Max_AC_inverter_current = Max_AC_inverter_current
             self.panel_startup_input_voltage = panel_startup_input_voltage
             self.nominal_output = nominal_output
@@ -180,20 +205,19 @@ def input_from_main():
         def array_Voc_minus_10(self):
             array_1_Voc_minus_10 = self.panel_Voc_minus_10()[0] * self.array2.panels
             array_2_Voc_minus_10 = self.panel_Voc_minus_10()[1] * self.array2.panels
-            # array_2_Voc_minus_10 =  (self.array_2.panel_Voc + (((self.array_2.Voctemperaturecoeffcient_pc_per_C / 100) * -35) * self.array_2.panel_Voc)) * self.array_2.panels
             return (array_1_Voc_minus_10, array_2_Voc_minus_10)
 
         ##calcualtes total short circuit current
         def array_Isc(self):
-            array_1_Isc = self.array1.strings * self.array1.panel_isc
-            array_2_Isc = self.array2.strings * self.array2.panel_isc
+            array_1_Isc = self.array1.strings * self.array1.panel_isc[0]
+            array_2_Isc = self.array2.strings * self.array2.panel_isc[0]
             return array_1_Isc, array_2_Isc
 
         # checks whether the array ISC will cause clipping but will still work, if it the configuration cant be used at all,
         # or if it is fine
         def inverter_mppt_max_check_1(self):
 
-            array_isc1 = (self.array_Isc()[0])[0]
+            array_isc1 = (self.array_Isc()[0])
 
             if array_isc1 < self.inverter1.I_DC_max and array_isc1 < self.inverter1.I_mppt_max:
                 return "ARRAY ! GOOD"
@@ -203,7 +227,7 @@ def input_from_main():
                 raise ValueError('must lower ISC of array 1, configuration wont work')
 
         def inverter_mppt_max_check_2(self):
-            array_isc2 = (self.array_Isc()[1])[0]
+            array_isc2 = (self.array_Isc()[1])
 
             if array_isc2 < self.inverter1.I_DC_max and array_isc2 < self.inverter1.I_mppt_max:
                 return "ARRAY 2 GOOD"
@@ -211,7 +235,6 @@ def input_from_main():
                 return "ARRAY 2 KINDA BAD"
             if array_isc2 > self.inverter1.I_DC_max and array_isc2 > self.inverter1.I_mppt_max:
                 raise ValueError('must lower ISC of array 2, configuration wont work')
-            
 
         ##checks to see if the total array wattage is less than CEC mandated max wattage guideline.
         # based on nominal inverter output
@@ -276,17 +299,35 @@ def input_from_main():
     array_2 = array(2, array_1_model_input, array_2_length, array_2_strings)
     array_3 = array(3, array_1_model_input, 10, 2)
     array_4 = array(4, array_1_model_input, 20, 2)
-    string_1 = string(1, 'model1', 15, 2, 1, array_1_length)
-    string_2 = string(1, 'model1', 5, 2, 2, array_1_length)
-    string_3 = string(2, array_1_model_input, 11, 1, 1, array_1_length)
-    string_4 = string(2, array_1_model_input, 1, 1, 1, array_1_length)
-    string_5 = string(3, array_1_model_input, 15, 2, 1, 10)
-    string_6 = string(3, array_1_model_input, 5, 2, 2, 10)
-    string_7 = string(4, 1, 1, 1, 1, 11)
-    string_8 = string(5, 1, 1, 1, 11, 1)
+    string_1 = string(1, array_1_model_input, array_1_length, array_1_strings, 1, array_1_length)
+    string_2 = string(1, array_1_model_input, array_1_length, array_1_strings, 2, array_1_length)
+    string_3 = string(2, array_1_model_input, array_2_length, array_2_strings, 3, array_2_length)
+    string_4 = string(2, array_1_model_input, array_2_length, array_2_strings, 4, array_2_length)
+    string_5 = string(3, array_1_model_input, 15, 2, 5, 10)
+    string_6 = string(3, array_1_model_input, 5, 2, 6, 10)
+    string_7 = string(4, 1, 1, 1, 7, 11)
+    string_8 = string(4, 1, 1, 1, 8, 1)
 
-    inverter_1 = inverter(1, inverter_1_input, 25, 20, 150, 5000, 10, 18)
-    inverter_2 = inverter(2, 'b', 25, 20, 150, 5000, 10, 18)
+    ## TODO maybe implement ability to read mppt 1 and 2. for now just 1
+    ## inverter database searching
+
+    cur.execute('SELECT Current FROM ACBreakerspecifications where ACBreaker=?', (ac_breaker_current_limit,))
+    ac_breaker_current = int(cur.fetchone()[0])
+    cur.execute('SELECT MaxACCurrent FROM Inverterspecifications where Inverter=?', (inverter_1_input,))
+    Max_AC_inverter_current_inv_1 = float(cur.fetchone()[0])
+    cur.execute('SELECT MinDCInputVoltageV FROM Inverterspecifications where Inverter=?', (inverter_1_input,))
+    panel_startup_input_voltage_inv_1 = float(cur.fetchone()[0])
+    cur.execute('SELECT ACNominalPowerW FROM Inverterspecifications where Inverter=?', (inverter_1_input,))
+    ACNominalPowerW_inv_1 = float(cur.fetchone()[0])
+    cur.execute('SELECT MaximuminputshortcircuitcurrentforMPPT1A FROM Inverterspecifications where Inverter=?',
+                (inverter_1_input,))
+    I_mppt_max_inv_1 = float(cur.fetchone()[0])
+    cur.execute('SELECT MaxInputCurrent1A FROM Inverterspecifications where Inverter=?', (inverter_1_input,))
+    I_DC_max_inv_1 = float(cur.fetchone()[0])
+
+    inverter_1 = inverter(1, inverter_1_input, Max_AC_inverter_current_inv_1,
+                          panel_startup_input_voltage_inv_1, ACNominalPowerW_inv_1, I_mppt_max_inv_1, I_DC_max_inv_1)
+    inverter_2 = inverter(2, inverter_2_input, 20, 150, 5000, 10, 18)
 
     global system_1, system_2
 
@@ -295,8 +336,10 @@ def input_from_main():
 
     print(array_1.strings)
     print(inverter_1.I_DC_max)
-    print((system_1.array_Isc()[1])[0])
-
+    print(inverter_1.I_mppt_max)
+    print(array_1.panel_isc)
+    print((system_1.array_Isc()))
+    print(system_1.Circuit_breaker_current_limit(ac_breaker_current))
     print(system_1.string1.length)
     print(system_1.array_Voc())
     print(system_1.array_Voc_minus_10()[0])
@@ -412,7 +455,7 @@ def create_SLD(fname, inverterno, battery, array, phase, current, reposit):
 
     ## TODO might need to change how componenet attributes are assigned. like when there are 2 different panels
     panelspec = ('%s' % array_1_model_input,)
-    batteryl = ('SolaX 3.3kWh Battery',)
+    batteryl = ('%s' % battery_input,)
     battery2 = ('BYD Battery Box H 6.4',)
     inverter1 = ('%s' % inverter_1_input,)
     inverter2 = ('',)
@@ -3033,7 +3076,6 @@ def VRC_GUI():
 
 def create_VRC(fname, name, address):
     """"""
-    # TODO needs a bit of updating for use with GUI
     filename = os.path.join(fname + ".pdf")
     c = canvas.Canvas(filename)
     c.setLineWidth(.3)
@@ -3192,7 +3234,6 @@ def start_screen():
 
         def design_tool(self):
             designgui()
-            print(array_1_model_input, type(array_1_length), type(array_1_strings))
             input_from_main()
 
         def SLD(self):
