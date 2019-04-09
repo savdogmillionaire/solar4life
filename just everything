@@ -293,7 +293,7 @@ def input_from_main():
             return answer
 
     ## this part will take vlaues that have been input from the main System design program. for now...
-    ## TODO associate below value to the database values.
+    ## TODO associate below value to the database values. continue for more than 2 arrays when necessary
     array_1 = array(1, array_1_model_input, array_1_length, array_1_strings)
     array_2 = array(2, array_1_model_input, array_2_length, array_2_strings)
     array_3 = array(3, array_1_model_input, 10, 2)
@@ -416,7 +416,6 @@ def SLDGUI():
 
     ## This Program creates the sLD
     ##
-    ## TODO clear up from where the tool takes values from for each sld scenario
     ## TODO run through array panel configurations, as well as reposit or not.
     ##
     ##
@@ -452,9 +451,6 @@ def create_SLD(fname, inverterno, battery, array, phase, current, reposit):
     conn = sqlite3.connect('VRCtable.db')
     cur = conn.cursor()
 
-    # TODO change this whole part arraymodules,string,arrayisc etc so that the values are just accessed in the program itself.
-
-
     ## where images of some shapes in the program used. cahgne if required.
     trianglepath = r"C:\Users\Solar4Life\Desktop\solar4life\sld generator files\sava assets\triangle.png"
     sinepath = r"C:\Users\Solar4Life\Desktop\solar4life\sld generator files\sava assets\sine.png"
@@ -462,7 +458,6 @@ def create_SLD(fname, inverterno, battery, array, phase, current, reposit):
     ## TODO might need to change how componenet attributes are assigned. like when there are 2 different panels
     panelspec = ('%s' % array_1_model_input,)
     batteryl = ('%s' % battery_input,)
-    battery2 = ('BYD Battery Box H 6.4',)
     inverter1 = ('%s' % inverter_1_input,)
     inverter2 = ('',)
     meter1 = ('LG Meter',)
@@ -3215,7 +3210,7 @@ def start_screen():
             self.create_widgets()
 
         def create_widgets(self):
-            ## TODO turn this first button into an entry for customer ID
+            ## TODO turn this first button into an entry for customer ID...one day
             self.hi_there = tk.Button(self)
             self.hi_there["text"] = "Hello World\n(click me)"
             self.hi_there["command"] = self.say_hi
