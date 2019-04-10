@@ -14,7 +14,8 @@ def designgui():
     global array_1_model_input, array_1_length, array_1_strings, \
         array_2_length, array_2_strings, inverter_1_input, inverter_2_input, \
         ac_breaker_current_limit, battery_input, SS_Switch, array_3_model_input, \
-        array_3_length, array_3_strings, array_4_length, array_4_strings
+        array_3_length, array_3_strings, array_4_length, array_4_strings, check
+    check = 0
 
     def combo_values_input():
 
@@ -55,7 +56,7 @@ def designgui():
     def more_array():
 
         global txt10_array_3_length, txt11_array_3_strings, \
-            txt12_array_4_length, txt13_array_4_strings, combo_panel_2, check
+            txt12_array_4_length, txt13_array_4_strings, combo_panel_2
 
         lbl10 = tk.Label(window, text="Array 3 length")
         lbl10.grid(column=0, row=10)
@@ -180,15 +181,13 @@ def designgui():
         array_4_strings = int(txt13_array_4_strings.get())
 
 
-
-
-
-
     window.destroy()
 
 def input_from_main():
     # establish connecttion to database
-    ## TODO weird accessing
+    ## TODO weird accessing. i have a feeling that i dont ant to stop sql injection stuff. just basic access
+
+    global system_1, system_2
 
     class array:
         def __init__(self, number, model, panels, strings):
@@ -199,7 +198,7 @@ def input_from_main():
             cur.execute('SELECT Voctemperaturecoeffcient_pc_per_C FROM Panelspecifications where Panel=?', (model,))
             self.Voctemperaturecoeffcient_pc_per_C = cur.fetchone()
             cur.execute('SELECT IscA FROM Panelspecifications where Panel=?', (model,))
-            self.panel_isc = cur.fetchone()
+            self.panel_isc = cur.fetchone()[0]
             cur.execute('SELECT PmaxW FROM Panelspecifications where Panel=?', (model,))
             self.wattage = cur.fetchone()
             self.panels = panels
@@ -212,14 +211,25 @@ def input_from_main():
             self.length = length
 
     class inverter:
-        def __init__(self, number, model, Max_AC_inverter_current, panel_startup_input_voltage,
-                     nominal_output, I_mppt_max, I_DC_max):
+        def __init__(self, number, model):
             self.number = number
             self.model = model
+            ## inverter database searching
+            cur.execute('SELECT MaxACCurrent FROM Inverterspecifications where Inverter=?', (model,))
+            Max_AC_inverter_current = cur.fetchone()
             self.Max_AC_inverter_current = Max_AC_inverter_current
+            cur.execute('SELECT MinDCInputVoltageV FROM Inverterspecifications where Inverter=?', (model,))
+            panel_startup_input_voltage = cur.fetchone()
             self.panel_startup_input_voltage = panel_startup_input_voltage
+            cur.execute('SELECT ACNominalPowerW FROM Inverterspecifications where Inverter=?', (model,))
+            nominal_output = cur.fetchone()
             self.nominal_output = nominal_output
+            cur.execute('SELECT MaximuminputshortcircuitcurrentforMPPT1A FROM Inverterspecifications where Inverter=?',
+                        (model,))
+            I_mppt_max = cur.fetchone()
             self.I_mppt_max = I_mppt_max
+            cur.execute('SELECT MaxInputCurrent1A FROM Inverterspecifications where Inverter=?', (model,))
+            I_DC_max = cur.fetchone()
             self.I_DC_max = I_DC_max
 
     class systemspecs:
@@ -256,8 +266,8 @@ def input_from_main():
 
         ##calcualtes total short circuit current
         def array_Isc(self):
-            array_1_Isc = self.array1.strings * self.array1.panel_isc[0]
-            array_2_Isc = self.array2.strings * self.array2.panel_isc[0]
+            array_1_Isc = self.array1.strings * self.array1.panel_isc
+            array_2_Isc = self.array2.strings * self.array2.panel_isc
             return array_1_Isc, array_2_Isc
 
         # checks whether the array ISC will cause clipping but will still work, if it the configuration cant be used at all,
@@ -265,28 +275,28 @@ def input_from_main():
         def inverter_mppt_max_check_1(self):
             array_isc1 = (self.array_Isc()[0])
 
-            if array_isc1 < self.inverter1.I_DC_max and array_isc1 <= self.inverter1.I_mppt_max:
+            if array_isc1 < self.inverter1.I_DC_max[0] and array_isc1 <= self.inverter1.I_mppt_max[0]:
                 return "ARRAY ! GOOD"
-            if array_isc1 > self.inverter1.I_DC_max and array_isc1 < self.inverter1.I_mppt_max:
+            if array_isc1 > self.inverter1.I_DC_max[0] and array_isc1 < self.inverter1.I_mppt_max[0]:
                 return "ARRAY ! GONNA CLIP"
-            if array_isc1 >= self.inverter1.I_DC_max and array_isc1 > self.inverter1.I_mppt_max:
+            if array_isc1 >= self.inverter1.I_DC_max[0] and array_isc1 > self.inverter1.I_mppt_max[0]:
                 raise ValueError('must lower ISC of array 1, configuration wont work')
 
         def inverter_mppt_max_check_2(self):
             array_isc2 = (self.array_Isc()[1])
 
-            if array_isc2 < self.inverter1.I_DC_max and array_isc2 <= self.inverter1.I_mppt_max:
+            if array_isc2 < self.inverter1.I_DC_max[0] and array_isc2 <= self.inverter1.I_mppt_max[0]:
                 return "ARRAY 2 GOOD"
-            if array_isc2 > self.inverter1.I_DC_max and array_isc2 < self.inverter1.I_mppt_max:
+            if array_isc2 > self.inverter1.I_DC_max[0] and array_isc2 < self.inverter1.I_mppt_max[0]:
                 return "ARRAY 2 GONNA CLIP"
-            if array_isc2 >= self.inverter1.I_DC_max and array_isc2 > self.inverter1.I_mppt_max:
+            if array_isc2 >= self.inverter1.I_DC_max[0] and array_isc2 > self.inverter1.I_mppt_max[0]:
                 raise ValueError('must lower ISC of array 2, configuration wont work')
 
         ##checks to see if the total array wattage is less than CEC mandated max wattage guideline.
         # based on nominal inverter output
         def CEC_Oversize_Check(self):
-            oversize = self.array1.panels * self.array1.wattage
-            answer2 = self.inverter1.nominal_output * 1.33
+            oversize = self.array1.panels * self.array1.wattage[0]
+            answer2 = self.inverter1.nominal_output[0] * 1.33
             if oversize > answer2:
                 return "Array wattage of %dW is larger than CEC guidelines of %dW, please change" % (oversize, answer2)
             else:
@@ -319,13 +329,13 @@ def input_from_main():
         ## checks if the ac breaekr rating is 1.2 * the max inverter dc output
         def Circuit_breaker_current_limit(self, ac_breaker_current):
             answer = ac_breaker_current * 1.2
-            if self.inverter1.Max_AC_inverter_current > answer:
+            if self.inverter1.Max_AC_inverter_current[0] > answer:
                 raise ValueError('Max AC output current of the Inverter is greater than maximum allowed AC Breaker')
                 # return "Max AC output current of the Inverter %dA is greater than maximum allowed AC Breaker " \
                 # "current of %dA, please change" % (self.inverter1.Max_AC_inverter_current, answer)
             else:
                 return "Maximum allowed AC Breaker current of %dA works with Inverter output " \
-                       "current of %dA" % (answer, self.inverter1.Max_AC_inverter_current)
+                       "current of %dA" % (answer, self.inverter1.Max_AC_inverter_current[0])
 
         # checks if the strings in an array are of uneven length
         def Even_Odd_string_length(self):
@@ -339,62 +349,46 @@ def input_from_main():
                 answer = 'string lengths of mppt are equal'
             return answer
 
+    ## TODO maybe implement ability to read mppt 1 and 2. for now just 1
+    cur.execute('SELECT Current FROM ACBreakerspecifications where ACBreaker=?', (ac_breaker_current_limit,))
+    ac_breaker_current = int(cur.fetchone()[0])
     ## this part will take vlaues that have been input from the main System design program. for now...
     ## TODO associate below value to the database values. continue for more than 2 arrays when necessary
+    inverter_1 = inverter(1, inverter_1_input)
     array_1 = array(1, array_1_model_input, array_1_length, array_1_strings)
     array_2 = array(2, array_1_model_input, array_2_length, array_2_strings)
-    array_3 = array(3, array_1_model_input, 10, 2)
-    array_4 = array(4, array_1_model_input, 20, 2)
     string_1 = string(1, array_1_model_input, array_1_length, array_1_strings, 1, array_1_length)
     string_2 = string(1, array_1_model_input, array_1_length, array_1_strings, 2, array_1_length)
     string_3 = string(2, array_1_model_input, array_2_length, array_2_strings, 3, array_2_length)
     string_4 = string(2, array_1_model_input, array_2_length, array_2_strings, 4, array_2_length)
-    string_5 = string(3, array_1_model_input, 15, 2, 5, 10)
-    string_6 = string(3, array_1_model_input, 5, 2, 6, 10)
-    string_7 = string(4, 1, 1, 1, 7, 11)
-    string_8 = string(4, 1, 1, 1, 8, 1)
-
-    ## TODO maybe implement ability to read mppt 1 and 2. for now just 1
-    ## inverter database searching
-
-    cur.execute('SELECT Current FROM ACBreakerspecifications where ACBreaker=?', (ac_breaker_current_limit,))
-    ac_breaker_current = int(cur.fetchone()[0])
-    cur.execute('SELECT MaxACCurrent FROM Inverterspecifications where Inverter=?', (inverter_1_input,))
-    Max_AC_inverter_current_inv_1 = float(cur.fetchone()[0])
-    cur.execute('SELECT MinDCInputVoltageV FROM Inverterspecifications where Inverter=?', (inverter_1_input,))
-    panel_startup_input_voltage_inv_1 = float(cur.fetchone()[0])
-    cur.execute('SELECT ACNominalPowerW FROM Inverterspecifications where Inverter=?', (inverter_1_input,))
-    ACNominalPowerW_inv_1 = float(cur.fetchone()[0])
-    cur.execute('SELECT MaximuminputshortcircuitcurrentforMPPT1A FROM Inverterspecifications where Inverter=?',
-                (inverter_1_input,))
-    I_mppt_max_inv_1 = float(cur.fetchone()[0])
-    cur.execute('SELECT MaxInputCurrent1A FROM Inverterspecifications where Inverter=?', (inverter_1_input,))
-    I_DC_max_inv_1 = float(cur.fetchone()[0])
-
-    inverter_1 = inverter(1, inverter_1_input, Max_AC_inverter_current_inv_1,
-                          panel_startup_input_voltage_inv_1, ACNominalPowerW_inv_1, I_mppt_max_inv_1, I_DC_max_inv_1)
-    inverter_2 = inverter(2, inverter_2_input, 20, 150, 5000, 10, 18)
-
-    global system_1, system_2
-
     system_1 = systemspecs(array_1, array_2, inverter_1, string_1, string_2, string_3, string_4, 'Residential')
-    system_2 = systemspecs(array_3, array_4, inverter_2, string_5, string_6, string_7, string_8, 'Commercial')
 
-    print(system_1.array_Voc_minus_10()[0])
-    print(system_1.array_Voc_minus_10()[1])
+    ##checks to see if arrays 3 and 4 created. could be tweaked
+    if check == 1:
+        inverter_2 = inverter(2, inverter_2_input)
+        array_3 = array(3, array_3_model_input, array_3_length, array_3_strings)
+        array_4 = array(4, array_3_model_input, array_4_length, array_4_strings)
+        string_6 = string(3, array_3_model_input, array_3_length, array_3_strings, 6, array_3_length)
+        string_5 = string(3, array_3_model_input, array_3_length, array_3_strings, 5, array_3_length)
+        string_7 = string(4, array_3_model_input, array_4_length, array_4_strings, 7, array_4_length)
+        string_8 = string(4, array_3_model_input, array_4_length, array_4_strings, 8, array_4_length)
+        system_2 = systemspecs(array_3, array_4, inverter_2, string_5, string_6, string_7, string_8, 'Commercial')
 
-    print(array_1.strings)
-    print(inverter_1.I_DC_max)
-    print(inverter_1.I_mppt_max)
-    print(array_1.panel_isc)
-    print((system_1.array_Isc()))
-    print(system_1.Circuit_breaker_current_limit(ac_breaker_current))
-    print(system_1.string1.length)
-    print(system_1.array_Voc())
-    print(system_1.array_Voc_minus_10())
-    print(array_1.panel_Voc[0])
-    print(system_1.inverter_mppt_max_check_1())
-    print(system_1.inverter_mppt_max_check_2())
+    print(system_1.CEC_Oversize_Check())
+    ##print(system_1.inverter_mppt_max_check_2())
+
+    ##print(array_1.strings)
+    ##print(inverter_1.I_DC_max)
+    ##print(inverter_1.I_mppt_max)
+    ##print(array_1.panel_isc)
+    ##print((system_1.array_Isc()))
+    ##print(system_1.Circuit_breaker_current_limit(ac_breaker_current))
+    ##print(system_1.string1.length)
+    ##print(system_1.array_Voc())
+    ##print(system_1.array_Voc_minus_10())
+    ##print(array_1.panel_Voc[0])
+    ##print(system_1.inverter_mppt_max_check_1())
+    ##print(system_1.inverter_mppt_max_check_2())
     print("")
 
     # make sure to close connection to database at end of program
