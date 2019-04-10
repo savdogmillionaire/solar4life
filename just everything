@@ -9,7 +9,6 @@ from reportlab.lib.colors import yellow, red, black, white
 conn = sqlite3.connect('VRCtable.db')
 cur = conn.cursor()
 
-
 def designgui():
     global array_1_model_input, array_1_length, array_1_strings, \
         array_2_length, array_2_strings, inverter_1_input, inverter_2_input, \
@@ -504,7 +503,7 @@ def create_SLD(fname, inverterno, battery, array, phase, current, reposit):
 
     ## TODO might need to change how componenet attributes are assigned. like when there are 2 different panels
     panelspec = ('%s' % array_1_model_input,)
-    panelspec2 = ('%s' % array_3_model_input,)
+    panelspec2 = ('%s' % array_1_model_input,)
     batteryl = ('%s' % battery_input,)
     inverter1 = ('%s' % inverter_1_input,)
     inverter2 = ('%s' % inverter_2_input,)
@@ -692,8 +691,9 @@ def create_SLD(fname, inverterno, battery, array, phase, current, reposit):
         c.line(x + 35, y + 142.5, x + 5, y + 142.5)
         c.line(x + 45, y + 142.5, x + 75, y + 142.5)
 
+        c.setFont('Helvetica', 12)
         c.drawString(x + 80, array_height + 145, 'Array %d' % arrayno)
-        c.setFont('Helvetica', 7)
+        c.setFont('Helvetica', 8)
 
 
         cur.execute('SELECT PmaxW FROM Panelspecifications where Panel=?', panelspec)
@@ -764,32 +764,34 @@ def create_SLD(fname, inverterno, battery, array, phase, current, reposit):
         c.setFont('Helvetica', 7)
         ##c.drawString(x + 5, y + 5, 'w/ Built-In Optimisers')
 
-        c.drawString(x + 5, y + 20, 'Isc')
+        c.drawString(x + 5, y + 5, 'Isc')
         cur.execute('SELECT IscA FROM Panelspecifications where Panel=?', panelspec)
         arrayisc = cur.fetchone()[0]
-        c.drawString(x + 60, y + 20, '=  %.2fA' % arrayisc)
+        c.drawString(x + 60, y + 5, '=  %.2fA' % arrayisc)
 
-        c.drawString(x + 5, y + 35, 'Voc')
+        c.drawString(x + 5, y + 20, 'Voc')
         cur.execute('SELECT VocV FROM Panelspecifications where Panel=?', panelspec)
         arrayvoc = cur.fetchone()[0]
-        c.drawString(x + 60, y + 35, '=  %.2fV' % arrayvoc)
+        c.drawString(x + 60, y + 20, '=  %.2fV' % arrayvoc)
 
-        c.drawString(x + 5, y + 50, 'Voc(-10C)')
+        c.drawString(x + 5, y + 35, 'Voc(-10C)')
         cur.execute('SELECT Voctemperaturecoeffcient_pc_per_C FROM Panelspecifications where Panel=?', panelspec)
         arrayvocminus10 = cur.fetchone()[0]
-        c.drawString(x + 60, y + 50, '=  %.2fV' % arrayvocminus10)
+        c.drawString(x + 60, y + 35, '=  %.2fV' % arrayvocminus10)
 
         cur.execute('SELECT PmaxW FROM Panelspecifications where Panel=?', panelspec)
         arraymodulerating = cur.fetchone()[0]
-        c.drawString(x + 5, y + 65, '%d x %dW modules' % (arraymodules1, arraymodulerating))
+        c.drawString(x + 5, y + 50, '%d x %dW modules' % (arraymodules1, arraymodulerating))
 
         cur.execute('SELECT Model FROM Panelspecifications where Panel=?', panelspec)
         arraymodelnumber = cur.fetchone()[0]
-        c.drawString(x + 5, y + 80, '%s' % arraymodelnumber)
+        c.drawString(x + 5, y + 65, '%s' % arraymodelnumber)
 
         cur.execute('SELECT Manufacturer FROM Panelspecifications where Panel=?', panelspec)
         arraymanufacturer = cur.fetchone()[0]
-        c.drawString(x + 5, y + 95, '%d/ String/s of %s' % (strings1, arraymanufacturer))
+        c.drawString(x + 5, y + 80, '%s' % arraymanufacturer)
+
+        c.drawString(x + 5, y + 90, '%d/ String/s of:' % strings1)
 
         draw_switch(x + 35, y - 40, 180)
         draw_switch(x + 65, y - 40, 180)
@@ -833,32 +835,36 @@ def create_SLD(fname, inverterno, battery, array, phase, current, reposit):
         c.setFont('Helvetica', 7)
         ##c.drawString(x + 5, y + 5, 'w/ Built-In Optimisers')
 
-        c.drawString(x + 5, y + 20, 'Isc')
+        c.drawString(x + 5, y + 5, 'Isc')
         cur.execute('SELECT IscA FROM Panelspecifications where Panel=?', panelspec)
         arrayisc = cur.fetchone()[0]
-        c.drawString(x + 60, y + 20, '=  %.2fA' % arrayisc)
+        c.drawString(x + 60, y + 5, '=  %.2fA' % arrayisc)
 
-        c.drawString(x + 5, y + 35, 'Voc')
+        c.drawString(x + 5, y + 20, 'Voc')
         cur.execute('SELECT VocV FROM Panelspecifications where Panel=?', panelspec)
         arrayvoc = cur.fetchone()[0]
-        c.drawString(x + 60, y + 35, '=  %.2fV' % arrayvoc)
+        c.drawString(x + 60, y + 20, '=  %.2fV' % arrayvoc)
 
-        c.drawString(x + 5, y + 50, 'Voc(-10C)')
+        c.drawString(x + 5, y + 35, 'Voc(-10C)')
         cur.execute('SELECT Voctemperaturecoeffcient_pc_per_C FROM Panelspecifications where Panel=?', panelspec)
         arrayvocminus10 = cur.fetchone()[0]
-        c.drawString(x + 60, y + 50, '=  %.2fV' % arrayvocminus10)
+        c.drawString(x + 60, y + 35, '=  %.2fV' % arrayvocminus10)
 
         cur.execute('SELECT PmaxW FROM Panelspecifications where Panel=?', panelspec)
         arraymodulerating = cur.fetchone()[0]
-        c.drawString(x + 5, y + 65, '%d x %dW modules' % (arraymodules2, arraymodulerating))
+        c.drawString(x + 5, y + 50, '%d x %dW modules' % (arraymodules2, arraymodulerating))
 
         cur.execute('SELECT Model FROM Panelspecifications where Panel=?', panelspec)
         arraymodelnumber = cur.fetchone()[0]
-        c.drawString(x + 5, y + 80, '%s' % arraymodelnumber)
+        c.drawString(x + 5, y + 65, '%s' % arraymodelnumber)
 
         cur.execute('SELECT Manufacturer FROM Panelspecifications where Panel=?', panelspec)
         arraymanufacturer = cur.fetchone()[0]
-        c.drawString(x + 5, y + 95, '%d/ String/s of %s' % (strings2, arraymanufacturer))
+        c.drawString(x + 5, y + 80, '%s' % arraymanufacturer)
+
+        c.drawString(x + 5, y + 90, '%d/ String/s of:' % strings2)
+
+
 
         draw_switch(x + 35, y - 40, 180)
         draw_switch(x + 65, y - 40, 180)
@@ -3084,26 +3090,29 @@ def VRC_GUI():
     txt_6 = tk.Entry(window_vrc_gui, width=10)
     txt_6.grid(column=1, row=6)
 
-    lbl_9_VRC = tk.Label(window_vrc_gui, text="SB")
-    lbl_9_VRC.grid(column=0, row=7)
-    combo_9 = ttk.Combobox(window_vrc_gui, width=30, height=20)
-    combo_9.grid(column=1, row=7)
-    combo_9['values'] = combo_values_cable_thick()
-
-    lbl_10 = tk.Label(window_vrc_gui, text="SB")
-    lbl_10.grid(column=0, row=8)
-    txt_10 = tk.Entry(window_vrc_gui, width=10)
-    txt_10.grid(column=1, row=8)
+    # SB stuff. i dont understand
+    # lbl_9_VRC = tk.Label(window_vrc_gui, text="SB")
+    # lbl_9_VRC.grid(column=0, row=7)
+    # combo_9 = ttk.Combobox(window_vrc_gui, width=30, height=20)
+    # combo_9.grid(column=1, row=7)
+    # combo_9['values'] = combo_values_cable_thick()
+    #
+    # lbl_10 = tk.Label(window_vrc_gui, text="SB")
+    # lbl_10.grid(column=0, row=8)
+    # txt_10 = tk.Entry(window_vrc_gui, width=10)
+    # txt_10.grid(column=1, row=8)
 
     lbl_7_VRC = tk.Label(window_vrc_gui, text="Type_of_Service")
     lbl_7_VRC.grid(column=0, row=9)
     combo_7 = ttk.Combobox(window_vrc_gui, width=30, height=20)
+    combo_7.set('underground')
     combo_7.grid(column=1, row=9)
     combo_7['values'] = ['overhead', 'underground', 'overhead from underground']
 
     lbl_8_VRC = tk.Label(window_vrc_gui, text="material")
     lbl_8_VRC.grid(column=0, row=10)
     combo_8 = ttk.Combobox(window_vrc_gui, width=30, height=20)
+    combo_8.set('Cu')
     combo_8.grid(column=1, row=10)
     combo_8['values'] = ['Cu', 'other thing']
 
@@ -3306,7 +3315,6 @@ def start_screen():
     mainwindow.geometry('250x200')
     app = Application(master=mainwindow)
     app.mainloop()
-
 
 start_screen()
 conn.close()
