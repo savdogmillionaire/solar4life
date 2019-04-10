@@ -15,7 +15,7 @@ def designgui():
         array_2_length, array_2_strings, inverter_1_input, inverter_2_input, \
         ac_breaker_current_limit, battery_input, SS_Switch, array_3_model_input, \
         array_3_length, array_3_strings, array_4_length, array_4_strings, check
-    check = 0
+
 
     def combo_values_input():
 
@@ -84,7 +84,7 @@ def designgui():
         combo_panel_2.set('None')
         combo_panel_2.grid(column=1, row=14)
         combo_panel_2['values'] = combo_values_input()
-
+        global check
         check = 1
 
 
@@ -92,6 +92,7 @@ def designgui():
     window = tk.Tk()
     window.title("Design Tool")
     window.geometry('500x350')
+    check = 0
 
     lbl1 = tk.Label(window, text="Panel 1 model")
     lbl1.grid(column=0, row=0)
@@ -296,6 +297,8 @@ def input_from_main():
         # based on nominal inverter output
         def CEC_Oversize_Check(self):
             oversize = self.array1.panels * self.array1.wattage[0]
+            if self.array2.panels > 0:
+                oversize += self.array2.panels * self.array2.wattage[0]
             answer2 = self.inverter1.nominal_output[0] * 1.33
             if oversize > answer2:
                 return "Array wattage of %dW is larger than CEC guidelines of %dW, please change" % (oversize, answer2)
@@ -316,13 +319,13 @@ def input_from_main():
         # checks if there are a minimum amount of panel to exceed the minimum inverter startup voltage
         def Min_panels_startup(self):
             smallest_Voc = min(self.panel_Voc_minus_10())
-            answer = self.inverter1.panel_startup_input_voltage / smallest_Voc
+            answer = self.inverter1.panel_startup_input_voltage[0] / smallest_Voc
             return answer
 
         # calculates the maximu amount of panels that can be placed that will be under the maximim system rating
         def Power_optimiser_limit(self):
-            oversize1 = self.inverter1.nominal_output * (4 / 3)
-            answer = oversize1 / self.array1.wattage
+            oversize1 = self.inverter1.nominal_output[0] * (4 / 3)
+            answer = oversize1 / self.array1.wattage[0]
             return "Number of Panels less than or equal to allowed based on %.2fW inverter oversizing: %d" % (
                 oversize1, answer)
 
@@ -330,16 +333,17 @@ def input_from_main():
         def Circuit_breaker_current_limit(self, ac_breaker_current):
             answer = ac_breaker_current * 1.2
             if self.inverter1.Max_AC_inverter_current[0] > answer:
-                raise ValueError('Max AC output current of the Inverter is greater than maximum allowed AC Breaker')
+                raise ValueError(
+                    'Max AC output current of the Inverter is greater than chosen maximum allowed AC Breaker')
                 # return "Max AC output current of the Inverter %dA is greater than maximum allowed AC Breaker " \
                 # "current of %dA, please change" % (self.inverter1.Max_AC_inverter_current, answer)
             else:
-                return "Maximum allowed AC Breaker current of %dA works with Inverter output " \
+                return "Maximum allowed AC Breaker current chosen of %dA works with Inverter output " \
                        "current of %dA" % (answer, self.inverter1.Max_AC_inverter_current[0])
 
         # checks if the strings in an array are of uneven length
         def Even_Odd_string_length(self):
-            if self.array1.strings == 1:
+            if self.array1.strings == 1 and self.array2.strings == 1:
                 answer = 'string length comparison not applicable'
             elif self.array1.strings > 1 and self.string1.length % self.string2.length != 0:
                 answer = 'uneven string length in array'
@@ -361,7 +365,7 @@ def input_from_main():
     string_2 = string(1, array_1_model_input, array_1_length, array_1_strings, 2, array_1_length)
     string_3 = string(2, array_1_model_input, array_2_length, array_2_strings, 3, array_2_length)
     string_4 = string(2, array_1_model_input, array_2_length, array_2_strings, 4, array_2_length)
-    system_1 = systemspecs(array_1, array_2, inverter_1, string_1, string_2, string_3, string_4, 'Residential')
+    system_1 = systemspecs(array_1, array_2, inverter_1, string_1, string_2, string_3, string_4, 'Commercial')
 
     ##checks to see if arrays 3 and 4 created. could be tweaked
     if check == 1:
@@ -374,7 +378,8 @@ def input_from_main():
         string_8 = string(4, array_3_model_input, array_4_length, array_4_strings, 8, array_4_length)
         system_2 = systemspecs(array_3, array_4, inverter_2, string_5, string_6, string_7, string_8, 'Commercial')
 
-    print(system_1.CEC_Oversize_Check())
+    print(check)
+    print(system_1.array_Voc_minus_10())
     ##print(system_1.inverter_mppt_max_check_2())
 
     ##print(array_1.strings)
@@ -499,9 +504,10 @@ def create_SLD(fname, inverterno, battery, array, phase, current, reposit):
 
     ## TODO might need to change how componenet attributes are assigned. like when there are 2 different panels
     panelspec = ('%s' % array_1_model_input,)
+    panelspec2 = ('%s' % array_3_model_input,)
     batteryl = ('%s' % battery_input,)
     inverter1 = ('%s' % inverter_1_input,)
-    inverter2 = ('',)
+    inverter2 = ('%s' % inverter_2_input,)
     meter1 = ('LG Meter',)
     meter2 = ('',)
 
@@ -2667,7 +2673,7 @@ def create_SLD(fname, inverterno, battery, array, phase, current, reposit):
             if array == 4:
                 draw_small_array(10, 660, 1, array_1_length, array_2_length, panelspec, array_1_strings,
                                  array_2_strings)
-                draw_small_array(335, 660, 3, array_3_length, array_4_length, panelspec, array_3_strings,
+                draw_small_array(335, 660, 3, array_3_length, array_4_length, panelspec2, array_3_strings,
                                  array_4_strings)
                 draw_inverter(75, 400, inverter1, inverterno, 'N')
                 draw_inverter(400, 400, inverter2, inverterno, 'N')
