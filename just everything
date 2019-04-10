@@ -4,7 +4,7 @@ import sqlite3
 import os
 import webbrowser
 from reportlab.pdfgen import canvas
-from reportlab.lib.colors import yellow, red, black, white
+from reportlab.lib.colors import black
 
 conn = sqlite3.connect('VRCtable.db')
 cur = conn.cursor()
@@ -377,21 +377,24 @@ def input_from_main():
         string_8 = string(4, array_3_model_input, array_4_length, array_4_strings, 8, array_4_length)
         system_2 = systemspecs(array_3, array_4, inverter_2, string_5, string_6, string_7, string_8, 'Commercial')
 
-    print(check)
     print(system_1.array_Voc_minus_10())
-    ##print(system_1.inverter_mppt_max_check_2())
+    print(system_1.inverter_mppt_max_check_1())
+    print(system_1.inverter_mppt_max_check_2())
+    print(system_1.Circuit_breaker_current_limit(ac_breaker_current))
+    print(system_1.Power_optimiser_limit())
+    print(system_1.Min_panels_startup())
+    print(system_1.Max_panels())
+    print(system_1.CEC_Oversize_Check())
 
     ##print(array_1.strings)
     ##print(inverter_1.I_DC_max)
     ##print(inverter_1.I_mppt_max)
     ##print(array_1.panel_isc)
     ##print((system_1.array_Isc()))
-    ##print(system_1.Circuit_breaker_current_limit(ac_breaker_current))
     ##print(system_1.string1.length)
     ##print(system_1.array_Voc())
     ##print(system_1.array_Voc_minus_10())
     ##print(array_1.panel_Voc[0])
-    ##print(system_1.inverter_mppt_max_check_1())
     ##print(system_1.inverter_mppt_max_check_2())
     print("")
 
@@ -510,9 +513,9 @@ def create_SLD(fname, inverterno, battery, array, phase, current, reposit):
     meter1 = ('LG Meter',)
     meter2 = ('',)
 
-    Inverter1ACIsolator = ('250V 1P 32A 6kA Suntree SUKF',)
+    Inverter1ACIsolator = ('%s' % SS_Switch,)
     Inverter2ACIsolator = ('1P 10A 6kA NHP mod6 AC Breaker',)
-    SolarSupplyMainSwitch = ('250V 1P 25A 6kA Suntree SL7-63',)
+    SolarSupplyMainSwitch = ('%s' % ac_breaker_current_limit,)
     BatteryACIsolator = ('1P 25A 6kA NHP mod6 AC Breaker',)
     BatteryDCIsolator = ('1P 25A 6kA NHP mod6 AC Breaker',)
     EPSACIsolator = ('3P 32A 6kA NHP mod6 AC Breaker',)
@@ -706,7 +709,7 @@ def create_SLD(fname, inverterno, battery, array, phase, current, reposit):
 
         cur.execute('SELECT Manufacturer FROM Panelspecifications where Panel=?', panelspec)
         arraymanufacturer = cur.fetchone()[0]
-        c.drawString(x + 5, y + 99, '%s' % arraymanufacturer)
+        c.drawString(x + 5, y + 97, '%s' % arraymanufacturer)
 
         c.drawString(x + 5, y + 110, '%d/ String/s of:' % strings)
 
@@ -3295,7 +3298,7 @@ def start_screen():
 
         def say_hi(self):
             print("make the name")
-            customer_ID = (123456,)
+            customer_ID = (123457,)
             name_address(customer_ID)
 
         def design_tool(self):
