@@ -664,9 +664,9 @@ def create_SLD(fname, inverterno, battery, array, phase, current, reposit):
         c.line(x + 40, y, x + 40, y - 10)
         x += 100
         y += 40
-        c.setFont('Helvetica', 14)
+        c.setFont('Helvetica', 12)
         c.drawString(x - 120, y + 70, "1 x Battery")
-        c.setFont('Helvetica', 10)
+        c.setFont('Helvetica', 8)
 
         ## TODO BMU label
 
