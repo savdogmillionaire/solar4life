@@ -13,7 +13,7 @@ def designgui():
     global array_1_model_input, array_1_length, array_1_strings, \
         array_2_length, array_2_strings, inverter_1_input, inverter_2_input, \
         ac_breaker_current_limit, battery_input, SS_Switch, array_3_model_input, \
-        array_3_length, array_3_strings, array_4_length, array_4_strings, check
+        array_3_length, array_3_strings, array_4_length, array_4_strings, check, application
 
 
     def combo_values_input():
@@ -90,7 +90,7 @@ def designgui():
 
     window = tk.Tk()
     window.title("Design Tool")
-    window.geometry('500x350')
+    window.geometry('500x400')
     check = 0
 
     lbl1 = tk.Label(window, text="Panel 1 model")
@@ -155,11 +155,18 @@ def designgui():
     txt9.grid(column=1, row=9)
     txt9['values'] = combo_values_input_breaker()
 
+    lbl_app = tk.Label(window, text="application")
+    lbl_app.grid(column=0, row=17)
+    txt_app = ttk.Combobox(window, width=30, height=20)
+    txt_app.set('Residential')
+    txt_app.grid(column=1, row=17)
+    txt_app['values'] = ['Residential', 'commercial']
+
     calculate = tk.Button(window, text='3+ arrays', command=more_array)
     calculate.grid(column=5, row=9)
 
     quit = tk.Button(window, text='GO', command=window.quit)
-    quit.grid(column=1, row=15)
+    quit.grid(column=1, row=16)
 
     window.mainloop()
 
@@ -173,6 +180,7 @@ def designgui():
     ac_breaker_current_limit = txt7.get()
     SS_Switch = txt9.get()
     battery_input = combo4.get()
+    application = txt_app.get()
     if check == 1:
         array_3_model_input = combo_panel_2.get()
         array_3_length = int(txt10_array_3_length.get())
@@ -276,9 +284,9 @@ def input_from_main():
             array_isc1 = (self.array_Isc()[0])
 
             if array_isc1 < self.inverter1.I_DC_max[0] and array_isc1 <= self.inverter1.I_mppt_max[0]:
-                return "ARRAY ! GOOD"
+                return "ARRAY 1 GOOD"
             if array_isc1 > self.inverter1.I_DC_max[0] and array_isc1 < self.inverter1.I_mppt_max[0]:
-                return "ARRAY ! GONNA CLIP"
+                return "ARRAY 1 GONNA CLIP"
             if array_isc1 >= self.inverter1.I_DC_max[0] and array_isc1 > self.inverter1.I_mppt_max[0]:
                 raise ValueError('must lower ISC of array 1, configuration wont work')
 
@@ -314,6 +322,19 @@ def input_from_main():
             if self.application == 'Commercial':
                 Max_panels = 1000 / biggest_Voc
                 return Max_panels
+
+        # checks how many panels can be placed for each inverter, and checks to tsee if the
+        # applications is residential or commercial when calculating
+        def Res_Com_check(self):
+            arrayaize = max(self.array_Voc_minus_10())
+            if self.application == 'Residential':
+                if arrayaize > 600:
+                    raise ValueError('Please lower Voc minus 10 of array')
+                return 'array Voc of %s is good ' % arrayaize
+            if self.application == 'Commercial':
+                if arrayaize > 1000:
+                    raise ValueError('Please lower Voc minus 10 of array')
+                return 'array Voc of %s is good ' % arrayaize
 
         # checks if there are a minimum amount of panel to exceed the minimum inverter startup voltage
         def Min_panels_startup(self):
@@ -364,7 +385,7 @@ def input_from_main():
     string_2 = string(1, array_1_model_input, array_1_length, array_1_strings, 2, array_1_length)
     string_3 = string(2, array_1_model_input, array_2_length, array_2_strings, 3, array_2_length)
     string_4 = string(2, array_1_model_input, array_2_length, array_2_strings, 4, array_2_length)
-    system_1 = systemspecs(array_1, array_2, inverter_1, string_1, string_2, string_3, string_4, 'Commercial')
+    system_1 = systemspecs(array_1, array_2, inverter_1, string_1, string_2, string_3, string_4, application)
 
     ##checks to see if arrays 3 and 4 created. could be tweaked
     if check == 1:
@@ -375,9 +396,10 @@ def input_from_main():
         string_5 = string(3, array_3_model_input, array_3_length, array_3_strings, 5, array_3_length)
         string_7 = string(4, array_3_model_input, array_4_length, array_4_strings, 7, array_4_length)
         string_8 = string(4, array_3_model_input, array_4_length, array_4_strings, 8, array_4_length)
-        system_2 = systemspecs(array_3, array_4, inverter_2, string_5, string_6, string_7, string_8, 'Commercial')
+        system_2 = systemspecs(array_3, array_4, inverter_2, string_5, string_6, string_7, string_8, application)
 
     print(system_1.array_Voc_minus_10())
+    print(system_1.Res_Com_check())
     print(system_1.inverter_mppt_max_check_1())
     print(system_1.inverter_mppt_max_check_2())
     print(system_1.Circuit_breaker_current_limit(ac_breaker_current))
@@ -398,8 +420,6 @@ def input_from_main():
     ##print(system_1.inverter_mppt_max_check_2())
     print("")
 
-    # make sure to close connection to database at end of program
-    conn.close()
 
 def SLDGUI():
     global inverterno, battery, arrays, phase, current, reposit
@@ -514,7 +534,7 @@ def create_SLD(fname, inverterno, battery, array, phase, current, reposit):
     meter2 = ('',)
 
     Inverter1ACIsolator = ('%s' % SS_Switch,)
-    Inverter2ACIsolator = ('1P 10A 6kA NHP mod6 AC Breaker',)
+    Inverter2ACIsolator = ('%s' % SS_Switch,)
     SolarSupplyMainSwitch = ('%s' % ac_breaker_current_limit,)
     BatteryACIsolator = ('1P 25A 6kA NHP mod6 AC Breaker',)
     BatteryDCIsolator = ('1P 25A 6kA NHP mod6 AC Breaker',)
@@ -3051,7 +3071,7 @@ def VRC_GUI():
     ## cable parameters
     window_vrc_gui = tk.Tk()
     window_vrc_gui.title("VRC make tool")
-    window_vrc_gui.geometry('550x500')
+    window_vrc_gui.geometry('450x400')
 
     def combo_values_cable_thick():
         query = cur.execute('SELECT conductor_size FROM cccarray')
@@ -3062,7 +3082,7 @@ def VRC_GUI():
 
     lbl_1_VRC = tk.Label(window_vrc_gui, text="CC to POA Cable Thickness")
     lbl_1_VRC.grid(column=0, row=1)
-    combo_1 = ttk.Combobox(window_vrc_gui, width=30, height=20)
+    combo_1 = ttk.Combobox(window_vrc_gui, width=20, height=10)
     combo_1.grid(column=1, row=1)
     combo_1['values'] = combo_values_cable_thick()
 
@@ -3073,7 +3093,7 @@ def VRC_GUI():
 
     lbl_3_VRC = tk.Label(window_vrc_gui, text="POA TO MB Cable Thickness")
     lbl_3_VRC.grid(column=0, row=3)
-    combo_3 = ttk.Combobox(window_vrc_gui, width=30, height=20)
+    combo_3 = ttk.Combobox(window_vrc_gui, width=20, height=10)
     combo_3.grid(column=1, row=3)
     combo_3['values'] = combo_values_cable_thick()
 
@@ -3084,7 +3104,7 @@ def VRC_GUI():
 
     lbl_5_VRC = tk.Label(window_vrc_gui, text="MB to INV Cable Thickness")
     lbl_5_VRC.grid(column=0, row=5)
-    combo_5 = ttk.Combobox(window_vrc_gui, width=30, height=20)
+    combo_5 = ttk.Combobox(window_vrc_gui, width=20, height=10)
     combo_5.grid(column=1, row=5)
     combo_5['values'] = combo_values_cable_thick()
 
@@ -3107,14 +3127,14 @@ def VRC_GUI():
 
     lbl_7_VRC = tk.Label(window_vrc_gui, text="Type_of_Service")
     lbl_7_VRC.grid(column=0, row=9)
-    combo_7 = ttk.Combobox(window_vrc_gui, width=30, height=20)
+    combo_7 = ttk.Combobox(window_vrc_gui, width=20, height=10)
     combo_7.set('underground')
     combo_7.grid(column=1, row=9)
     combo_7['values'] = ['overhead', 'underground', 'overhead from underground']
 
     lbl_8_VRC = tk.Label(window_vrc_gui, text="material")
     lbl_8_VRC.grid(column=0, row=10)
-    combo_8 = ttk.Combobox(window_vrc_gui, width=30, height=20)
+    combo_8 = ttk.Combobox(window_vrc_gui, width=20, height=10)
     combo_8.set('Cu')
     combo_8.grid(column=1, row=10)
     combo_8['values'] = ['Cu', 'other thing']
@@ -3122,7 +3142,8 @@ def VRC_GUI():
     quit = tk.Button(window_vrc_gui, text='GO', command=window_vrc_gui.quit)
     quit.grid(column=1, row=11)
 
-    # make sure to close connection to database at end of program
+    # make sure to close connection
+    # to database at end of program
     conn.close()
 
     window_vrc_gui.mainloop()
