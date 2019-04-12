@@ -13,7 +13,7 @@ CustomerContactNumber = '0261822724'
 
 SystemNominalOutput = '6.6kW'
 NumberofPanels = '22'
-PanelManufacturer = 'ET Solar New Energ yCo Ltd'
+PanelManufacturer = 'ET Solar New Energy Co Ltd'
 PanelModelNumber = 'ET-M660300WB'
 RatingperPanel = '300W'
 PanelsPerInverter = '22'
