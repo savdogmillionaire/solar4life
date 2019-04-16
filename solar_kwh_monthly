@@ -1,0 +1,44 @@
+from pysolar.solar import *
+import datetime
+from dateutil import tz
+import sqlite3
+import calendar
+
+import matplotlib.pyplot as plt
+
+AEST = tz.gettz('Australia/Canberra')
+latitude_deg = -35.2809  # positive in the northern hemisphere
+longitude_deg = 149.1300  # negative reckoning west from prime meridian in Greenwich, England
+
+monthly_kwh_list = [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+]
+
+month_num = 1
+month_day_count = 1
+while month_num <= 12:
+    month_day_count = 1
+    while month_day_count <= calendar.monthlen(2018, month_num):
+        hour_count = 7
+        while hour_count <= 19:
+            date = datetime.datetime(2018, 1, 1, hour_count, tzinfo=AEST)
+            altitude_deg = get_altitude(latitude_deg, longitude_deg, date)
+            monthly_kwh_list[month_num - 1] += radiation.get_radiation_direct(date, altitude_deg)
+            hour_count += 1
+
+        month_day_count += 1
+    month_num += 1
+
+print(monthly_kwh_list)
+print(sum(monthly_kwh_list))

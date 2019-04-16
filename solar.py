@@ -63,15 +63,6 @@ date3 = datetime.datetime(2018, 1, 1, tzinfo=AEST) + datetime.timedelta(14 - 1)
 date4 = int(date3.strftime('%m'))
 print(date4)
 
-monthly_kwh_dict = [
-    'january'
-    'february'
-    'march'
-    ''
-]
-
-while day_count <= 365
-    while month_count < 12
 
 print(calendar.monthlen(2018, 1))
 calendar.month_name
