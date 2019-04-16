@@ -144,14 +144,14 @@ def designgui():
     lbl7 = tk.Label(window, text="AC Breaker")
     lbl7.grid(column=0, row=8)
     txt7 = ttk.Combobox(window, width=30, height=20)
-    txt7.set('250V 1P 25A 6kA Suntree SL7-63')
+    txt7.set('250V 1P 63A 6kA Suntree SL7-63')
     txt7.grid(column=1, row=8)
     txt7['values'] = combo_values_input_breaker()
 
     lbl9 = tk.Label(window, text="Solar Supply Main Switch")
     lbl9.grid(column=0, row=9)
     txt9 = ttk.Combobox(window, width=30, height=20)
-    txt9.set('250V 1P 32A 6kA Suntree SUKF')
+    txt9.set('250V 1P 63A 6kA Suntree SUKF')
     txt9.grid(column=1, row=9)
     txt9['values'] = combo_values_input_breaker()
 
@@ -372,6 +372,11 @@ def input_from_main():
             else:
                 answer = 'string lengths of mppt are equal'
             return answer
+
+        def solar_edge_checks(self):
+            pass
+            # check panel Voc minus 10 vs. optimiser limit
+            # check string wattage against inverter optimiser limit.
 
     ## TODO maybe implement ability to read mppt 1 and 2. for now just 1
     cur.execute('SELECT Current FROM ACBreakerspecifications where ACBreaker=?', (ac_breaker_current_limit,))
