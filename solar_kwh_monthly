@@ -6,6 +6,9 @@ import calendar
 
 import matplotlib.pyplot as plt
 
+plt.style.use('seaborn-whitegrid')
+import numpy as np
+
 AEST = tz.gettz('Australia/Canberra')
 latitude_deg = -35.2809  # positive in the northern hemisphere
 longitude_deg = 149.1300  # negative reckoning west from prime meridian in Greenwich, England
@@ -32,13 +35,48 @@ while month_num <= 12:
     while month_day_count <= calendar.monthlen(2018, month_num):
         hour_count = 7
         while hour_count <= 19:
-            date = datetime.datetime(2018, 1, 1, hour_count, tzinfo=AEST)
+            date = datetime.datetime(2018, month_num, month_day_count, hour_count, tzinfo=AEST)
             altitude_deg = get_altitude(latitude_deg, longitude_deg, date)
             monthly_kwh_list[month_num - 1] += radiation.get_radiation_direct(date, altitude_deg)
             hour_count += 1
 
         month_day_count += 1
+    monthly_kwh_list[month_num - 1] = monthly_kwh_list[month_num - 1] / (calendar.monthlen(2018, month_num) * 1000)
     month_num += 1
 
-print(monthly_kwh_list)
-print(sum(monthly_kwh_list))
+# Average Monthly Production (kWh/day) =
+# System Size (kW)
+# x Mean Monthly Irradiation (kWh/m2)
+# x STC Adjustment (1m2/1kW)
+# x Inclination De-Rating (%)
+# x Orientation De-Rating (%)
+# x Inverter Efficiency (%)
+# x DC Cable Losses (%)
+# x AC Cable Losses (%)
+# x Temperature and Dirt De-Rating (%)
+# x Shading Factor (%)
+# x Panel Effiency (Up to us, just based on if theyre better or worse than a standard panel %)
+
+monthly_kwh_list_plot = np.array(monthly_kwh_list)
+monthly_kwh_list_plot = monthly_kwh_list_plot * ((90 / 365) + ((141 * 0.5) / 365))
+
+bom = [
+    6.82,
+    6.04,
+    5.08,
+    3.71,
+    2.73,
+    2.25,
+    2.48,
+    3.29,
+    4.42,
+    5.62,
+    6.39,
+    6.91,
+]
+
+print(monthly_kwh_list_plot)
+fig2 = plt.bar(np.arange(12), bom)
+fig1 = plt.bar(np.arange(12), monthly_kwh_list_plot)
+plt.xticks(np.arange(12), calendar.month_abbr[1:])
+plt.show()
