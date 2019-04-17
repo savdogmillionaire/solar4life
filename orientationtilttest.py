@@ -28,7 +28,7 @@ def tilt_azimuth_factor(tilt, orientation):
 
         azimuth = np.array(get_azimuth_fast(latitude_deg, longitude_deg, date)) * (np.pi / 180)
 
-        panel_azimuth = np.subtract(azimuth, orientation_array)
+        panel_azimuth = np.add(azimuth, orientation_array)
         factor = ((np.cos(altitude) * np.sin(tilt_array) * np.cos(panel_azimuth)) \
                   + (np.sin(altitude) * np.cos(tilt_array)))
         tilt_azimuth_factor[0, x - 1] = tilt_azimuth_factor[0, x - 1] * factor
@@ -36,9 +36,14 @@ def tilt_azimuth_factor(tilt, orientation):
     return tilt_azimuth_factor
 
 
-print(tilt_azimuth_factor(22.5, 0))
-date = datetime.datetime(2018, 12, 15, tzinfo=AEST)
+print(tilt_azimuth_factor(22.5, 90))
+date = datetime.datetime(2018, 12, 15, 12, tzinfo=AEST)
 azimuth = np.array(get_azimuth(latitude_deg, longitude_deg, date))
 altitude = np.array(get_altitude(latitude_deg, longitude_deg, date))
 print(azimuth)
 print(altitude)
+
+ploty = tilt_azimuth_factor(0, 0)[0]
+fig2 = plt.bar(np.arange(12), ploty)
+plt.xticks(np.arange(12), calendar.month_abbr[1:])
+plt.show()

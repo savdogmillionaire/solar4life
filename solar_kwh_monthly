@@ -102,7 +102,6 @@ month_hours = [
     0,
     0
 ]
-
 elem = 1
 while elem <= 12:
     month_hours[elem - 1] += calendar.monthlen(2018, elem)
@@ -110,40 +109,52 @@ while elem <= 12:
 
 month_hours_array = np.array(month_hours) * 24
 sun_hours_scalar = np.array(sun_hours)
-
 percent_sun_hours = (sun_hours_scalar / month_hours_array)
 
 monthly_kwh_list_plot = np.array(monthly_kwh_list)
-# monthly_kwh_list_plot = monthly_kwh_list_plot * ((90 / 365) + ((141 * 0.5) / 365))
-monthly_kwh_list_plot = monthly_kwh_list_plot * percent_sun_hours
+monthly_kwh_list_plot = monthly_kwh_list_plot * ((101 / 365) + ((124 * 0.8) / 365))
 
-print(monthly_kwh_list_plot)
-print(bom)
+
+# monthly_kwh_list_plot = monthly_kwh_list_plot * percent_sun_hours
+
+
 
 
 def tilt_azimuth_factor(tilt, orientation):
     # kWhmod=Sincident[cos(α)sin(β)cos(Ψ−Θ)+sin(α)cos(β)]
     tilt_azimuth_factor = np.ones((1, 12))
-    tilt_rad = (tilt * np.pi) / 180
-    orientation_rad = (orientation * np.pi) / 180
+    tilt_azimuth_factor_2 = np.ones((1, 12))
+    tilt_rad = tilt * (np.pi / 180)
+    orientation_rad = orientation * (np.pi / 180)
     x = 1
-    while x <= 12
-        date = datetime.datetime(2018, x, 15, tzinfo=AEST)
+    while x <= 12:
+        date = datetime.datetime(2018, x, 23, 12, tzinfo=AEST)
         orientation_array = np.array(orientation_rad)
         tilt_array = np.array(tilt_rad)
-        altitude = np.array(get_altitude(latitude_deg, longitude_deg, date))
-        azimuth = np.array(get_azimuth_fast(latitude_deg, longitude_deg, date))
-        panel_azimuth = np.subtract(orientation_array, azimuth)
-        factor = ((np.cos(altitude) * np.sin(tilt_array) * np.cos(panel_azimuth)) + (
-                    np.sin(altitude) * np.cos(tilt_array)))
-        tilt_azimuth_factor[x] = tilt_azimuth_factor[x] * factor
+        altitude = np.array(get_altitude(latitude_deg, longitude_deg, date)) * (np.pi / 180)
+
+        azimuth = np.array(get_azimuth_fast(latitude_deg, longitude_deg, date)) * (np.pi / 180)
+
+        panel_azimuth = np.add(azimuth, orientation_array)
+        factor = ((np.cos(altitude) * np.sin(tilt_array) * np.cos(panel_azimuth)) \
+                  + (np.sin(altitude) * np.cos(tilt_array)))
+        dec_factor = (np.sin(altitude + tilt_rad) / np.sin(altitude))
+        print(x, factor, dec_factor)
+        tilt_azimuth_factor[0, x - 1] = tilt_azimuth_factor[0, x - 1] * factor * dec_factor
+        x += 1
     return tilt_azimuth_factor
 
+
+print(monthly_kwh_list_plot)
+print(bom)
+monthly_kwh_list_plot = monthly_kwh_list_plot * tilt_azimuth_factor(0, 30)[0]
+monthly_kwh_list_plot2 = monthly_kwh_list_plot * tilt_azimuth_factor(30, 30)[0]
 
 ind = np.arange(12)
 width = 0.35
 fig, ax, = plt.subplots()
-fig2 = ax.bar(ind - width / 2, bom, width)
-fig1 = ax.bar(ind + width / 2, monthly_kwh_list_plot, width)
+fig2 = ax.bar(ind - width / 3, bom, width)
+fig1 = ax.bar(ind + width / 3, monthly_kwh_list_plot, width)
+fig3 = ax.bar(ind + 2 * width / 3, monthly_kwh_list_plot2, width)
 plt.xticks(np.arange(12), calendar.month_abbr[1:])
 plt.show()
