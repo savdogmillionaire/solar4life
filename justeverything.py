@@ -345,7 +345,7 @@ def input_from_main():
         # calculates the maximu amount of panels that can be placed that will be under the maximim system rating
         def Power_optimiser_limit(self):
             oversize1 = self.inverter1.nominal_output[0] * (4 / 3)
-            answer = oversize1 / self.array1.wattage[0]
+            answer = oversize1 / (self.array1.wattage[0] + self.array2.wattage[0])
             return "Number of Panels less than or equal to allowed based on %.2fW inverter oversizing: %d" % (
                 oversize1, answer)
 
