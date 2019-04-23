@@ -15,9 +15,9 @@ import numpy as np
 # ---------------------------------------------#
 
 AEST = tz.gettz('Australia/Canberra')
-latitude_deg = -35.2809  # positive in the northern hemisphere
-longitude_deg = 149.1300  # negative reckoning west from prime meridian in Greenwich, England
-
+latitude_deg = -35.31  # positive in the northern hemisphere
+longitude_deg = 149.20  # negative reckoning west from prime meridian in Greenwich, England
+year = 2018
 monthly_kwh_list = [
     0,
     0,
@@ -38,16 +38,16 @@ month_num = 1
 month_day_count = 1
 while month_num <= 12:
     month_day_count = 1
-    while month_day_count <= calendar.monthlen(2018, month_num):
+    while month_day_count <= calendar.monthlen(year, month_num):
         hour_count = 1
         while hour_count <= 23:
-            date = datetime.datetime(2018, month_num, month_day_count, hour_count, tzinfo=AEST)
+            date = datetime.datetime(year, month_num, month_day_count, hour_count, tzinfo=AEST)
             altitude_deg = get_altitude(latitude_deg, longitude_deg, date)
             monthly_kwh_list[month_num - 1] += radiation.get_radiation_direct(date, altitude_deg)
             hour_count += 1
 
         month_day_count += 1
-    monthly_kwh_list[month_num - 1] = monthly_kwh_list[month_num - 1] / (calendar.monthlen(2018, month_num) * 1000)
+    monthly_kwh_list[month_num - 1] = monthly_kwh_list[month_num - 1] / (calendar.monthlen(year, month_num) * 1000)
     month_num += 1
 # copied from designer tool, used as a reference.
 # Average Monthly Production (kWh/day) =
@@ -64,7 +64,7 @@ while month_num <= 12:
 # x Panel Effiency (Up to us, just based on if theyre better or worse than a standard panel %)
 
 
-bom = [
+bom_old = [
     6.82,
     6.04,
     5.08,
@@ -79,11 +79,25 @@ bom = [
     6.91,
 ]
 
+bom = [
+    7.1,
+    5.9,
+    4.8,
+    3.7,
+    2.9,
+    2.2,
+    2.5,
+    3.4,
+    4.6,
+    5.7,
+    6.4,
+    7.0,
+]
 # this part is an attempt to cater for sunny days and cloudy days in a year. could be tweaked
 # the effect is to lower the calcualted kWh for each month
 
 monthly_kwh_list_plot = np.array(monthly_kwh_list)
-monthly_kwh_list_plot = monthly_kwh_list_plot * ((101 / 365) + ((124 * 0.8) / 365) + (((365 - 101 - 124) * 0.2) / 365))
+monthly_kwh_list_plot = monthly_kwh_list_plot * ((100 / 365) + ((125 * 0.8) / 365) + (((365 - 100 - 125) * 0.2) / 365))
 
 
 # sun_hours = [
@@ -116,7 +130,7 @@ monthly_kwh_list_plot = monthly_kwh_list_plot * ((101 / 365) + ((124 * 0.8) / 36
 # ]
 # elem = 1
 # while elem <= 12:
-#    month_hours[elem - 1] += calendar.monthlen(2018, elem)
+#    month_hours[elem - 1] += calendar.monthlen(year, elem)
 #    elem += 1
 # month_hours_array = np.array(month_hours) * 24
 # sun_hours_scalar = np.array(sun_hours)
@@ -132,15 +146,16 @@ def tilt_azimuth_factor(tilt, orientation):
     tilt_rad = tilt * (np.pi / 180)
     orientation_rad = orientation * (np.pi / 180)
     x = 1
+    hourcalc = 12
     while x <= 12:
-        date = datetime.datetime(2018, x, 23, 12, tzinfo=AEST)
+        date = datetime.datetime(year, x, 15, hourcalc, tzinfo=AEST)
         orientation_array = np.array(orientation_rad)
         tilt_array = np.array(tilt_rad)
         altitude = np.array(get_altitude(latitude_deg, longitude_deg, date)) * (np.pi / 180)
 
         azimuth = np.array(get_azimuth_fast(latitude_deg, longitude_deg, date)) * (np.pi / 180)
 
-        panel_azimuth = np.add(azimuth, orientation_array)
+        panel_azimuth = np.subtract(orientation_array, azimuth)
         factor = ((np.cos(altitude) * np.sin(tilt_array) * np.cos(panel_azimuth)) \
                   + (np.sin(altitude) * np.cos(tilt_array)))
         dec_factor = (np.sin(altitude + tilt_rad) / np.sin(altitude))
@@ -149,16 +164,21 @@ def tilt_azimuth_factor(tilt, orientation):
     return tilt_azimuth_factor
 
 
-monthly_kwh_list_plot = monthly_kwh_list_plot * tilt_azimuth_factor(0, 0)[0]
-monthly_kwh_list_plot2 = monthly_kwh_list_plot * tilt_azimuth_factor(22.5, 0)[0]
+kilowatts = 5.4
+efficiency = 0.77
+monthly_kwh_list_plot1 = monthly_kwh_list_plot * tilt_azimuth_factor(22.5, 0)[0] * kilowatts * efficiency
+monthly_kwh_list_plot2 = monthly_kwh_list_plot * tilt_azimuth_factor(22.5, 50)[0] * kilowatts * efficiency
+
+print(tilt_azimuth_factor(22.5, 0)[0])
+plt.style.use('seaborn')
 
 ind = np.arange(12)
 width = 0.3
 fig, ax, = plt.subplots()
-fig2 = ax.bar(ind - width / 2, bom, width)
-fig1 = ax.bar(ind + width / 2, monthly_kwh_list_plot, width)
+# fig2 = ax.bar(ind - width / 2, bom, width)
+fig1 = ax.bar(ind + width / 2, monthly_kwh_list_plot1, width)
 fig3 = ax.bar(ind + 3 * width / 2, monthly_kwh_list_plot2, width)
 plt.xticks(np.arange(12), calendar.month_abbr[1:])
 plt.ylabel('kWh/day/m^2 for an average day in each month')
-plt.style.use('seaborn-whitegrid')
+
 plt.show()
