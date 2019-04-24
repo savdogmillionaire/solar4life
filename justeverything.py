@@ -9,14 +9,19 @@ from reportlab.lib.colors import black
 conn = sqlite3.connect('VRCtable.db')
 cur = conn.cursor()
 
+
+# entry gui to design solar panel system.
 def designgui():
+    ##assigning some variables to be global. i do this a lot. helpts to pass values between functions
+    ## in this program
     global array_1_model_input, array_1_length, array_1_strings, \
         array_2_length, array_2_strings, inverter_1_input, inverter_2_input, \
         ac_breaker_current_limit, battery_input, SS_Switch, array_3_model_input, \
         array_3_length, array_3_strings, array_4_length, array_4_strings, check, application
 
-
-    def combo_values_input():
+    ## combo value input functions simply access each row of the database and saves it to a list.
+    ## a drop down box can then be created using values from this list
+    def combo_values_input_panel():
 
         query = cur.execute('SELECT Panel FROM Panelspecifications')
         data = []
@@ -52,6 +57,7 @@ def designgui():
             data.append(row[0])
         return data
 
+    # creates a function that will allow the user to input data for when the system has 3 or more arrays,
     def more_array():
 
         global txt10_array_3_length, txt11_array_3_strings, \
@@ -82,7 +88,9 @@ def designgui():
         combo_panel_2 = ttk.Combobox(window, width=30, height=20)
         combo_panel_2.set('None')
         combo_panel_2.grid(column=1, row=14)
-        combo_panel_2['values'] = combo_values_input()
+        combo_panel_2['values'] = combo_values_input_panel()
+
+        # making a check value so that later parts of the code know that there are 3 or more arrays.
         global check
         check = 1
 
@@ -98,7 +106,7 @@ def designgui():
     combo = ttk.Combobox(window, width=30, height=20)
     combo.set('SunPower P19 320W Residential')
     combo.grid(column=1, row=0)
-    combo['values'] = combo_values_input()
+    combo['values'] = combo_values_input_panel()
 
     lbl2 = tk.Label(window, text="Array 1 length")
     lbl2.grid(column=0, row=1)
@@ -141,14 +149,14 @@ def designgui():
     combo4.grid(column=1, row=7)
     combo4['values'] = combo_values_input_battery()
 
-    lbl7 = tk.Label(window, text="AC Breaker")
+    lbl7 = tk.Label(window, text="Solar Supply Main Switch")
     lbl7.grid(column=0, row=8)
     txt7 = ttk.Combobox(window, width=30, height=20)
     txt7.set('250V 1P 63A 6kA Suntree SL7-63')
     txt7.grid(column=1, row=8)
     txt7['values'] = combo_values_input_breaker()
 
-    lbl9 = tk.Label(window, text="Solar Supply Main Switch")
+    lbl9 = tk.Label(window, text="AC Breaker")
     lbl9.grid(column=0, row=9)
     txt9 = ttk.Combobox(window, width=30, height=20)
     txt9.set('250V 1P 63A 6kA Suntree SUKF')
@@ -170,6 +178,7 @@ def designgui():
 
     window.mainloop()
 
+    #assigning to global variables things that have ben entered into the gui window.
     array_1_model_input = combo.get()
     array_1_length = int(txt2.get())
     array_1_strings = int(txt3.get())
@@ -191,12 +200,14 @@ def designgui():
 
     window.destroy()
 
-def input_from_main():
-    # establish connecttion to database
-    ## TODO weird accessing. i have a feeling that i dont ant to stop sql injection stuff. just basic access
 
+##calculation program.
+def input_from_main():
+    #assigning system classes as being global variables.
     global system_1, system_2
 
+    # creating classes. these classes can be called and new variables made for each part of the system.
+    # room for expansion perhaps.
     class array:
         def __init__(self, number, model, panels, strings):
             self.number = number
@@ -240,6 +251,9 @@ def input_from_main():
             I_DC_max = cur.fetchone()
             self.I_DC_max = I_DC_max
 
+    ## the meat of the calculations are performed here. should be verififed against excel designer tool
+    # to begin with. works well for smaller systems.
+    # TODO verify calcs for 3 or more arrays. i doubt it is 100% accurate.
     class systemspecs:
         # inputs
         def __init__(self, array1, array2, inverter1, string1, string2, string3, string4, application):
@@ -361,7 +375,7 @@ def input_from_main():
                 return "Maximum allowed AC Breaker current chosen of %dA works with Inverter output " \
                        "current of %dA" % (answer, self.inverter1.Max_AC_inverter_current[0])
 
-        # checks if the strings in an array are of uneven length
+        # checks if the strings in an array are of uneven length. should be obsolete.
         def Even_Odd_string_length(self):
             if self.array1.strings == 1 and self.array2.strings == 1:
                 answer = 'string length comparison not applicable'
@@ -373,16 +387,16 @@ def input_from_main():
                 answer = 'string lengths of mppt are equal'
             return answer
 
+        ## TODO implement solar edge calculations.
         def solar_edge_checks(self):
             pass
             # check panel Voc minus 10 vs. optimiser limit
             # check string wattage against inverter optimiser limit.
 
     ## TODO maybe implement ability to read mppt 1 and 2. for now just 1
+    ## below area assigns values entered into previous textbox to parts of the system.
     cur.execute('SELECT Current FROM ACBreakerspecifications where ACBreaker=?', (ac_breaker_current_limit,))
     ac_breaker_current = int(cur.fetchone()[0])
-    ## this part will take vlaues that have been input from the main System design program. for now...
-    ## TODO associate below value to the database values. continue for more than 2 arrays when necessary
     inverter_1 = inverter(1, inverter_1_input)
     array_1 = array(1, array_1_model_input, array_1_length, array_1_strings)
     array_2 = array(2, array_1_model_input, array_2_length, array_2_strings)
@@ -403,6 +417,8 @@ def input_from_main():
         string_8 = string(4, array_3_model_input, array_4_length, array_4_strings, 8, array_4_length)
         system_2 = systemspecs(array_3, array_4, inverter_2, string_5, string_6, string_7, string_8, application)
 
+    # system information is printed below.
+    #TODO create a popup window displaying this infromation with tKinter.
     print(system_1.array_Voc_minus_10())
     print(system_1.Res_Com_check())
     print(system_1.inverter_mppt_max_check_1())
@@ -413,19 +429,14 @@ def input_from_main():
     print(system_1.Max_panels())
     print(system_1.CEC_Oversize_Check())
 
-    ##print(array_1.strings)
-    ##print(inverter_1.I_DC_max)
-    ##print(inverter_1.I_mppt_max)
-    ##print(array_1.panel_isc)
-    ##print((system_1.array_Isc()))
-    ##print(system_1.string1.length)
-    ##print(system_1.array_Voc())
-    ##print(system_1.array_Voc_minus_10())
-    ##print(array_1.panel_Voc[0])
-    ##print(system_1.inverter_mppt_max_check_2())
     print("")
 
 
+## this gui pops up when tyou want to create a SLD. ideally, it would not require manual inputs.
+## however, it is a bit of a relic from previous versions.
+## TODO SLDGUI should really not have to require manual inputs. should be able to know the system maybe check to see if entries have 0??
+
+## configuration based on earlier calculations. a bit messy to implement
 def SLDGUI():
     global inverterno, battery, arrays, phase, current, reposit
 
@@ -446,7 +457,6 @@ def SLDGUI():
     txt9.set('0')
     txt9.grid(column=1, row=8)
     txt9['values'] = ['0', '1']
-
 
     lbl10 = tk.Label(window2, text="arrays")
     lbl10.grid(column=0, row=9)
@@ -479,6 +489,7 @@ def SLDGUI():
 
     window2.mainloop()
 
+    #assigning to global variables things that have ben entered into the SLD gui window.
     inverterno = int(txt8.get())
     battery = int(txt9.get())
     arrays = int(txt10.get())
@@ -494,9 +505,10 @@ def SLDGUI():
     ##
     ##
 
+
+## creates a name and address for use in SLD and VRC. based on an input of customer ID
 def name_address(customer_ID):
     """"""
-
     global name, address
 
     # establish connecttion to database
@@ -517,7 +529,23 @@ def name_address(customer_ID):
     ## string concatenation to create title.
     address = street + ', ' + suburb + ' ' + state + ' ' + str(postoode)
 
+    print(name, address)
+
     conn.close()
+
+
+## my first program at solar4life. also by far the messiest. the code to create lines on the SLD is held
+## together with magic and sticky tape.
+
+""""""""""
+check which layouts work
+
+Phase   Arrays  Batteries   Current   Reposit   Inverters | Works?  Annotated?     
+1       1       0           -         0         1         |  Y          -
+1       1       0           -         1         1         |  Y          -
+1       1       1           -         1         1         |  Y          needs check
+
+"""""""""""
 
 def create_SLD(fname, inverterno, battery, array, phase, current, reposit):
 
@@ -530,6 +558,7 @@ def create_SLD(fname, inverterno, battery, array, phase, current, reposit):
     sinepath = r"C:\Users\Solar4Life\Desktop\solar4life\sld generator files\sava assets\sine.png"
 
     ## TODO might need to change how componenet attributes are assigned. like when there are 2 different panels
+    #checks the database for values that will be printed on the SLD as strings.
     panelspec = ('%s' % array_1_model_input,)
     panelspec2 = ('%s' % array_1_model_input,)
     batteryl = ('%s' % battery_input,)
@@ -553,6 +582,7 @@ def create_SLD(fname, inverterno, battery, array, phase, current, reposit):
     ##Title
     c.drawCentredString(300, 820, 'Single Line Diagram for %s - %s' % (name, address))
 
+    #function to draw arcs. it helped.
     def draw_arc(x, y):
         x += -7.5
         y += 7
@@ -730,7 +760,7 @@ def create_SLD(fname, inverterno, battery, array, phase, current, reposit):
 
         cur.execute('SELECT Model FROM Panelspecifications where Panel=?', panelspec)
         arraymodelnumber = cur.fetchone()[0]
-        c.drawString(x + 5, y + 80, '%s' % arraymodelnumber)
+        c.drawCentredString(x + 75, y + 80, '%s' % arraymodelnumber)
 
         cur.execute('SELECT Manufacturer FROM Panelspecifications where Panel=?', panelspec)
         arraymanufacturer = cur.fetchone()[0]
@@ -813,7 +843,7 @@ def create_SLD(fname, inverterno, battery, array, phase, current, reposit):
 
         cur.execute('SELECT Model FROM Panelspecifications where Panel=?', panelspec)
         arraymodelnumber = cur.fetchone()[0]
-        c.drawString(x + 5, y + 65, '%s' % arraymodelnumber)
+        c.drawString(x + 35, y + 65, '%s' % arraymodelnumber)
 
         cur.execute('SELECT Manufacturer FROM Panelspecifications where Panel=?', panelspec)
         arraymanufacturer = cur.fetchone()[0]
@@ -884,7 +914,7 @@ def create_SLD(fname, inverterno, battery, array, phase, current, reposit):
 
         cur.execute('SELECT Model FROM Panelspecifications where Panel=?', panelspec)
         arraymodelnumber = cur.fetchone()[0]
-        c.drawString(x + 5, y + 65, '%s' % arraymodelnumber)
+        c.drawString(x + 35, y + 65, '%s' % arraymodelnumber)
 
         cur.execute('SELECT Manufacturer FROM Panelspecifications where Panel=?', panelspec)
         arraymanufacturer = cur.fetchone()[0]
@@ -3290,6 +3320,8 @@ def create_VRC(fname, name, address):
     # make sure to close connection to database at end of program
     conn.close()
 
+
+#starting gui. nice n tidy.
 def start_screen():
     class Application(tk.Frame):
         def __init__(self, master=None):
@@ -3299,11 +3331,14 @@ def start_screen():
             self.create_widgets()
 
         def create_widgets(self):
-            ## TODO turn this first button into an entry for customer ID...one day
+            # creates entry box for customer ID.
+            self.entrybutton = tk.Entry(self, width=10)
+            self.entrybutton.grid(column=1, row=2)
+
             self.hi_there = tk.Button(self)
-            self.hi_there["text"] = "Hello World\n(click me)"
+            self.hi_there["text"] = "enter customer ID (123456)"
             self.hi_there["command"] = self.say_hi
-            self.hi_there.grid(column=1, row=3)
+            self.hi_there.grid(column=2, row=2)
 
             self.design1 = tk.Button(self)
             self.design1["text"] = "design and test"
@@ -3326,8 +3361,8 @@ def start_screen():
             self.quit.grid(column=1, row=7)
 
         def say_hi(self):
-            print("make the name")
-            customer_ID = (123460,)
+            customer_ID_int = int(self.entrybutton.get())
+            customer_ID = ('%d' % customer_ID_int,)
             name_address(customer_ID)
 
         def design_tool(self):
