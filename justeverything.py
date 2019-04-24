@@ -756,7 +756,7 @@ def create_SLD(fname, inverterno, battery, array, phase, current, reposit):
         c.line(x + 45, y + 142.5, x + 75, y + 142.5)
 
         c.setFont('Helvetica', 12)
-        c.drawString(x + 80, array_height + 145, 'Array %d' % arrayno)
+        c.drawString(x + 80, 630 + 145, 'Array %d' % arrayno)
         c.setFont('Helvetica', 8)
 
 
@@ -774,20 +774,20 @@ def create_SLD(fname, inverterno, battery, array, phase, current, reposit):
 
         c.drawString(x + 5, y + 110, '%d/ String/s of:' % strings)
 
-        draw_switch(x + 65, array_height - 50, 180)
-        draw_switch(x + 95, array_height - 50, 180)
-        draw_switch(x + 65, array_height - 100, 180)
-        draw_switch(x + 95, array_height - 100, 180)
+        draw_switch(x + 65, 630 - 50, 180)
+        draw_switch(x + 95, 630 - 50, 180)
+        draw_switch(x + 65, 630 - 100, 180)
+        draw_switch(x + 95, 630 - 100, 180)
         c.setDash(array=[3], phase=13)
-        c.line(x + 65, array_height - 107, x + 95, array_height - 107)
-        c.line(x + 65, array_height - 57, x + 95, array_height - 57)
+        c.line(x + 65, 630 - 107, x + 95, 630 - 107)
+        c.line(x + 65, 630 - 57, x + 95, 630 - 57)
         c.setDash(array=[], phase=0)
         if arrayno == 1:
             x += 120
-            c.drawString(x - 15, array_height - 50, 'Rooftop DC Isolator')
-            c.drawString(x - 15, array_height - 65, '1200V 32A')
-            c.drawString(x - 15, array_height - 100, 'Inverter DC Isolator')
-            c.drawString(x - 15, array_height - 115, '1200V 32A')
+            c.drawString(x - 15, 630 - 50, 'Rooftop DC Isolator')
+            c.drawString(x - 15, 630 - 65, '1200V 32A')
+            c.drawString(x - 15, 630 - 100, 'Inverter DC Isolator')
+            c.drawString(x - 15, 630 - 115, '1200V 32A')
             x += -120
             ##c.drawString(x + 5, y + 5, 'w/ Built-In Optimisers')
             c.drawString(x + 5, y + 20, 'Isc')
@@ -799,10 +799,10 @@ def create_SLD(fname, inverterno, battery, array, phase, current, reposit):
 
         else:
 
-            c.drawString(x - 5, array_height - 50, 'Rooftop DC Isolator')
-            c.drawString(x - 5, array_height - 65, '1200V 32A')
-            c.drawString(x - 5, array_height - 100, 'Inverter DC Isolator')
-            c.drawString(x - 5, array_height - 115, '1200V 32A')
+            c.drawString(x - 5, 630 - 50, 'Rooftop DC Isolator')
+            c.drawString(x - 5, 630 - 65, '1200V 32A')
+            c.drawString(x - 5, 630 - 100, 'Inverter DC Isolator')
+            c.drawString(x - 5, 630 - 115, '1200V 32A')
 
             ##c.drawString(x + 5, y + 5, 'w/ Built-In Optimisers')
             c.drawString(x + 5, y + 20, 'Isc')
@@ -811,8 +811,8 @@ def create_SLD(fname, inverterno, battery, array, phase, current, reposit):
             c.drawString(x + 60, y + 35, '=  %.2fV' % system_1.array_Voc()[0])
             c.drawString(x + 5, y + 50, 'Voc(-10C)')
             c.drawString(x + 60, y + 50, '=  %.2fV' % system_1.array_Voc_minus_10()[0])
-        c.circle(x + 65, array_height, 2, stroke=1, fill=0)
-        c.circle(x + 95, array_height, 2, stroke=1, fill=0)
+        c.circle(x + 65, 630, 2, stroke=1, fill=0)
+        c.circle(x + 95, 630, 2, stroke=1, fill=0)
         c.setFont('Helvetica', 12)
 
     ## draw arrays and wires when there are 4 arrays required
@@ -1055,24 +1055,24 @@ def create_SLD(fname, inverterno, battery, array, phase, current, reposit):
         draw_reposit()
 
     ## main meat of the wiring. depends on variables taken from main design tool.
-    def complex_wiring(phase, array, battery, inverterno, array_height, current):
+    def complex_wiring(phase, array, battery, inverterno, current):
 
         if phase == 1:
             if array == 1:
-                draw_array(25, array_height, 1, array_1_length, panelspec, array_1_strings)
+                draw_array(25, 630, 1, array_1_length, panelspec, array_1_strings)
                 if battery == 0:
                     ##wiring
                     x = 25
-                    c.circle(x + 65, array_height - 180, 2, stroke=1, fill=1)
-                    c.circle(x + 77.5, array_height - 180, 2, stroke=1, fill=1)
-                    c.line(x + 65, array_height - 2, x + 65, array_height - 48)
-                    c.line(x + 95, array_height - 2, x + 95, array_height - 48)
-                    c.line(x + 65, array_height - 67, x + 65, array_height - 98)
-                    c.line(x + 95, array_height - 67, x + 95, array_height - 98)
-                    c.line(x + 65, array_height - 117, x + 65, array_height - 178)
-                    c.line(x + 77.5, array_height - 129.5, x + 77.5, array_height - 178)
-                    c.line(x + 77.5, array_height - 129.5, x + 95, array_height - 129.5)
-                    c.line(x + 95, array_height - 129.5, x + 95, array_height - 117)
+                    c.circle(x + 65, 630 - 180, 2, stroke=1, fill=1)
+                    c.circle(x + 77.5, 630 - 180, 2, stroke=1, fill=1)
+                    c.line(x + 65, 630 - 2, x + 65, 630 - 48)
+                    c.line(x + 95, 630 - 2, x + 95, 630 - 48)
+                    c.line(x + 65, 630 - 67, x + 65, 630 - 98)
+                    c.line(x + 95, 630 - 67, x + 95, 630 - 98)
+                    c.line(x + 65, 630 - 117, x + 65, 630 - 178)
+                    c.line(x + 77.5, 630 - 129.5, x + 77.5, 630 - 178)
+                    c.line(x + 77.5, 630 - 129.5, x + 95, 630 - 129.5)
+                    c.line(x + 95, 630 - 129.5, x + 95, 630 - 117)
                     draw_inverter(75, 375, inverter1, inverterno, 'N')
 
                     ##BOTTOM
@@ -1120,42 +1120,42 @@ def create_SLD(fname, inverterno, battery, array, phase, current, reposit):
 
                 if battery == 1 and current == 'DC':
                     x = 25
-                    c.circle(x + 65, array_height - 180, 2, stroke=1, fill=1)
-                    c.circle(x + 77.5, array_height - 180, 2, stroke=1, fill=1)
-                    c.line(x + 65, array_height - 2, x + 65, array_height - 48)
-                    c.line(x + 95, array_height - 2, x + 95, array_height - 48)
-                    c.line(x + 65, array_height - 67, x + 65, array_height - 98)
-                    c.line(x + 95, array_height - 67, x + 95, array_height - 98)
-                    c.line(x + 65, array_height - 117, x + 65, array_height - 178)
-                    c.line(x + 77.5, array_height - 129.5, x + 77.5, array_height - 178)
-                    c.line(x + 77.5, array_height - 129.5, x + 95, array_height - 129.5)
-                    c.line(x + 95, array_height - 129.5, x + 95, array_height - 117)
+                    c.circle(x + 65, 630 - 180, 2, stroke=1, fill=1)
+                    c.circle(x + 77.5, 630 - 180, 2, stroke=1, fill=1)
+                    c.line(x + 65, 630 - 2, x + 65, 630 - 48)
+                    c.line(x + 95, 630 - 2, x + 95, 630 - 48)
+                    c.line(x + 65, 630 - 67, x + 65, 630 - 98)
+                    c.line(x + 95, 630 - 67, x + 95, 630 - 98)
+                    c.line(x + 65, 630 - 117, x + 65, 630 - 178)
+                    c.line(x + 77.5, 630 - 129.5, x + 77.5, 630 - 178)
+                    c.line(x + 77.5, 630 - 129.5, x + 95, 630 - 129.5)
+                    c.line(x + 95, 630 - 129.5, x + 95, 630 - 117)
                     draw_battery(400, 550, batteryl)
 
-                    c.line(410, array_height - 90, 410, array_height - 145)
-                    c.line(410, array_height - 145, x + 280, array_height - 145)
-                    c.line(x + 261, array_height - 145, x + 95, array_height - 145)
-                    c.line(x + 95, array_height - 145, x + 95, array_height - 178)
-                    draw_switch(x + 263, array_height - 145, 270)
+                    c.line(410, 630 - 90, 410, 630 - 145)
+                    c.line(410, 630 - 145, x + 280, 630 - 145)
+                    c.line(x + 261, 630 - 145, x + 95, 630 - 145)
+                    c.line(x + 95, 630 - 145, x + 95, 630 - 178)
+                    draw_switch(x + 263, 630 - 145, 270)
 
-                    c.circle(x + 95, array_height - 180, 2, stroke=1, fill=1)
+                    c.circle(x + 95, 630 - 180, 2, stroke=1, fill=1)
 
                     draw_inverter(75, 375, inverter1, inverterno, 'N')
-                    c.circle(x + 105, array_height - 180, 2, stroke=1, fill=1)
-                    c.line(x + 415, array_height - 90, x + 415, array_height - 165)
-                    c.line(x + 415, array_height - 165, x + 280, array_height - 165)
-                    c.line(x + 261, array_height - 165, x + 105, array_height - 165)
-                    c.line(x + 105, array_height - 165, x + 105, array_height - 180)
-                    draw_switch(x + 263, array_height - 165, 270)
+                    c.circle(x + 105, 630 - 180, 2, stroke=1, fill=1)
+                    c.line(x + 415, 630 - 90, x + 415, 630 - 165)
+                    c.line(x + 415, 630 - 165, x + 280, 630 - 165)
+                    c.line(x + 261, 630 - 165, x + 105, 630 - 165)
+                    c.line(x + 105, 630 - 165, x + 105, 630 - 180)
+                    draw_switch(x + 263, 630 - 165, 270)
                     c.setFont('Helvetica', 7)
-                    c.drawString(x + 240, array_height - 110, 'Battery DC Isolator')
+                    c.drawString(x + 240, 630 - 110, 'Battery DC Isolator')
                     cur.execute('SELECT ACBreaker FROM ACbreakerspecifications where ACBreaker =?',
                                 BatteryDCIsolator)
                     i1iso = cur.fetchone()[0]
-                    c.drawString(x + 240, array_height - 125, '1200V 32A')
+                    c.drawString(x + 240, 630 - 125, '1200V 32A')
                     c.setFont('Helvetica', 12)
                     c.setDash(array=[3], phase=13)
-                    c.line(x + 270, array_height - 145, x + 270, array_height - 165)
+                    c.line(x + 270, 630 - 145, x + 270, 630 - 165)
                     c.setDash(array=[], phase=0)
 
                     ##BOTTOM
@@ -1238,16 +1238,16 @@ def create_SLD(fname, inverterno, battery, array, phase, current, reposit):
 
                 if battery == 1 and current == 'AC':
                     x = 25
-                    c.circle(x + 65, array_height - 180, 2, stroke=1, fill=1)
-                    c.circle(x + 77.5, array_height - 180, 2, stroke=1, fill=1)
-                    c.line(x + 65, array_height - 2, x + 65, array_height - 48)
-                    c.line(x + 95, array_height - 2, x + 95, array_height - 48)
-                    c.line(x + 65, array_height - 67, x + 65, array_height - 98)
-                    c.line(x + 95, array_height - 67, x + 95, array_height - 98)
-                    c.line(x + 65, array_height - 117, x + 65, array_height - 178)
-                    c.line(x + 77.5, array_height - 129.5, x + 77.5, array_height - 178)
-                    c.line(x + 77.5, array_height - 129.5, x + 95, array_height - 129.5)
-                    c.line(x + 95, array_height - 129.5, x + 95, array_height - 117)
+                    c.circle(x + 65, 630 - 180, 2, stroke=1, fill=1)
+                    c.circle(x + 77.5, 630 - 180, 2, stroke=1, fill=1)
+                    c.line(x + 65, 630 - 2, x + 65, 630 - 48)
+                    c.line(x + 95, 630 - 2, x + 95, 630 - 48)
+                    c.line(x + 65, 630 - 67, x + 65, 630 - 98)
+                    c.line(x + 95, 630 - 67, x + 95, 630 - 98)
+                    c.line(x + 65, 630 - 117, x + 65, 630 - 178)
+                    c.line(x + 77.5, 630 - 129.5, x + 77.5, 630 - 178)
+                    c.line(x + 77.5, 630 - 129.5, x + 95, 630 - 129.5)
+                    c.line(x + 95, 630 - 129.5, x + 95, 630 - 117)
                     draw_inverter(75, 375, inverter1, inverterno, 'N')
 
                     draw_battery(430, 540, batteryl)
@@ -1326,12 +1326,12 @@ def create_SLD(fname, inverterno, battery, array, phase, current, reposit):
 
             if array == 2:
                 if battery == 0:
-                    draw_array(20, array_height, 1, array_1_length, panelspec, array_1_strings)
-                    draw_array(320, array_height, 2, array_2_length, panelspec, array_2_strings)
+                    draw_array(20, 630, 1, array_1_length, panelspec, array_1_strings)
+                    draw_array(320, 630, 2, array_2_length, panelspec, array_2_strings)
 
                     # inverter circles
                     x = 20
-                    y = array_height
+                    y = 630
                     c.circle(x + 65, y - 180, 2, stroke=1, fill=1)
                     c.circle(x + 77.5, y - 180, 2, stroke=1, fill=1)
                     c.circle(x + 90, y - 180, 2, stroke=1, fill=1)
@@ -1415,9 +1415,9 @@ def create_SLD(fname, inverterno, battery, array, phase, current, reposit):
 
                 if battery == 1 and current == 'DC':
                     x = 20
-                    y = array_height
-                    draw_array(x, array_height, 1, array_1_length, panelspec, array_1_strings)
-                    draw_array(x + 200, array_height, 2, array_2_length, panelspec, array_2_strings)
+                    y = 630
+                    draw_array(x, 630, 1, array_1_length, panelspec, array_1_strings)
+                    draw_array(x + 200, 630, 2, array_2_length, panelspec, array_2_strings)
                     draw_battery(x + 430, 550, batteryl)
                     draw_inverter(x + 60, 350, inverter1, inverterno, 'N')
                     c.circle(x + 65, y - 205, 2, stroke=1, fill=1)
@@ -1427,23 +1427,23 @@ def create_SLD(fname, inverterno, battery, array, phase, current, reposit):
                     c.circle(x + 115, y - 205, 2, stroke=1, fill=1)
                     c.circle(x + 127.5, y - 205, 2, stroke=1, fill=1)
 
-                    c.line(490, array_height - 90, 490, 450)
+                    c.line(490, 630 - 90, 490, 450)
                     c.line(490, 450, x + 367, 450)
 
-                    c.line(x + 440, array_height - 90, x + 440, array_height - 165)
-                    c.line(x + 440, array_height - 165, x + 367, array_height - 165)
-                    c.line(x + 348, array_height - 165, x + 115, array_height - 165)
-                    c.line(x + 115, array_height - 165, x + 115, 427)
+                    c.line(x + 440, 630 - 90, x + 440, 630 - 165)
+                    c.line(x + 440, 630 - 165, x + 367, 630 - 165)
+                    c.line(x + 348, 630 - 165, x + 115, 630 - 165)
+                    c.line(x + 115, 630 - 165, x + 115, 427)
 
-                    c.line(x + 65, array_height - 2, x + 65, array_height - 48)
-                    c.line(x + 95, array_height - 2, x + 95, array_height - 48)
-                    c.line(x + 65, array_height - 67, x + 65, array_height - 98)
-                    c.line(x + 95, array_height - 67, x + 95, array_height - 98)
+                    c.line(x + 65, 630 - 2, x + 65, 630 - 48)
+                    c.line(x + 95, 630 - 2, x + 95, 630 - 48)
+                    c.line(x + 65, 630 - 67, x + 65, 630 - 98)
+                    c.line(x + 95, 630 - 67, x + 95, 630 - 98)
 
-                    c.line(x + 65, array_height - 117, x + 65, array_height - 205)
-                    c.line(x + 77.5, array_height - 125, x + 77.5, array_height - 205)
-                    c.line(x + 77.5, array_height - 125, x + 95, array_height - 125)
-                    c.line(x + 95, array_height - 125, x + 95, array_height - 117)
+                    c.line(x + 65, 630 - 117, x + 65, 630 - 205)
+                    c.line(x + 77.5, 630 - 125, x + 77.5, 630 - 205)
+                    c.line(x + 77.5, 630 - 125, x + 95, 630 - 125)
+                    c.line(x + 95, 630 - 125, x + 95, 630 - 117)
 
                     c.line(x + 102.5, y - 205, x + 102.5, y - 150)
                     c.line(x + 102.5, y - 150, x + 295, y - 150)
@@ -1469,14 +1469,14 @@ def create_SLD(fname, inverterno, battery, array, phase, current, reposit):
                     c.line(x + 127.5, 450, x + 348, 450)
 
                     c.setFont('Helvetica', 7)
-                    c.drawString(x + 330, array_height - 125, 'Battery DC Isolator')
+                    c.drawString(x + 330, 630 - 125, 'Battery DC Isolator')
                     cur.execute('SELECT ACBreaker FROM ACbreakerspecifications where ACBreaker =?',
                                 BatteryDCIsolator)
                     i1iso = cur.fetchone()[0]
-                    c.drawString(x + 330, array_height - 140, '1200V 32A')
+                    c.drawString(x + 330, 630 - 140, '1200V 32A')
                     c.setFont('Helvetica', 12)
                     c.setDash(array=[3], phase=13)
-                    c.line(x + 357, array_height - 165, x + 357, array_height - 180)
+                    c.line(x + 357, 630 - 165, x + 357, 630 - 180)
                     c.setDash(array=[], phase=0)
 
                     ##BOTTOM
@@ -1561,9 +1561,9 @@ def create_SLD(fname, inverterno, battery, array, phase, current, reposit):
 
                 if battery == 1 and current == 'AC':
                     x = 20
-                    y = array_height
-                    draw_array(x, array_height, 1, array_1_length, panelspec, array_1_strings)
-                    draw_array(x + 200, array_height, 2, array_2_length, panelspec, array_2_strings)
+                    y = 630
+                    draw_array(x, 630, 1, array_1_length, panelspec, array_1_strings)
+                    draw_array(x + 200, 630, 2, array_2_length, panelspec, array_2_strings)
                     draw_inverter(x + 60, 350, inverter1, inverterno, 'N')
                     draw_battery(430, 540, batteryl)
                     draw_inverter(420, 455, inverter2, inverterno, 'Y')
@@ -1573,15 +1573,15 @@ def create_SLD(fname, inverterno, battery, array, phase, current, reposit):
                     c.circle(x + 90, y - 205, 2, stroke=1, fill=1)
                     c.circle(x + 102.5, y - 205, 2, stroke=1, fill=1)
 
-                    c.line(x + 65, array_height - 2, x + 65, array_height - 48)
-                    c.line(x + 95, array_height - 2, x + 95, array_height - 48)
-                    c.line(x + 65, array_height - 67, x + 65, array_height - 98)
-                    c.line(x + 95, array_height - 67, x + 95, array_height - 98)
+                    c.line(x + 65, 630 - 2, x + 65, 630 - 48)
+                    c.line(x + 95, 630 - 2, x + 95, 630 - 48)
+                    c.line(x + 65, 630 - 67, x + 65, 630 - 98)
+                    c.line(x + 95, 630 - 67, x + 95, 630 - 98)
 
-                    c.line(x + 65, array_height - 117, x + 65, array_height - 205)
-                    c.line(x + 77.5, array_height - 125, x + 77.5, array_height - 205)
-                    c.line(x + 77.5, array_height - 125, x + 95, array_height - 125)
-                    c.line(x + 95, array_height - 125, x + 95, array_height - 117)
+                    c.line(x + 65, 630 - 117, x + 65, 630 - 205)
+                    c.line(x + 77.5, 630 - 125, x + 77.5, 630 - 205)
+                    c.line(x + 77.5, 630 - 125, x + 95, 630 - 125)
+                    c.line(x + 95, 630 - 125, x + 95, 630 - 117)
 
                     c.line(x + 102.5, y - 205, x + 102.5, y - 150)
                     c.line(x + 102.5, y - 150, x + 295, y - 150)
@@ -1668,20 +1668,20 @@ def create_SLD(fname, inverterno, battery, array, phase, current, reposit):
 
         if phase == 3:
             if array == 1:
-                draw_array(25, array_height, 1, array_1_length, panelspec, array_1_strings)
+                draw_array(25, 630, 1, array_1_length, panelspec, array_1_strings)
                 if battery == 0:
                     ##top
                     x = 25
-                    c.circle(x + 65, array_height - 180, 2, stroke=1, fill=1)
-                    c.circle(x + 77.5, array_height - 180, 2, stroke=1, fill=1)
-                    c.line(x + 65, array_height - 2, x + 65, array_height - 48)
-                    c.line(x + 95, array_height - 2, x + 95, array_height - 48)
-                    c.line(x + 65, array_height - 67, x + 65, array_height - 98)
-                    c.line(x + 95, array_height - 67, x + 95, array_height - 98)
-                    c.line(x + 65, array_height - 117, x + 65, array_height - 178)
-                    c.line(x + 77.5, array_height - 129.5, x + 77.5, array_height - 178)
-                    c.line(x + 77.5, array_height - 129.5, x + 95, array_height - 129.5)
-                    c.line(x + 95, array_height - 129.5, x + 95, array_height - 117)
+                    c.circle(x + 65, 630 - 180, 2, stroke=1, fill=1)
+                    c.circle(x + 77.5, 630 - 180, 2, stroke=1, fill=1)
+                    c.line(x + 65, 630 - 2, x + 65, 630 - 48)
+                    c.line(x + 95, 630 - 2, x + 95, 630 - 48)
+                    c.line(x + 65, 630 - 67, x + 65, 630 - 98)
+                    c.line(x + 95, 630 - 67, x + 95, 630 - 98)
+                    c.line(x + 65, 630 - 117, x + 65, 630 - 178)
+                    c.line(x + 77.5, 630 - 129.5, x + 77.5, 630 - 178)
+                    c.line(x + 77.5, 630 - 129.5, x + 95, 630 - 129.5)
+                    c.line(x + 95, 630 - 129.5, x + 95, 630 - 117)
                     draw_inverter(75, 375, inverter1, inverterno, 'N')
 
                     ##BOTTOM
@@ -1811,42 +1811,42 @@ def create_SLD(fname, inverterno, battery, array, phase, current, reposit):
 
                 if battery == 1 and current == 'DC':
                     x = 25
-                    c.circle(x + 65, array_height - 180, 2, stroke=1, fill=1)
-                    c.circle(x + 77.5, array_height - 180, 2, stroke=1, fill=1)
-                    c.line(x + 65, array_height - 2, x + 65, array_height - 48)
-                    c.line(x + 95, array_height - 2, x + 95, array_height - 48)
-                    c.line(x + 65, array_height - 67, x + 65, array_height - 98)
-                    c.line(x + 95, array_height - 67, x + 95, array_height - 98)
-                    c.line(x + 65, array_height - 117, x + 65, array_height - 178)
-                    c.line(x + 77.5, array_height - 129.5, x + 77.5, array_height - 178)
-                    c.line(x + 77.5, array_height - 129.5, x + 95, array_height - 129.5)
-                    c.line(x + 95, array_height - 129.5, x + 95, array_height - 117)
+                    c.circle(x + 65, 630 - 180, 2, stroke=1, fill=1)
+                    c.circle(x + 77.5, 630 - 180, 2, stroke=1, fill=1)
+                    c.line(x + 65, 630 - 2, x + 65, 630 - 48)
+                    c.line(x + 95, 630 - 2, x + 95, 630 - 48)
+                    c.line(x + 65, 630 - 67, x + 65, 630 - 98)
+                    c.line(x + 95, 630 - 67, x + 95, 630 - 98)
+                    c.line(x + 65, 630 - 117, x + 65, 630 - 178)
+                    c.line(x + 77.5, 630 - 129.5, x + 77.5, 630 - 178)
+                    c.line(x + 77.5, 630 - 129.5, x + 95, 630 - 129.5)
+                    c.line(x + 95, 630 - 129.5, x + 95, 630 - 117)
                     draw_battery(400, 550, batteryl)
 
-                    c.line(410, array_height - 90, 410, array_height - 145)
-                    c.line(410, array_height - 145, x + 280, array_height - 145)
-                    c.line(x + 261, array_height - 145, x + 95, array_height - 145)
-                    c.line(x + 95, array_height - 145, x + 95, array_height - 178)
-                    draw_switch(x + 263, array_height - 145, 270)
+                    c.line(410, 630 - 90, 410, 630 - 145)
+                    c.line(410, 630 - 145, x + 280, 630 - 145)
+                    c.line(x + 261, 630 - 145, x + 95, 630 - 145)
+                    c.line(x + 95, 630 - 145, x + 95, 630 - 178)
+                    draw_switch(x + 263, 630 - 145, 270)
 
-                    c.circle(x + 95, array_height - 180, 2, stroke=1, fill=1)
+                    c.circle(x + 95, 630 - 180, 2, stroke=1, fill=1)
 
                     draw_inverter(75, 375, inverter1, inverterno, 'N')
-                    c.circle(x + 105, array_height - 180, 2, stroke=1, fill=1)
-                    c.line(x + 415, array_height - 90, x + 415, array_height - 165)
-                    c.line(x + 415, array_height - 165, x + 280, array_height - 165)
-                    c.line(x + 261, array_height - 165, x + 105, array_height - 165)
-                    c.line(x + 105, array_height - 165, x + 105, array_height - 180)
-                    draw_switch(x + 263, array_height - 165, 270)
+                    c.circle(x + 105, 630 - 180, 2, stroke=1, fill=1)
+                    c.line(x + 415, 630 - 90, x + 415, 630 - 165)
+                    c.line(x + 415, 630 - 165, x + 280, 630 - 165)
+                    c.line(x + 261, 630 - 165, x + 105, 630 - 165)
+                    c.line(x + 105, 630 - 165, x + 105, 630 - 180)
+                    draw_switch(x + 263, 630 - 165, 270)
                     c.setFont('Helvetica', 7)
-                    c.drawString(x + 240, array_height - 110, 'Battery DC Isolator')
+                    c.drawString(x + 240, 630 - 110, 'Battery DC Isolator')
                     cur.execute('SELECT ACBreaker FROM ACbreakerspecifications where ACBreaker =?',
                                 BatteryDCIsolator)
                     i1iso = cur.fetchone()[0]
-                    c.drawString(x + 240, array_height - 125, '1200V 32A')
+                    c.drawString(x + 240, 630 - 125, '1200V 32A')
                     c.setFont('Helvetica', 12)
                     c.setDash(array=[3], phase=13)
-                    c.line(x + 270, array_height - 145, x + 270, array_height - 165)
+                    c.line(x + 270, 630 - 145, x + 270, 630 - 165)
                     c.setDash(array=[], phase=0)
 
                     ##BOTTOM
@@ -2008,16 +2008,16 @@ def create_SLD(fname, inverterno, battery, array, phase, current, reposit):
 
                 if battery == 1 and current == 'AC':
                     x = 25
-                    c.circle(x + 65, array_height - 180, 2, stroke=1, fill=1)
-                    c.circle(x + 77.5, array_height - 180, 2, stroke=1, fill=1)
-                    c.line(x + 65, array_height - 2, x + 65, array_height - 48)
-                    c.line(x + 95, array_height - 2, x + 95, array_height - 48)
-                    c.line(x + 65, array_height - 67, x + 65, array_height - 98)
-                    c.line(x + 95, array_height - 67, x + 95, array_height - 98)
-                    c.line(x + 65, array_height - 117, x + 65, array_height - 178)
-                    c.line(x + 77.5, array_height - 129.5, x + 77.5, array_height - 178)
-                    c.line(x + 77.5, array_height - 129.5, x + 95, array_height - 129.5)
-                    c.line(x + 95, array_height - 129.5, x + 95, array_height - 117)
+                    c.circle(x + 65, 630 - 180, 2, stroke=1, fill=1)
+                    c.circle(x + 77.5, 630 - 180, 2, stroke=1, fill=1)
+                    c.line(x + 65, 630 - 2, x + 65, 630 - 48)
+                    c.line(x + 95, 630 - 2, x + 95, 630 - 48)
+                    c.line(x + 65, 630 - 67, x + 65, 630 - 98)
+                    c.line(x + 95, 630 - 67, x + 95, 630 - 98)
+                    c.line(x + 65, 630 - 117, x + 65, 630 - 178)
+                    c.line(x + 77.5, 630 - 129.5, x + 77.5, 630 - 178)
+                    c.line(x + 77.5, 630 - 129.5, x + 95, 630 - 129.5)
+                    c.line(x + 95, 630 - 129.5, x + 95, 630 - 117)
                     draw_inverter(75, 375, inverter1, inverterno, 'N')
 
                     draw_battery(430, 540, batteryl)
@@ -2172,11 +2172,11 @@ def create_SLD(fname, inverterno, battery, array, phase, current, reposit):
             if array == 2:
                 if battery == 0:
                     # top
-                    draw_array(20, array_height, 1, array_1_length, panelspec, array_1_strings)
-                    draw_array(320, array_height, 2, array_2_length, panelspec, array_2_strings)
+                    draw_array(20, 630, 1, array_1_length, panelspec, array_1_strings)
+                    draw_array(320, 630, 2, array_2_length, panelspec, array_2_strings)
                     # inverter circles
                     x = 20
-                    y = array_height
+                    y = 630
                     c.circle(x + 65, y - 180, 2, stroke=1, fill=1)
                     c.circle(x + 77.5, y - 180, 2, stroke=1, fill=1)
                     c.circle(x + 90, y - 180, 2, stroke=1, fill=1)
@@ -2347,9 +2347,9 @@ def create_SLD(fname, inverterno, battery, array, phase, current, reposit):
 
                 if battery == 1 and current == 'DC':
                     x = 20
-                    y = array_height
-                    draw_array(x, array_height, 1, array_1_length, panelspec, array_1_strings)
-                    draw_array(x + 200, array_height, 2, array_2_length, panelspec, array_2_strings)
+                    y = 630
+                    draw_array(x, 630, 1, array_1_length, panelspec, array_1_strings)
+                    draw_array(x + 200, 630, 2, array_2_length, panelspec, array_2_strings)
                     draw_battery(x + 430, 550, batteryl)
                     draw_inverter(x + 60, 350, inverter1, inverterno, 'N')
                     c.circle(x + 65, y - 205, 2, stroke=1, fill=1)
@@ -2359,23 +2359,23 @@ def create_SLD(fname, inverterno, battery, array, phase, current, reposit):
                     c.circle(x + 115, y - 205, 2, stroke=1, fill=1)
                     c.circle(x + 127.5, y - 205, 2, stroke=1, fill=1)
 
-                    c.line(490, array_height - 90, 490, 450)
+                    c.line(490, 630 - 90, 490, 450)
                     c.line(490, 450, x + 367, 450)
 
-                    c.line(x + 440, array_height - 90, x + 440, array_height - 165)
-                    c.line(x + 440, array_height - 165, x + 367, array_height - 165)
-                    c.line(x + 348, array_height - 165, x + 115, array_height - 165)
-                    c.line(x + 115, array_height - 165, x + 115, 427)
+                    c.line(x + 440, 630 - 90, x + 440, 630 - 165)
+                    c.line(x + 440, 630 - 165, x + 367, 630 - 165)
+                    c.line(x + 348, 630 - 165, x + 115, 630 - 165)
+                    c.line(x + 115, 630 - 165, x + 115, 427)
 
-                    c.line(x + 65, array_height - 2, x + 65, array_height - 48)
-                    c.line(x + 95, array_height - 2, x + 95, array_height - 48)
-                    c.line(x + 65, array_height - 67, x + 65, array_height - 98)
-                    c.line(x + 95, array_height - 67, x + 95, array_height - 98)
+                    c.line(x + 65, 630 - 2, x + 65, 630 - 48)
+                    c.line(x + 95, 630 - 2, x + 95, 630 - 48)
+                    c.line(x + 65, 630 - 67, x + 65, 630 - 98)
+                    c.line(x + 95, 630 - 67, x + 95, 630 - 98)
 
-                    c.line(x + 65, array_height - 117, x + 65, array_height - 205)
-                    c.line(x + 77.5, array_height - 125, x + 77.5, array_height - 205)
-                    c.line(x + 77.5, array_height - 125, x + 95, array_height - 125)
-                    c.line(x + 95, array_height - 125, x + 95, array_height - 117)
+                    c.line(x + 65, 630 - 117, x + 65, 630 - 205)
+                    c.line(x + 77.5, 630 - 125, x + 77.5, 630 - 205)
+                    c.line(x + 77.5, 630 - 125, x + 95, 630 - 125)
+                    c.line(x + 95, 630 - 125, x + 95, 630 - 117)
 
                     c.line(x + 102.5, y - 205, x + 102.5, y - 150)
                     c.line(x + 102.5, y - 150, x + 295, y - 150)
@@ -2401,14 +2401,14 @@ def create_SLD(fname, inverterno, battery, array, phase, current, reposit):
                     c.line(x + 127.5, 450, x + 348, 450)
 
                     c.setFont('Helvetica', 7)
-                    c.drawString(x + 330, array_height - 125, 'Battery DC Isolator')
+                    c.drawString(x + 330, 630 - 125, 'Battery DC Isolator')
                     cur.execute('SELECT ACBreaker FROM ACbreakerspecifications where ACBreaker =?',
                                 BatteryDCIsolator)
                     i1iso = cur.fetchone()[0]
-                    c.drawString(x + 330, array_height - 140, '1200V 32A')
+                    c.drawString(x + 330, 630 - 140, '1200V 32A')
                     c.setFont('Helvetica', 12)
                     c.setDash(array=[3], phase=13)
-                    c.line(x + 357, array_height - 165, x + 357, array_height - 180)
+                    c.line(x + 357, 630 - 165, x + 357, 630 - 180)
                     c.setDash(array=[], phase=0)
 
                     ##BOTTOM
@@ -2570,9 +2570,9 @@ def create_SLD(fname, inverterno, battery, array, phase, current, reposit):
 
                 if battery == 1 and current == 'AC':
                     x = 20
-                    y = array_height
-                    draw_array(x, array_height, 1, array_1_length, panelspec, array_1_strings)
-                    draw_array(x + 200, array_height, 2, array_2_length, panelspec, array_2_strings)
+                    y = 630
+                    draw_array(x, 630, 1, array_1_length, panelspec, array_1_strings)
+                    draw_array(x + 200, 630, 2, array_2_length, panelspec, array_2_strings)
                     draw_inverter(x + 60, 350, inverter1, inverterno, 'N')
 
                     draw_battery(430, 540, batteryl)
@@ -2582,15 +2582,15 @@ def create_SLD(fname, inverterno, battery, array, phase, current, reposit):
                     c.circle(x + 90, y - 205, 2, stroke=1, fill=1)
                     c.circle(x + 102.5, y - 205, 2, stroke=1, fill=1)
 
-                    c.line(x + 65, array_height - 2, x + 65, array_height - 48)
-                    c.line(x + 95, array_height - 2, x + 95, array_height - 48)
-                    c.line(x + 65, array_height - 67, x + 65, array_height - 98)
-                    c.line(x + 95, array_height - 67, x + 95, array_height - 98)
+                    c.line(x + 65, 630 - 2, x + 65, 630 - 48)
+                    c.line(x + 95, 630 - 2, x + 95, 630 - 48)
+                    c.line(x + 65, 630 - 67, x + 65, 630 - 98)
+                    c.line(x + 95, 630 - 67, x + 95, 630 - 98)
 
-                    c.line(x + 65, array_height - 117, x + 65, array_height - 205)
-                    c.line(x + 77.5, array_height - 125, x + 77.5, array_height - 205)
-                    c.line(x + 77.5, array_height - 125, x + 95, array_height - 125)
-                    c.line(x + 95, array_height - 125, x + 95, array_height - 117)
+                    c.line(x + 65, 630 - 117, x + 65, 630 - 205)
+                    c.line(x + 77.5, 630 - 125, x + 77.5, 630 - 205)
+                    c.line(x + 77.5, 630 - 125, x + 95, 630 - 125)
+                    c.line(x + 95, 630 - 125, x + 95, 630 - 117)
 
                     c.line(x + 102.5, y - 205, x + 102.5, y - 150)
                     c.line(x + 102.5, y - 150, x + 295, y - 150)
@@ -3099,9 +3099,8 @@ def create_SLD(fname, inverterno, battery, array, phase, current, reposit):
                     c.drawString(470, 390, '* Inverter isolates ')
                     c.drawString(470, 383, 'in the event of a blackout')
 
-    array_height = 630
     basic_wiring(25, 100)
-    complex_wiring(phase, array, battery, inverterno, array_height, current)
+    complex_wiring(phase, array, battery, inverterno, current)
     c.save()
     url = r'file:///C:\Users\Solar4Life\Desktop\solar4life\sld generator files\SLD %s.pdf' % name
     chrome_path = 'C:/Program Files (x86)/Google/Chrome/Application/chrome.exe %s'

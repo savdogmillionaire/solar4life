@@ -97,50 +97,42 @@ bom = [
 # the effect is to lower the calcualted kWh for each month
 
 monthly_kwh_list_plot = np.array(monthly_kwh_list)
-monthly_kwh_list_plot = monthly_kwh_list_plot * ((100 / 365) + ((125 * 0.8) / 365) + (((365 - 100 - 125) * 0.2) / 365))
 
 
-# sun_hours = [
-#    294.5,
-#    254.3,
-#    251.1,
-#    219.0,
-#    186.0,
-#    156.0,
-#    179.8,
-#    217.0,
-#    231.0,
-#    266.6,
-#    267.0,
-#    291.4
-# ]
-# month_hours = [
-#    0,
-#    0,
-#    0,
-#    0,
-#    0,
-#    0,
-#    0,
-#    0,
-#    0,
-#    0,
-#    0,
-#    0
-# ]
-# elem = 1
-# while elem <= 12:
-#    month_hours[elem - 1] += calendar.monthlen(year, elem)
-#    elem += 1
-# month_hours_array = np.array(month_hours) * 24
-# sun_hours_scalar = np.array(sun_hours)
-# percent_sun_hours = (sun_hours_scalar / month_hours_array)
-# monthly_kwh_list_plot = monthly_kwh_list_plot * percent_sun_hours
+def sun_hour_calc():
+    sun_hours = [
+        294.5,
+        254.3,
+        251.1,
+        219.0,
+        186.0,
+        156.0,
+        179.8,
+        217.0,
+        231.0,
+        266.6,
+        267.0,
+        291.4
+    ]
+    month_hours = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
+    elem = 1
+    while elem <= 12:
+        month_hours[elem - 1] += calendar.monthlen(year, elem)
+        elem += 1
+    month_hours_array = np.array(month_hours) * 16
+    sun_hours_scalar = np.array(sun_hours)
+    percent_sun_hours = (sun_hours_scalar / month_hours_array)
+    monthly_kwh_list_plot = monthly_kwh_list_plot * percent_sun_hours
+
+
+# attempts to estimate the effect of cloudy and sunny
+# days on solar insolation. does okay, not good for month dependant
+monthly_kwh_list_plot = monthly_kwh_list_plot * ((100 / 365) + ((125 * 0.8) / 365) \
+                                                 + (((365 - 100 - 125) * 0.2) / 365))
 
 # aims to do the nasty calculations. cosine and sine stuff.
-# creates two factors. smod/shor derating and plane inclination
-# derating.
+# creates two factors. smod/shor derating and plane inclination derating.
 def tilt_azimuth_factor(tilt, orientation):
     tilt_azimuth_factor = np.ones((1, 12))
     tilt_rad = tilt * (np.pi / 180)
@@ -173,10 +165,10 @@ def tilt_azimuth_factor(tilt, orientation):
 
 kilowatts = 6.6
 efficiency = 0.77
-monthly_kwh_list_plot1 = monthly_kwh_list_plot * tilt_azimuth_factor(22.5, 75)[0] * kilowatts * efficiency
-monthly_kwh_list_plot2 = monthly_kwh_list_plot * tilt_azimuth_factor(22.5, 255)[0] * kilowatts * efficiency
-monthly_kwh_list_plot3 = monthly_kwh_list_plot * tilt_azimuth_factor(22.5, 345)[0] * kilowatts * efficiency
-bom_plot = np.array(bom) * kilowatts * efficiency
+monthly_kwh_list_plot1 = monthly_kwh_list_plot * tilt_azimuth_factor(22.5, 0)[0]
+monthly_kwh_list_plot2 = monthly_kwh_list_plot * tilt_azimuth_factor(0, 0)[0]
+monthly_kwh_list_plot3 = monthly_kwh_list_plot * tilt_azimuth_factor(22.5, 345)[0]
+bom_plot = np.array(bom_old)
 
 
 
@@ -187,7 +179,7 @@ width = 0.3
 fig, ax, = plt.subplots()
 fig2 = ax.bar(ind - width / 2, monthly_kwh_list_plot1, width)
 fig1 = ax.bar(ind + width / 2, monthly_kwh_list_plot2, width)
-fig3 = ax.bar(ind + 3 * width / 2, monthly_kwh_list_plot3, width)
+fig3 = ax.bar(ind + 3 * width / 2, bom_plot, width)
 plt.xticks(np.arange(12), calendar.month_abbr[1:])
 plt.ylabel('kWh/day/m^2')
 
