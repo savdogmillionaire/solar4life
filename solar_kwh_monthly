@@ -146,9 +146,16 @@ def tilt_azimuth_factor(tilt, orientation):
     tilt_rad = tilt * (np.pi / 180)
     orientation_rad = orientation * (np.pi / 180)
     x = 1
-    hourcalc = 12
+    day = 23
+    # WEIRD daylight savings effects. tried to compensate.
+    # manual calc shows in 2018, daylight ended 1 april, started 7 october.
     while x <= 12:
-        date = datetime.datetime(year, x, 15, hourcalc, tzinfo=AEST)
+        # change the if statement if the day changes
+        if x < 4 or x > 9:
+            hourcalc = 12
+        else:
+            hourcalc = 11
+        date = datetime.datetime(year, x, day, hourcalc, tzinfo=AEST)
         orientation_array = np.array(orientation_rad)
         tilt_array = np.array(tilt_rad)
         altitude = np.array(get_altitude(latitude_deg, longitude_deg, date)) * (np.pi / 180)
@@ -166,19 +173,22 @@ def tilt_azimuth_factor(tilt, orientation):
 
 kilowatts = 5.4
 efficiency = 0.77
-monthly_kwh_list_plot1 = monthly_kwh_list_plot * tilt_azimuth_factor(22.5, 0)[0] * kilowatts * efficiency
-monthly_kwh_list_plot2 = monthly_kwh_list_plot * tilt_azimuth_factor(22.5, 50)[0] * kilowatts * efficiency
+monthly_kwh_list_plot1 = monthly_kwh_list_plot * tilt_azimuth_factor(30, 0)[0] * kilowatts * efficiency
+monthly_kwh_list_plot2 = monthly_kwh_list_plot * tilt_azimuth_factor(30, 300)[0] * kilowatts * efficiency
+monthly_kwh_list_plot3 = monthly_kwh_list_plot * tilt_azimuth_factor(30, 60)[0] * kilowatts * efficiency
+bom_plot = np.array(bom) * kilowatts * efficiency
 
-print(tilt_azimuth_factor(22.5, 0)[0])
+
+
+
 plt.style.use('seaborn')
-
 ind = np.arange(12)
 width = 0.3
 fig, ax, = plt.subplots()
-# fig2 = ax.bar(ind - width / 2, bom, width)
-fig1 = ax.bar(ind + width / 2, monthly_kwh_list_plot1, width)
-fig3 = ax.bar(ind + 3 * width / 2, monthly_kwh_list_plot2, width)
+fig2 = ax.bar(ind - width / 2, monthly_kwh_list_plot1, width)
+fig1 = ax.bar(ind + width / 2, monthly_kwh_list_plot2, width)
+fig3 = ax.bar(ind + 3 * width / 2, monthly_kwh_list_plot3, width)
 plt.xticks(np.arange(12), calendar.month_abbr[1:])
-plt.ylabel('kWh/day/m^2 for an average day in each month')
+plt.ylabel('kWh/day/m^2')
 
 plt.show()

@@ -2,12 +2,11 @@ from PyPDF2 import PdfFileMerger
 
 merger = PdfFileMerger()
 
-input1 = open("PV Modules List 190313.pdf", "rb")
-input2 = open("Dossier WithoutBatteries.pdf", "rb")
+input1 = open("Hartley SLD version 3.pdf", "rb")
+input2 = open("Hartley Lifecare Dossier WithoutBatteries UPDATED.pdf", "rb")
 
 merger.append(input2)
-merger.merge(position=2, fileobj=input1, pages=(0, 1))
-merger.merge(position=4, fileobj=input1, pages=(0, 2))
+merger.merge(position=14, fileobj=input1, pages=(0, 1))
 
-output = open("Dossier WithoutBatteries - Copy.pdf", "wb")
+output = open("Hartley Lifecare Dossier WithoutBatteries UPDATED 2.pdf", "wb")
 merger.write(output)
