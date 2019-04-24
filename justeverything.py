@@ -2284,27 +2284,30 @@ def create_SLD(fname, inverterno, battery, array, phase, current, reposit):
                     c.line(370, 170, 370, 100)
 
                     ##reposit
+                    if reposit == 1:
+                        # ball to repo
+                        c.line(185, 167.5, 185, 30)
+                        c.line(205, 177.5, 205, 40)
+                        c.line(225, 187.5, 225, 50)
+                        c.line(185, 30, 300, 30)
+                        c.line(205, 40, 300, 40)
+                        c.line(225, 50, 300, 50)
 
-                    # ball to repo
-                    c.line(185, 167.5, 185, 30)
-                    c.line(205, 177.5, 205, 40)
-                    c.line(225, 187.5, 225, 50)
-                    c.line(185, 30, 300, 30)
-                    c.line(205, 40, 300, 40)
-                    c.line(225, 50, 300, 50)
+                        # repo to VR
+                        c.line(335, 55, 335, 150)
+                        c.line(335, 150, 363.5, 150)
+                        c.line(378.5, 150, 392.5, 150)
+                        c.line(407.5, 150, 423.5, 150)
 
-                    # repo to VR
-                    c.line(335, 55, 335, 150)
-                    c.line(335, 150, 363.5, 150)
-                    c.line(378.5, 150, 392.5, 150)
-                    c.line(407.5, 150, 423.5, 150)
+                        c.line(340, 55, 340, 135)
+                        c.line(340, 135, 363.5, 135)
+                        c.line(378.5, 135, 393.5, 135)
 
-                    c.line(340, 55, 340, 135)
-                    c.line(340, 135, 363.5, 135)
-                    c.line(378.5, 135, 393.5, 135)
-
-                    c.line(345, 55, 345, 120)
-                    c.line(345, 120, 363.5, 120)
+                        c.line(345, 55, 345, 120)
+                        c.line(345, 120, 363.5, 120)
+                    else:
+                        c.line(190, 170, 260, 170)
+                        c.line(210, 182.5, 260, 182.5)
 
                 if battery == 1 and current == 'DC':
                     x = 20
@@ -3324,7 +3327,7 @@ def start_screen():
 
         def say_hi(self):
             print("make the name")
-            customer_ID = (123459,)
+            customer_ID = (123460,)
             name_address(customer_ID)
 
         def design_tool(self):
