@@ -540,10 +540,16 @@ def name_address(customer_ID):
 """"""""""
 check which layouts work
 
-Phase   Arrays  Batteries   Current   Reposit   Inverters | Works?  Annotated?     
-1       1       0           -         0         1         |  Y          -
-1       1       0           -         1         1         |  Y          -
-1       1       1           -         1         1         |  Y          needs check
+Phase   Arrays  Batteries   Current Reposit     Inverters | Works?  Annotated?     
+1       1       0           -       0           1         |  Y          -
+1       1       0           -       1           1         |  Y          -
+1       1       1           AC      1           1         |  Y          needs check
+1       1       1           DC      1           1         |  Y          needs check
+1       2       0           -       0           1         |  Y          -
+1       2       0           -       1           1         |  Y          -                                  
+1       2       1           AC      1           1         |  Y          needs check
+1       2       1           DC      1           1         |  Y          needs check
+           
 
 """""""""""
 
@@ -785,11 +791,11 @@ def create_SLD(fname, inverterno, battery, array, phase, current, reposit):
             x += -120
             ##c.drawString(x + 5, y + 5, 'w/ Built-In Optimisers')
             c.drawString(x + 5, y + 20, 'Isc')
-            c.drawString(x + 60, y + 20, '=  %.2fA' % system_1.array_Isc()[1])
+            c.drawString(x + 60, y + 20, '=  %.2fA' % system_1.array_Isc()[0])
             c.drawString(x + 5, y + 35, 'Voc')
-            c.drawString(x + 60, y + 35, '=  %.2fV' % system_1.array_Voc()[1])
+            c.drawString(x + 60, y + 35, '=  %.2fV' % system_1.array_Voc()[0])
             c.drawString(x + 5, y + 50, 'Voc(-10C)')
-            c.drawString(x + 60, y + 50, '=  %.2fV' % system_1.array_Voc_minus_10()[1])
+            c.drawString(x + 60, y + 50, '=  %.2fV' % system_1.array_Voc_minus_10()[0])
 
         else:
 
@@ -3097,7 +3103,7 @@ def create_SLD(fname, inverterno, battery, array, phase, current, reposit):
     basic_wiring(25, 100)
     complex_wiring(phase, array, battery, inverterno, array_height, current)
     c.save()
-    url = r'file:///C:\Users\Solar4Life\Desktop\solar4life\sld generator files\SLD.pdf'
+    url = r'file:///C:\Users\Solar4Life\Desktop\solar4life\sld generator files\SLD %s.pdf' % name
     chrome_path = 'C:/Program Files (x86)/Google/Chrome/Application/chrome.exe %s'
     webbrowser.get(chrome_path).open(url)
     # make sure to close connection to database at end of program
@@ -3195,13 +3201,16 @@ def VRC_GUI():
         POA_to_MB_Distance_m = float(txt_4.get())
         MB_to_INV_Cable_Thickness_mm2 = float(combo_5.get())
         MB_to_INV_Distance_m = float(txt_6.get())
-        MB_to_SB_Cable_Thickness_mm2 = float(combo_9.get())
-        MB_to_SB_Distance_m = float(txt_10.get())
+        #        MB_to_SB_Cable_Thickness_mm2 = float(combo_9.get())
+        #        MB_to_SB_Distance_m = float(txt_10.get())
         Type_of_Service = combo_7.get()
         material = combo_8.get()
 
     window_vrc_gui.destroy()
 
+
+##quite old. creates the voltage rise calculations for basic stuff fairly well.
+##TODO does need refinement
 def create_VRC(fname, name, address):
     """"""
     filename = os.path.join(fname + ".pdf")
@@ -3371,7 +3380,8 @@ def start_screen():
 
         def SLD(self):
             SLDGUI()
-            create_SLD('SLD', inverterno, battery, arrays, phase, current, reposit)
+            SLD_name = "SLD %s" % name
+            create_SLD(SLD_name, inverterno, battery, arrays, phase, current, reposit)
 
         def VRC(self):
             VRC_GUI()
