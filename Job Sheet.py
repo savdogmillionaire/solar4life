@@ -1,3 +1,12 @@
+######
+#
+# creates job sheet based on CA TEST
+# look to transition from importing CA TEST
+# into importing from main tool
+#
+######
+
+
 from __future__ import print_function
 from mailmerge import MailMerge
 from datetime import date

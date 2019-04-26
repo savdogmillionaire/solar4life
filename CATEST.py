@@ -1,23 +1,29 @@
-CustomerorBusinessName = 'Stephen R Horn'
-NMI = '7001064548'
+######
+# entry doc for Job Sheet.py
+#
+#####
+
+
+CustomerorBusinessName = 'Neil Orme'
+NMI = '70010616623'
 Unit = ''
-StreetNumber = '1'
-Streetname = 'Scarlett Street'
-Suburb = 'Melba'
+StreetNumber = '2'
+Streetname = 'North Place'
+Suburb = 'Charnwood'
 State = 'ACT'
 Postcode = '2615'
-BlockNumber = '4'
-SectionNumber = '35'
+BlockNumber = '1'
+SectionNumber = '74'
 Lot = ''
 Dp = ''
-NumberofPanels = '16'
+NumberofPanels = '27'
 PanelName = ' LONGi'
-PanelModelNumber = 'LR6-60PE-300M'
-InverterName = ' '
-InverterModelNumber = ' GROWATT 5500MTL-S'
+PanelModelNumber = 'LR6-60PB-315M'
+InverterName = ' Fronius'
+InverterModelNumber = ' Symo 8.2-3-M'
 Company = 'Solar4life'
 Email = ''
-Phone = '0406 375 160'
+Phone = '0434 253 454'
 
 
 

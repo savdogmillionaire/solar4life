@@ -18,37 +18,41 @@ AEST = tz.gettz('Australia/Canberra')
 latitude_deg = -35.31  # positive in the northern hemisphere
 longitude_deg = 149.20  # negative reckoning west from prime meridian in Greenwich, England
 year = 2018
-monthly_kwh_list = [
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0
-]
-# this part will calculate a basic solar irradiance values assuming clear sky conditions.
-# does it for each hour of each day in a given year. saves to a list value.
-month_num = 1
-month_day_count = 1
-while month_num <= 12:
-    month_day_count = 1
-    while month_day_count <= calendar.monthlen(year, month_num):
-        hour_count = 1
-        while hour_count <= 23:
-            date = datetime.datetime(year, month_num, month_day_count, hour_count, tzinfo=AEST)
-            altitude_deg = get_altitude(latitude_deg, longitude_deg, date)
-            monthly_kwh_list[month_num - 1] += radiation.get_radiation_direct(date, altitude_deg)
-            hour_count += 1
 
-        month_day_count += 1
-    monthly_kwh_list[month_num - 1] = monthly_kwh_list[month_num - 1] / (calendar.monthlen(year, month_num) * 1000)
-    month_num += 1
+
+# only need to do this once unless some parameters change.
+def calc_monthly_kwh_list():
+    monthly_kwh_list = [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+    ]
+    # this part will calculate a basic solar irradiance values assuming clear sky conditions.
+    # does it for each hour of each day in a given year. saves to a list value.
+    month_num = 1
+    month_day_count = 1
+    while month_num <= 12:
+        month_day_count = 1
+        while month_day_count <= calendar.monthlen(year, month_num):
+            hour_count = 1
+            while hour_count <= 23:
+                date = datetime.datetime(year, month_num, month_day_count, hour_count, tzinfo=AEST)
+                altitude_deg = get_altitude(latitude_deg, longitude_deg, date)
+                monthly_kwh_list[month_num - 1] += radiation.get_radiation_direct(date, altitude_deg)
+                hour_count += 1
+
+            month_day_count += 1
+        monthly_kwh_list[month_num - 1] = monthly_kwh_list[month_num - 1] / (calendar.monthlen(year, month_num) * 1000)
+        month_num += 1
 # copied from designer tool, used as a reference.
 # Average Monthly Production (kWh/day) =
 # System Size (kW)
@@ -63,7 +67,10 @@ while month_num <= 12:
 # x Shading Factor (%)
 # x Panel Effiency (Up to us, just based on if theyre better or worse than a standard panel %)
 
-
+## results of calc monthly kwh list
+monthly_kwh_list = [12.303443407240222, 11.196248130628426, 9.519964885391898, 7.651232768579563, 5.9912198500013165, \
+                    5.188142647427091, 5.37769626142263, 6.507531066900285, 8.19417243992528, 9.960944039243886, \
+                    11.56457518412641, 12.405774352295436]
 bom_old = [
     6.82,
     6.04,
