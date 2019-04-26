@@ -9,8 +9,8 @@ template = "JOB SHEET TEMPLATE.docx"
 document = MailMerge(template)
 print(document.get_merge_fields())
 
+
 document.merge(
-    POSTCODE='%s' % Postcode,
     STATE='%s' % State,
     UNIT='%s' % Unit,
     STREETNAME='%s' % Streetname,
@@ -20,6 +20,16 @@ document.merge(
     DATE='{:%d/%m/%Y}'.format(date.today()),
     BLOCK='%s' % BlockNumber,
     SECTION='%s' % SectionNumber,
+    INVERTER='%s' % Inverter,
+    PANEL='%s' % Panel,
+    LOT='%s' % Lot,
+    DP='%s' % Dp,
+    NMI='%s' % NMI,
+    PANELNUMBER='%s' % NumberofPanels,
+    COMPANY='%s' % Company,
+    POSTCODE='%s' % Postcode,
+    PHONE='%s' % Phone,
+    EMAIL='%s' % Email
 )
 
 document.write('%s JOB SHEET.docx' % CustomerorBusinessName)

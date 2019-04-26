@@ -540,6 +540,8 @@ def name_address(customer_ID):
 """"""""""
 check which layouts work
 
+to make a new layout, best to copy paste the most similar layout under a new if statements, and change slightly
+
 Phase   Arrays  Batteries   Current Reposit     Inverters | Works?  Annotated?     
 1       1       0           -       0           1         |  Y          -
 1       1       0           -       1           1         |  Y          -
@@ -549,7 +551,49 @@ Phase   Arrays  Batteries   Current Reposit     Inverters | Works?  Annotated?
 1       2       0           -       1           1         |  Y          -                                  
 1       2       1           AC      1           1         |  Y          needs check
 1       2       1           DC      1           1         |  Y          needs check
-           
+1       3       0           -       0           1         |  N          not exist
+1       3       0           -       1           1         |  N          not exist
+1       3       1           AC      1           1         |  N          not exist
+1       3       1           DC      1           1         |  N          not exist
+1       3       0           -       0           2         |  N          not exist
+1       3       0           -       1           2         |  N          not exist
+1       3       1           AC      1           2         |  N          not exist
+1       3       1           DC      1           2         |  N          not exist
+1       4       0           -       0           1         |  N          not exist 
+1       4       0           -       1           1         |  N          not exist 
+1       4       1           AC      1           1         |  N          not exist 
+1       4       1           DC      1           1         |  N          not exist 
+1       4       0           -       0           2         |  N          not exist
+1       4       0           -       1           2         |  N          not exist  
+1       4       1           AC      1           2         |  N          not exist           
+1       4       1           DC      1           2         |  N          not exist
+3       1       0           -       0           1         |  Y          -          
+3       1       0           -       1           1         |  Y          -          
+3       1       1           AC      1           1         |  Y          needs check
+3       1       1           DC      1           1         |  Y          needs check
+3       2       0           -       0           1         |  Y          -          
+3       2       0           -       1           1         |  Y          -          
+3       2       1           AC      1           1         |  Y          needs check
+3       2       1           DC      1           1         |  Y          needs check
+3       3       0           -       0           1         |  N          not exist
+3       3       0           -       1           1         |  N          not exist
+3       3       1           AC      1           1         |  N          not exist
+3       3       1           DC      1           1         |  N          not exist
+3       3       0           -       0           2         |  N          not exist
+3       3       0           -       1           2         |  N          not exist
+3       3       1           AC      1           2         |  N          not exist
+3       3       1           DC      1           2         |  N          not exist
+3       4       0           -       0           1         |  N          not exist
+3       4       0           -       1           1         |  N          not exist
+3       4       1           AC      1           1         |  N          not exist
+3       4       1           DC      1           1         |  N          not exist
+3       4       0           -       0           2         |  N          lines aren't good
+3       4       0           -       1           2         |  N          lines aren't good
+3       4       1           AC      1           2         |  Y          not exist
+3       4       1           DC      1           2         |  Y          not exist
+
+
+
 
 """""""""""
 
@@ -885,71 +929,70 @@ def create_SLD(fname, inverterno, battery, array, phase, current, reposit):
         c.line(x + 65, y - 157.5, x + 82.5, y - 157.5)
         c.line(x + 82.5, y - 157.5, x + 82.5, y - 185)
 
-        x += 130
-        arrayno += 1
-        c.setFont('Helvetica', 12)
-        c.circle(x + 35, y, 2, stroke=1, fill=0)
-        c.circle(x + 65, y, 2, stroke=1, fill=0)
-        c.rect(x, y, 120, 140)
-        c.line(x + 30, y + 105, x + 30, y + 135)
-        c.line(x + 37, y + 110, x + 37, y + 130)
-        c.line(x + 30, y + 120, x + 10, y + 120)
-        c.line(x + 37, y + 120, x + 55, y + 120)
-        c.drawString(x + 70, y + 115, 'Array %d' % arrayno)
-        c.setFont('Helvetica', 7)
-        ##c.drawString(x + 5, y + 5, 'w/ Built-In Optimisers')
+        if arrayno == 4:
+            x += 130
+            arrayno += 1
+            c.setFont('Helvetica', 12)
+            c.circle(x + 35, y, 2, stroke=1, fill=0)
+            c.circle(x + 65, y, 2, stroke=1, fill=0)
+            c.rect(x, y, 120, 140)
+            c.line(x + 30, y + 105, x + 30, y + 135)
+            c.line(x + 37, y + 110, x + 37, y + 130)
+            c.line(x + 30, y + 120, x + 10, y + 120)
+            c.line(x + 37, y + 120, x + 55, y + 120)
+            c.drawString(x + 70, y + 115, 'Array %d' % arrayno)
+            c.setFont('Helvetica', 7)
+            ##c.drawString(x + 5, y + 5, 'w/ Built-In Optimisers')
 
-        c.drawString(x + 5, y + 5, 'Isc')
-        cur.execute('SELECT IscA FROM Panelspecifications where Panel=?', panelspec)
-        arrayisc = cur.fetchone()[0]
-        c.drawString(x + 60, y + 5, '=  %.2fA' % arrayisc)
+            c.drawString(x + 5, y + 5, 'Isc')
+            cur.execute('SELECT IscA FROM Panelspecifications where Panel=?', panelspec)
+            arrayisc = cur.fetchone()[0]
+            c.drawString(x + 60, y + 5, '=  %.2fA' % arrayisc)
 
-        c.drawString(x + 5, y + 20, 'Voc')
-        cur.execute('SELECT VocV FROM Panelspecifications where Panel=?', panelspec)
-        arrayvoc = cur.fetchone()[0]
-        c.drawString(x + 60, y + 20, '=  %.2fV' % arrayvoc)
+            c.drawString(x + 5, y + 20, 'Voc')
+            cur.execute('SELECT VocV FROM Panelspecifications where Panel=?', panelspec)
+            arrayvoc = cur.fetchone()[0]
+            c.drawString(x + 60, y + 20, '=  %.2fV' % arrayvoc)
 
-        c.drawString(x + 5, y + 35, 'Voc(-10C)')
-        cur.execute('SELECT Voctemperaturecoeffcient_pc_per_C FROM Panelspecifications where Panel=?', panelspec)
-        arrayvocminus10 = cur.fetchone()[0]
-        c.drawString(x + 60, y + 35, '=  %.2fV' % arrayvocminus10)
+            c.drawString(x + 5, y + 35, 'Voc(-10C)')
+            cur.execute('SELECT Voctemperaturecoeffcient_pc_per_C FROM Panelspecifications where Panel=?', panelspec)
+            arrayvocminus10 = cur.fetchone()[0]
+            c.drawString(x + 60, y + 35, '=  %.2fV' % arrayvocminus10)
 
-        cur.execute('SELECT PmaxW FROM Panelspecifications where Panel=?', panelspec)
-        arraymodulerating = cur.fetchone()[0]
-        c.drawString(x + 5, y + 50, '%d x %dW modules' % (arraymodules2, arraymodulerating))
+            cur.execute('SELECT PmaxW FROM Panelspecifications where Panel=?', panelspec)
+            arraymodulerating = cur.fetchone()[0]
+            c.drawString(x + 5, y + 50, '%d x %dW modules' % (arraymodules2, arraymodulerating))
 
-        cur.execute('SELECT Model FROM Panelspecifications where Panel=?', panelspec)
-        arraymodelnumber = cur.fetchone()[0]
-        c.drawString(x + 35, y + 65, '%s' % arraymodelnumber)
+            cur.execute('SELECT Model FROM Panelspecifications where Panel=?', panelspec)
+            arraymodelnumber = cur.fetchone()[0]
+            c.drawString(x + 35, y + 65, '%s' % arraymodelnumber)
 
-        cur.execute('SELECT Manufacturer FROM Panelspecifications where Panel=?', panelspec)
-        arraymanufacturer = cur.fetchone()[0]
-        c.drawString(x + 5, y + 80, '%s' % arraymanufacturer)
+            cur.execute('SELECT Manufacturer FROM Panelspecifications where Panel=?', panelspec)
+            arraymanufacturer = cur.fetchone()[0]
+            c.drawString(x + 5, y + 80, '%s' % arraymanufacturer)
 
-        c.drawString(x + 5, y + 90, '%d/ String/s of:' % strings2)
+            c.drawString(x + 5, y + 90, '%d/ String/s of:' % strings2)
 
+            draw_switch(x + 35, y - 40, 180)
+            draw_switch(x + 65, y - 40, 180)
+            draw_switch(x + 35, y - 90, 180)
+            draw_switch(x + 65, y - 90, 180)
+            c.setDash(array=[3], phase=13)
+            c.line(x + 35, y - 97, x + 65, y - 97)
+            c.line(x + 35, y - 47, x + 65, y - 47)
+            c.setDash(array=[], phase=0)
 
+            c.line(x + 35, y - 2, x + 35, y - 38)
+            c.line(x + 35, y - 57, x + 35, y - 88)
+            c.line(x + 35, y - 107, x + 35, y - 120)
+            c.line(x + 35, y - 120, x - 35, y - 120)
+            c.line(x - 35, y - 120, x - 35, y - 185)
 
-        draw_switch(x + 35, y - 40, 180)
-        draw_switch(x + 65, y - 40, 180)
-        draw_switch(x + 35, y - 90, 180)
-        draw_switch(x + 65, y - 90, 180)
-        c.setDash(array=[3], phase=13)
-        c.line(x + 35, y - 97, x + 65, y - 97)
-        c.line(x + 35, y - 47, x + 65, y - 47)
-        c.setDash(array=[], phase=0)
-
-        c.line(x + 35, y - 2, x + 35, y - 38)
-        c.line(x + 35, y - 57, x + 35, y - 88)
-        c.line(x + 35, y - 107, x + 35, y - 120)
-        c.line(x + 35, y - 120, x - 35, y - 120)
-        c.line(x - 35, y - 120, x - 35, y - 185)
-
-        c.line(x + 65, y - 2, x + 65, y - 38)
-        c.line(x + 65, y - 57, x + 65, y - 88)
-        c.line(x + 65, y - 107, x + 65, y - 132.5)
-        c.line(x + 65, y - 132.5, x - 22.5, y - 132.5)
-        c.line(x - 22.5, y - 132.5, x - 22.5, y - 185)
+            c.line(x + 65, y - 2, x + 65, y - 38)
+            c.line(x + 65, y - 57, x + 65, y - 88)
+            c.line(x + 65, y - 107, x + 65, y - 132.5)
+            c.line(x + 65, y - 132.5, x - 22.5, y - 132.5)
+            c.line(x - 22.5, y - 132.5, x - 22.5, y - 185)
 
     ##draw inverter function
     def draw_inverter(x, y, inverter, inverterno, batt):
@@ -1665,6 +1708,11 @@ def create_SLD(fname, inverterno, battery, array, phase, current, reposit):
                     c.line(355, 210, 355, 400)
                     c.line(355, 400, 450, 400)
                     c.line(450, 400, 450, 455)
+
+            if array == 3:
+                pass
+            if array == 4:
+                pass
 
         if phase == 3:
             if array == 1:
@@ -2742,6 +2790,14 @@ def create_SLD(fname, inverterno, battery, array, phase, current, reposit):
                     c.line(355, 400, 450, 400)
                     c.line(450, 400, 450, 455)
                     draw_arc(380, 210)
+
+            if array == 3:
+                if battery == 0:
+                    pass
+                if battery == 1 and current == 'DC':
+                    pass
+                if battery == 1 and current == 'AC':
+                    pass
 
             if array == 4:
                 draw_small_array(10, 660, 1, array_1_length, array_2_length, panelspec, array_1_strings,
