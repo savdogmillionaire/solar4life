@@ -2,7 +2,7 @@ from PyPDF2 import PdfFileMerger
 
 merger = PdfFileMerger()
 
-name = "Mohit Sharma"
+name = "Shakil Plans"
 
 SLD_file = "%s SLD.pdf" % name
 SPE_file = "%s SPE.pdf" % name

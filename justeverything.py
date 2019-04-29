@@ -661,8 +661,8 @@ Phase   Arrays  Batteries   Current Reposit     Inverters | Works?  Annotated?
 3       4       1           DC      1           1         |  N          not exist
 3       4       0           -       0           2         |  N          lines aren't good
 3       4       0           -       1           2         |  N          lines aren't good
-3       4       1           AC      1           2         |  Y          not exist
-3       4       1           DC      1           2         |  Y          not exist
+3       4       1           AC      1           2         |  Y          needs check
+3       4       1           DC      1           2         |  Y          needs check
 
 
 
