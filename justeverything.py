@@ -17,7 +17,7 @@ def designgui():
     global array_1_model_input, array_1_length, array_1_strings, \
         array_2_length, array_2_strings, inverter_1_input, inverter_2_input, \
         ac_breaker_current_limit, battery_input, SS_Switch, array_3_model_input, \
-        array_3_length, array_3_strings, array_4_length, array_4_strings, check, application
+        array_3_length, array_3_strings, array_4_length, array_4_strings, check, application, check
 
     ## combo value input functions simply access each row of the database and saves it to a list.
     ## a drop down box can then be created using values from this list
@@ -60,18 +60,10 @@ def designgui():
     # creates a function that will allow the user to input data for when the system has 3 or more arrays,
     def more_array():
 
-        global txt10_array_3_length, txt11_array_3_strings, \
+        global \
             txt12_array_4_length, txt13_array_4_strings, combo_panel_2
 
-        lbl10 = tk.Label(window, text="Array 3 length")
-        lbl10.grid(column=0, row=10)
-        txt10_array_3_length = tk.Entry(window, width=10)
-        txt10_array_3_length.grid(column=1, row=10)
 
-        lbl11 = tk.Label(window, text="Array 3 strings")
-        lbl11.grid(column=0, row=11)
-        txt11_array_3_strings = tk.Entry(window, width=10)
-        txt11_array_3_strings.grid(column=1, row=11)
 
         lbl12 = tk.Label(window, text="Array 4 length")
         lbl12.grid(column=0, row=12)
@@ -91,8 +83,7 @@ def designgui():
         combo_panel_2['values'] = combo_values_input_panel()
 
         # making a check value so that later parts of the code know that there are 3 or more arrays.
-        global check
-        check = 1
+
 
 
 
@@ -168,9 +159,25 @@ def designgui():
     txt_app = ttk.Combobox(window, width=30, height=20)
     txt_app.set('Residential')
     txt_app.grid(column=1, row=17)
-    txt_app['values'] = ['Residential', 'commercial']
+    txt_app['values'] = ['Residential', 'Commercial']
 
-    calculate = tk.Button(window, text='3+ arrays', command=more_array)
+    lbl10 = tk.Label(window, text="Array 3 length")
+    lbl10.grid(column=0, row=10)
+    txt10_array_3_length = tk.Entry(window, width=10)
+    txt10_array_3_length.grid(column=1, row=10)
+
+    lbl11 = tk.Label(window, text="Array 3 strings")
+    lbl11.grid(column=0, row=11)
+    txt11_array_3_strings = tk.Entry(window, width=10)
+    txt11_array_3_strings.grid(column=1, row=11)
+
+    var = tk.IntVar(window)
+    inv_2_3_array_checklbl = tk.Label(window, text="2 inverters?")
+    inv_2_3_array_checklbl.grid(column=2, row=15)
+    inv_2_3_array_check = tk.Checkbutton(window, variable=var)
+    inv_2_3_array_check.grid(column=2, row=16)
+    inv_2_3_array_check.var = var
+    calculate = tk.Button(window, text='4+ arrays', command=more_array)
     calculate.grid(column=5, row=9)
 
     quit = tk.Button(window, text='GO', command=window.quit)
@@ -182,8 +189,20 @@ def designgui():
     array_1_model_input = combo.get()
     array_1_length = int(txt2.get())
     array_1_strings = int(txt3.get())
-    array_2_length = int(txt4.get())
-    array_2_strings = int(txt5.get())
+    try:
+        array_2_length = int(txt4.get())
+        array_2_strings = int(txt5.get())
+    except:
+        array_2_length = 0
+        array_2_strings = 0
+    try:
+        array_3_length = int(txt10_array_3_length.get())
+        array_3_strings = int(txt11_array_3_strings.get())
+    except:
+        array_3_length = 0
+        array_3_strings = 0
+    array_3_model_input = combo.get()
+    check = inv_2_3_array_check.var.get()
     inverter_1_input = combo2.get()
     inverter_2_input = combo_inv_2.get()
     ac_breaker_current_limit = txt7.get()
@@ -191,12 +210,18 @@ def designgui():
     battery_input = combo4.get()
     application = txt_app.get()
     if check == 1:
-        array_3_model_input = combo_panel_2.get()
+        try:
+            array_3_model_input = combo_panel_2.get()
+        except:
+            array_3_model_input = array_1_model_input
         array_3_length = int(txt10_array_3_length.get())
         array_3_strings = int(txt11_array_3_strings.get())
-        array_4_length = int(txt12_array_4_length.get())
-        array_4_strings = int(txt13_array_4_strings.get())
-
+        try:
+            array_4_length = int(txt12_array_4_length.get())
+            array_4_strings = int(txt13_array_4_strings.get())
+        except:
+            array_4_length = 0
+            array_4_strings = 0
 
     window.destroy()
 
@@ -251,15 +276,18 @@ def input_from_main():
             I_DC_max = cur.fetchone()
             self.I_DC_max = I_DC_max
 
+
     ## the meat of the calculations are performed here. should be verififed against excel designer tool
     # to begin with. works well for smaller systems.
     # TODO verify calcs for 3 or more arrays. i doubt it is 100% accurate.
     class systemspecs:
         # inputs
-        def __init__(self, array1, array2, inverter1, string1, string2, string3, string4, application):
+        def __init__(self, array1, array2, array3, inverter1, string1, string2, string3, string4, string5, string6,
+                     application):
 
             self.array1 = array1
             self.array2 = array2
+            self.array3 = array3
             self.inverter1 = inverter1
             self.string1 = string1
             self.string2 = string2
@@ -271,7 +299,8 @@ def input_from_main():
         def array_Voc(self):
             array_Voc_1 = self.array1.panels * self.array1.panel_Voc[0]
             array_Voc_2 = self.array2.panels * self.array2.panel_Voc[0]
-            return (array_Voc_1, array_Voc_2)
+            array_Voc_3 = self.array3.panels * self.array3.panel_Voc[0]
+            return array_Voc_1, array_Voc_2, array_Voc_3
 
         # calculates total open circuit voltage taking weather into account
         def panel_Voc_minus_10(self):
@@ -279,18 +308,22 @@ def input_from_main():
                     ((self.array1.Voctemperaturecoeffcient_pc_per_C[0] / 100) * -35) * self.array1.panel_Voc[0])
             panel_2_Voc_minus_10 = self.array2.panel_Voc[0] + (
                     ((self.array2.Voctemperaturecoeffcient_pc_per_C[0] / 100) * -35) * self.array2.panel_Voc[0])
-            return (panel_1_Voc_minus_10, panel_2_Voc_minus_10)
+            panel_3_Voc_minus_10 = self.array3.panel_Voc[0] + (
+                    ((self.array3.Voctemperaturecoeffcient_pc_per_C[0] / 100) * -35) * self.array3.panel_Voc[0])
+            return panel_1_Voc_minus_10, panel_2_Voc_minus_10, panel_3_Voc_minus_10
 
         def array_Voc_minus_10(self):
             array_1_Voc_minus_10 = self.panel_Voc_minus_10()[0] * self.array1.panels
             array_2_Voc_minus_10 = self.panel_Voc_minus_10()[1] * self.array2.panels
-            return (array_1_Voc_minus_10, array_2_Voc_minus_10)
+            array_3_Voc_minus_10 = self.panel_Voc_minus_10()[1] * self.array3.panels
+            return array_1_Voc_minus_10, array_2_Voc_minus_10, array_3_Voc_minus_10 
 
         ##calcualtes total short circuit current
         def array_Isc(self):
             array_1_Isc = self.array1.strings * self.array1.panel_isc
             array_2_Isc = self.array2.strings * self.array2.panel_isc
-            return array_1_Isc, array_2_Isc
+            array_3_Isc = self.array3.strings * self.array3.panel_isc
+            return array_1_Isc, array_2_Isc, array_3_Isc
 
         # checks whether the array ISC will cause clipping but will still work, if it the configuration cant be used at all,
         # or if it is fine
@@ -306,7 +339,6 @@ def input_from_main():
 
         def inverter_mppt_max_check_2(self):
             array_isc2 = (self.array_Isc()[1])
-
             if array_isc2 < self.inverter1.I_DC_max[0] and array_isc2 <= self.inverter1.I_mppt_max[0]:
                 return "ARRAY 2 GOOD"
             if array_isc2 > self.inverter1.I_DC_max[0] and array_isc2 < self.inverter1.I_mppt_max[0]:
@@ -314,12 +346,23 @@ def input_from_main():
             if array_isc2 >= self.inverter1.I_DC_max[0] and array_isc2 > self.inverter1.I_mppt_max[0]:
                 raise ValueError('must lower ISC of array 2, configuration wont work')
 
+        def inverter_mppt_max_check_3(self):
+            array_isc3 = (self.array_Isc()[1])
+            if array_isc3 < self.inverter1.I_DC_max[0] and array_isc3 <= self.inverter1.I_mppt_max[0]:
+                return "ARRAY 3 GOOD"
+            if array_isc3 > self.inverter1.I_DC_max[0] and array_isc3 < self.inverter1.I_mppt_max[0]:
+                return "ARRAY 3 GONNA CLIP"
+            if array_isc3 >= self.inverter1.I_DC_max[0] and array_isc3 > self.inverter1.I_mppt_max[0]:
+                raise ValueError('must lower ISC of array 3, configuration wont work')
+
         ##checks to see if the total array wattage is less than CEC mandated max wattage guideline.
         # based on nominal inverter output
         def CEC_Oversize_Check(self):
             oversize = self.array1.panels * self.array1.wattage[0]
             if self.array2.panels > 0:
                 oversize += self.array2.panels * self.array2.wattage[0]
+            if self.array3.panels > 0:
+                oversize += self.array3.panels * self.array3.wattage[0]
             answer2 = self.inverter1.nominal_output[0] * 1.33
             if oversize > answer2:
                 return "Array wattage of %dW is larger than CEC guidelines of %dW, please change" % (oversize, answer2)
@@ -340,15 +383,17 @@ def input_from_main():
         # checks how many panels can be placed for each inverter, and checks to tsee if the
         # applications is residential or commercial when calculating
         def Res_Com_check(self):
-            arrayaize = max(self.array_Voc_minus_10())
+            arraysize = max(self.array_Voc_minus_10())
+
+
             if self.application == 'Residential':
-                if arrayaize > 600:
+                if arraysize > 600:
                     raise ValueError('Please lower Voc minus 10 of array')
-                return 'array Voc of %s is good ' % arrayaize
+                return 'array Voc of %s less than 600V limit ' % arraysize
             if self.application == 'Commercial':
-                if arrayaize > 1000:
+                if arraysize > 1000:
                     raise ValueError('Please lower Voc minus 10 of array')
-                return 'array Voc of %s is good ' % arrayaize
+                return 'array Voc of %s is less than 1000V limit ' % arraysize
 
         # checks if there are a minimum amount of panel to exceed the minimum inverter startup voltage
         def Min_panels_startup(self):
@@ -398,25 +443,24 @@ def input_from_main():
     cur.execute('SELECT Current FROM ACBreakerspecifications where ACBreaker=?', (ac_breaker_current_limit,))
     ac_breaker_current = int(cur.fetchone()[0])
     inverter_1 = inverter(1, inverter_1_input)
+    inverter_2 = inverter(2, inverter_2_input)
     array_1 = array(1, array_1_model_input, array_1_length, array_1_strings)
     array_2 = array(2, array_1_model_input, array_2_length, array_2_strings)
+    if inverter_2 == "None":
+        array_3 = array(3, array_3_model_input, 0, 0)
+        string_5 = string(3, array_3_model_input, 0, 0, 5, 0)
+        string_6 = string(3, array_3_model_input, 0, 0, 6, 0)
+    else:
+        array_3 = array(3, array_3_model_input, array_3_length, array_3_strings)
+        string_5 = string(3, array_3_model_input, array_3_length, array_3_strings, 5, array_3_length)
+        string_6 = string(3, array_3_model_input, array_3_length, array_3_strings, 6, array_3_length)
+
     string_1 = string(1, array_1_model_input, array_1_length, array_1_strings, 1, array_1_length)
     string_2 = string(1, array_1_model_input, array_1_length, array_1_strings, 2, array_1_length)
     string_3 = string(2, array_1_model_input, array_2_length, array_2_strings, 3, array_2_length)
     string_4 = string(2, array_1_model_input, array_2_length, array_2_strings, 4, array_2_length)
-    system_1 = systemspecs(array_1, array_2, inverter_1, string_1, string_2, string_3, string_4, application)
-
-    ##checks to see if arrays 3 and 4 created. could be tweaked
-    if check == 1:
-        inverter_2 = inverter(2, inverter_2_input)
-        array_3 = array(3, array_3_model_input, array_3_length, array_3_strings)
-        array_4 = array(4, array_3_model_input, array_4_length, array_4_strings)
-        string_6 = string(3, array_3_model_input, array_3_length, array_3_strings, 6, array_3_length)
-        string_5 = string(3, array_3_model_input, array_3_length, array_3_strings, 5, array_3_length)
-        string_7 = string(4, array_3_model_input, array_4_length, array_4_strings, 7, array_4_length)
-        string_8 = string(4, array_3_model_input, array_4_length, array_4_strings, 8, array_4_length)
-        system_2 = systemspecs(array_3, array_4, inverter_2, string_5, string_6, string_7, string_8, application)
-
+    system_1 = systemspecs(array_1, array_2, array_3, inverter_1, string_1, string_2, string_3, string_4, string_5,
+                           string_6, application)
     # system information is printed below.
     #TODO create a popup window displaying this infromation with tKinter.
     print(system_1.array_Voc_minus_10())
@@ -428,8 +472,36 @@ def input_from_main():
     print(system_1.Min_panels_startup())
     print(system_1.Max_panels())
     print(system_1.CEC_Oversize_Check())
-
     print("")
+
+    ##checks to see if arrays 3 and 4 created. could be tweaked
+    if check == 1:
+        array_3 = array(3, array_3_model_input, array_3_length, array_3_strings)
+        array_4 = array(4, array_3_model_input, array_4_length, array_4_strings)
+        array_dummy = array(5, array_1_model_input, 0, 0)
+        string_5 = string(3, array_3_model_input, array_3_length, array_3_strings, 5, array_3_length)
+        string_6 = string(3, array_3_model_input, array_3_length, array_3_strings, 6, array_3_length)
+        string_7 = string(4, array_3_model_input, array_4_length, array_4_strings, 7, array_4_length)
+        string_8 = string(4, array_3_model_input, array_4_length, array_4_strings, 8, array_4_length)
+        string_dummy = string(5, array_1_model_input, 0, 0, 9, 0)
+        system_2 = systemspecs(array_3, array_4, array_dummy, inverter_2, string_5, string_6, string_7, string_8,
+                               string_dummy, string_dummy, application)
+        # system information is printed below.
+        # TODO create a popup window displaying this infromation with tKinter.
+        print(system_2.array_Voc_minus_10())
+        print(system_2.Res_Com_check())
+        print(system_2.inverter_mppt_max_check_1())
+        print(system_2.inverter_mppt_max_check_2())
+        print(system_2.Circuit_breaker_current_limit(ac_breaker_current))
+        print(system_2.Power_optimiser_limit())
+        print(system_2.Min_panels_startup())
+        print(system_2.Max_panels())
+        print(system_2.CEC_Oversize_Check())
+        print("")
+
+
+
+
 
 
 ## this gui pops up when tyou want to create a SLD. ideally, it would not require manual inputs.
@@ -602,6 +674,7 @@ def create_SLD(fname, inverterno, battery, array, phase, current, reposit):
     # establish connecttion to database
     conn = sqlite3.connect('VRCtable.db')
     cur = conn.cursor()
+
 
     ## where images of some shapes in the program used. cahgne if required.
     trianglepath = r"C:\Users\Solar4Life\Desktop\solar4life\sld generator files\sava assets\triangle.png"
@@ -850,11 +923,11 @@ def create_SLD(fname, inverterno, battery, array, phase, current, reposit):
 
             ##c.drawString(x + 5, y + 5, 'w/ Built-In Optimisers')
             c.drawString(x + 5, y + 20, 'Isc')
-            c.drawString(x + 60, y + 20, '=  %.2fA' % system_1.array_Isc()[0])
+            c.drawString(x + 60, y + 20, '=  %.2fA' % system_1.array_Isc()[1])
             c.drawString(x + 5, y + 35, 'Voc')
-            c.drawString(x + 60, y + 35, '=  %.2fV' % system_1.array_Voc()[0])
+            c.drawString(x + 60, y + 35, '=  %.2fV' % system_1.array_Voc()[1])
             c.drawString(x + 5, y + 50, 'Voc(-10C)')
-            c.drawString(x + 60, y + 50, '=  %.2fV' % system_1.array_Voc_minus_10()[0])
+            c.drawString(x + 60, y + 50, '=  %.2fV' % system_1.array_Voc_minus_10()[1])
         c.circle(x + 65, 630, 2, stroke=1, fill=0)
         c.circle(x + 95, 630, 2, stroke=1, fill=0)
         c.setFont('Helvetica', 12)
@@ -3265,7 +3338,7 @@ def VRC_GUI():
 
 
 ##quite old. creates the voltage rise calculations for basic stuff fairly well.
-##TODO does need refinement
+# TODO does need refinement
 def create_VRC(fname, name, address):
     """"""
     filename = os.path.join(fname + ".pdf")

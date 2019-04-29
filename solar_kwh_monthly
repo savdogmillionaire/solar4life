@@ -8,10 +8,6 @@ If you want to calclulate a new monthly kwh list in a more rigorous fashion, sim
 calc_monthly_kwh_list function slightly edited perhaps, and commount out (ctrl+f AA3)
 
 """""""""
-
-
-
-
 from pysolar.solar import *
 import datetime
 from dateutil import tz
@@ -67,6 +63,8 @@ def calc_monthly_kwh_list():
             month_day_count += 1
         monthly_kwh_list[month_num - 1] = monthly_kwh_list[month_num - 1] / (calendar.monthlen(year, month_num) * 1000)
         month_num += 1
+    return monthly_kwh_list
+
 # copied from designer tool, used as a reference.
 # Average Monthly Production (kWh/day) =
 # System Size (kW)
@@ -81,10 +79,12 @@ def calc_monthly_kwh_list():
 # x Shading Factor (%)
 # x Panel Effiency (Up to us, just based on if theyre better or worse than a standard panel %)
 
+"""""""""
 ## results of calc monthly kwh list AA3
 monthly_kwh_list = [12.303443407240222, 11.196248130628426, 9.519964885391898, 7.651232768579563, 5.9912198500013165, \
                     5.188142647427091, 5.37769626142263, 6.507531066900285, 8.19417243992528, 9.960944039243886, \
                     11.56457518412641, 12.405774352295436]
+"""""""""
 bom_old = [
     6.82,
     6.04,
@@ -117,7 +117,9 @@ bom = [
 # this part is an attempt to cater for sunny days and cloudy days in a year. could be tweaked
 # the effect is to lower the calcualted kWh for each month
 
+monthly_kwh_list = calc_monthly_kwh_list()
 monthly_kwh_list_plot = np.array(monthly_kwh_list)
+
 
 
 def sun_hour_calc():
@@ -159,7 +161,7 @@ def tilt_azimuth_factor(tilt, orientation):
     tilt_rad = tilt * (np.pi / 180)
     orientation_rad = orientation * (np.pi / 180)
     x = 1
-    day = 23
+    day = 10
     # WEIRD daylight savings effects. tried to compensate.
     # manual calc shows in 2018, daylight ended 1 april, started 7 october.
     while x <= 12:
@@ -184,25 +186,23 @@ def tilt_azimuth_factor(tilt, orientation):
     return tilt_azimuth_factor
 
 
-kilowatts = 6.6
-efficiency = 0.82
+kilowatts = 6
+efficiency = 0.77
 monthly_kwh_list_plot1 = monthly_kwh_list_plot * tilt_azimuth_factor(22.5, 280)[0] * efficiency * 3.6
 monthly_kwh_list_plot2 = monthly_kwh_list_plot * tilt_azimuth_factor(22.5, 100)[0] * efficiency * 2.4
 monthly_kwh_list_plot4 = monthly_kwh_list_plot1 + monthly_kwh_list_plot2
-monthly_kwh_list_plot3 = monthly_kwh_list_plot * tilt_azimuth_factor(22.5, 345)[0] * efficiency
-bom_plot = (np.array(bom) * tilt_azimuth_factor(22.5, 100)[0] * efficiency * 2.4) + \
-           (np.array(bom) * tilt_azimuth_factor(22.5, 280)[0] * efficiency * 3.6)
+bom_plot = (np.array(bom_old) * tilt_azimuth_factor(22.5, 100)[0] * efficiency * 2.4) + \
+           (np.array(bom_old) * tilt_azimuth_factor(22.5, 280)[0] * efficiency * 3.6)
 
 
 
 
 plt.style.use('seaborn')
 ind = np.arange(12)
-width = 0.3
+width = 0.5
 fig, ax, = plt.subplots()
-fig2 = ax.bar(ind - width / 2, monthly_kwh_list_plot1, width)
 fig1 = ax.bar(ind + width / 2, monthly_kwh_list_plot4, width)
-fig3 = ax.bar(ind + 3 * width / 2, bom_plot, width)
+fig3 = ax.bar(ind - width / 2, bom_plot, width)
 plt.xticks(np.arange(12), calendar.month_abbr[1:])
 plt.ylabel('kWh/day/m^2')
 
