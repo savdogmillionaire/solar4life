@@ -177,7 +177,7 @@ def designgui():
     inv_2_3_array_check = tk.Checkbutton(window, variable=var)
     inv_2_3_array_check.grid(column=2, row=16)
     inv_2_3_array_check.var = var
-    calculate = tk.Button(window, text='4+ arrays', command=more_array)
+    calculate = tk.Button(window, text='3+ arrays', command=more_array)
     calculate.grid(column=5, row=9)
 
     quit = tk.Button(window, text='GO', command=window.quit)
@@ -933,78 +933,76 @@ def create_SLD(fname, inverterno, battery, array, phase, current, reposit):
         c.setFont('Helvetica', 12)
 
     ## draw arrays and wires when there are 4 arrays required
-    def draw_small_array(x, y, arrayno, arraymodules1, arraymodules2, panelspec, strings1, strings2):
+    def draw_small_array(x, y, arrayno, system):
 
-        c.setFont('Helvetica', 12)
-        c.rect(x, y, 120, 140)
-        c.line(x + 30, y + 105, x + 30, y + 135)
-        c.line(x + 37, y + 110, x + 37, y + 130)
-        c.line(x + 30, y + 120, x + 10, y + 120)
-        c.line(x + 37, y + 120, x + 55, y + 120)
-        c.drawString(x + 70, y + 115, 'Array %d' % arrayno)
-        c.setFont('Helvetica', 7)
-        ##c.drawString(x + 5, y + 5, 'w/ Built-In Optimisers')
+        if arrayno == 1 or arrayno == 3:
+            c.setFont('Helvetica', 12)
+            c.rect(x, y, 120, 140)
+            c.line(x + 30, y + 105, x + 30, y + 135)
+            c.line(x + 37, y + 110, x + 37, y + 130)
+            c.line(x + 30, y + 120, x + 10, y + 120)
+            c.line(x + 37, y + 120, x + 55, y + 120)
+            c.drawString(x + 70, y + 115, 'Array %d' % arrayno)
+            c.setFont('Helvetica', 7)
+            ##c.drawString(x + 5, y + 5, 'w/ Built-In Optimisers')
 
-        c.drawString(x + 5, y + 5, 'Isc')
-        cur.execute('SELECT IscA FROM Panelspecifications where Panel=?', panelspec)
-        arrayisc = cur.fetchone()[0]
-        c.drawString(x + 60, y + 5, '=  %.2fA' % arrayisc)
+            c.drawString(x + 5, y + 5, 'Isc')
+            arrayisc = system.array_Isc()[0]
+            c.drawString(x + 60, y + 5, '=  %.2fA' % arrayisc)
 
-        c.drawString(x + 5, y + 20, 'Voc')
-        cur.execute('SELECT VocV FROM Panelspecifications where Panel=?', panelspec)
-        arrayvoc = cur.fetchone()[0]
-        c.drawString(x + 60, y + 20, '=  %.2fV' % arrayvoc)
+            c.drawString(x + 5, y + 20, 'Voc')
+            arrayvoc = system.array_Voc()[0]
+            c.drawString(x + 60, y + 20, '=  %.2fV' % arrayvoc)
 
-        c.drawString(x + 5, y + 35, 'Voc(-10C)')
-        cur.execute('SELECT Voctemperaturecoeffcient_pc_per_C FROM Panelspecifications where Panel=?', panelspec)
-        arrayvocminus10 = cur.fetchone()[0]
-        c.drawString(x + 60, y + 35, '=  %.2fV' % arrayvocminus10)
+            c.drawString(x + 5, y + 35, 'Voc(-10C)')
+            arrayvocminus10 = system.array_Voc_minus_10()[0]
+            c.drawString(x + 60, y + 35, '=  %.2fV' % arrayvocminus10)
 
-        cur.execute('SELECT PmaxW FROM Panelspecifications where Panel=?', panelspec)
-        arraymodulerating = cur.fetchone()[0]
-        c.drawString(x + 5, y + 50, '%d x %dW modules' % (arraymodules1, arraymodulerating))
+            arraymodulerating = system.array1.wattage[0]
+            arraymodules1 = system.string1.length
+            c.drawString(x + 5, y + 50, '%d x %dW modules' % (arraymodules1, arraymodulerating))
 
-        cur.execute('SELECT Model FROM Panelspecifications where Panel=?', panelspec)
-        arraymodelnumber = cur.fetchone()[0]
-        c.drawString(x + 35, y + 65, '%s' % arraymodelnumber)
+            cur.execute('SELECT Model FROM Panelspecifications where Panel=?', panelspec)
+            arraymodelnumber = cur.fetchone()[0]
+            c.drawString(x + 35, y + 65, '%s' % arraymodelnumber)
 
-        cur.execute('SELECT Manufacturer FROM Panelspecifications where Panel=?', panelspec)
-        arraymanufacturer = cur.fetchone()[0]
-        c.drawString(x + 5, y + 80, '%s' % arraymanufacturer)
+            cur.execute('SELECT Manufacturer FROM Panelspecifications where Panel=?', panelspec)
+            arraymanufacturer = cur.fetchone()[0]
+            c.drawString(x + 5, y + 80, '%s' % arraymanufacturer)
 
-        c.drawString(x + 5, y + 90, '%d/ String/s of:' % strings1)
+            c.drawString(x + 5, y + 90, '%d/ String/s of:' % system.string1.strings)
 
-        draw_switch(x + 35, y - 40, 180)
-        draw_switch(x + 65, y - 40, 180)
-        draw_switch(x + 35, y - 90, 180)
-        draw_switch(x + 65, y - 90, 180)
-        c.setDash(array=[3], phase=13)
-        c.line(x + 35, y - 97, x + 65, y - 97)
-        c.line(x + 35, y - 47, x + 65, y - 47)
-        c.setDash(array=[], phase=0)
-        c.drawString(x + 90, y - 40, 'Rooftop DC Isolator')
-        c.drawString(x + 90, y - 55, '1200V 32A')
-        c.drawString(x + 90, y - 90, 'Inverter DC Isolator')
-        c.drawString(x + 90, y - 105, '1200V 32A')
-        c.circle(x + 35, y, 2, stroke=1, fill=0)
-        c.circle(x + 65, y, 2, stroke=1, fill=0)
-        c.setFont('Helvetica', 12)
+            draw_switch(x + 35, y - 40, 180)
+            draw_switch(x + 65, y - 40, 180)
+            draw_switch(x + 35, y - 90, 180)
+            draw_switch(x + 65, y - 90, 180)
+            c.setDash(array=[3], phase=13)
+            c.line(x + 35, y - 97, x + 65, y - 97)
+            c.line(x + 35, y - 47, x + 65, y - 47)
+            c.setDash(array=[], phase=0)
+            c.drawString(x + 90, y - 40, 'Rooftop DC Isolator')
+            c.drawString(x + 90, y - 55, '1200V 32A')
+            c.drawString(x + 90, y - 90, 'Inverter DC Isolator')
+            c.drawString(x + 90, y - 105, '1200V 32A')
+            c.circle(x + 35, y, 2, stroke=1, fill=0)
+            c.circle(x + 65, y, 2, stroke=1, fill=0)
+            c.setFont('Helvetica', 12)
 
-        c.line(x + 35, y - 2, x + 35, y - 38)
-        c.line(x + 35, y - 57, x + 35, y - 88)
-        c.line(x + 35, y - 107, x + 35, y - 170)
-        c.line(x + 35, y - 170, x + 70, y - 170)
-        c.line(x + 70, y - 170, x + 70, y - 185)
+            c.line(x + 35, y - 2, x + 35, y - 38)
+            c.line(x + 35, y - 57, x + 35, y - 88)
+            c.line(x + 35, y - 107, x + 35, y - 170)
+            c.line(x + 35, y - 170, x + 70, y - 170)
+            c.line(x + 70, y - 170, x + 70, y - 185)
 
-        c.line(x + 65, y - 2, x + 65, y - 38)
-        c.line(x + 65, y - 57, x + 65, y - 88)
-        c.line(x + 65, y - 107, x + 65, y - 157.5)
-        c.line(x + 65, y - 157.5, x + 82.5, y - 157.5)
-        c.line(x + 82.5, y - 157.5, x + 82.5, y - 185)
-
-        if arrayno == 4:
-            x += 130
+            c.line(x + 65, y - 2, x + 65, y - 38)
+            c.line(x + 65, y - 57, x + 65, y - 88)
+            c.line(x + 65, y - 107, x + 65, y - 157.5)
+            c.line(x + 65, y - 157.5, x + 82.5, y - 157.5)
+            c.line(x + 82.5, y - 157.5, x + 82.5, y - 185)
             arrayno += 1
+        if arrayno == 2 or arrayno == 4:
+            x += 130
+
             c.setFont('Helvetica', 12)
             c.circle(x + 35, y, 2, stroke=1, fill=0)
             c.circle(x + 65, y, 2, stroke=1, fill=0)
@@ -1018,23 +1016,20 @@ def create_SLD(fname, inverterno, battery, array, phase, current, reposit):
             ##c.drawString(x + 5, y + 5, 'w/ Built-In Optimisers')
 
             c.drawString(x + 5, y + 5, 'Isc')
-            cur.execute('SELECT IscA FROM Panelspecifications where Panel=?', panelspec)
-            arrayisc = cur.fetchone()[0]
+            arrayisc = system.array_Isc()[1]
             c.drawString(x + 60, y + 5, '=  %.2fA' % arrayisc)
 
             c.drawString(x + 5, y + 20, 'Voc')
-            cur.execute('SELECT VocV FROM Panelspecifications where Panel=?', panelspec)
-            arrayvoc = cur.fetchone()[0]
+            arrayvoc = system.array_Voc()[1]
             c.drawString(x + 60, y + 20, '=  %.2fV' % arrayvoc)
 
             c.drawString(x + 5, y + 35, 'Voc(-10C)')
-            cur.execute('SELECT Voctemperaturecoeffcient_pc_per_C FROM Panelspecifications where Panel=?', panelspec)
-            arrayvocminus10 = cur.fetchone()[0]
+            arrayvocminus10 = system.array_Voc_minus_10()[1]
             c.drawString(x + 60, y + 35, '=  %.2fV' % arrayvocminus10)
 
-            cur.execute('SELECT PmaxW FROM Panelspecifications where Panel=?', panelspec)
-            arraymodulerating = cur.fetchone()[0]
-            c.drawString(x + 5, y + 50, '%d x %dW modules' % (arraymodules2, arraymodulerating))
+            arraymodulerating = system.array1.wattage[0]
+            arraymodules1 = system.string3.length
+            c.drawString(x + 5, y + 50, '%d x %dW modules' % (arraymodules1, arraymodulerating))
 
             cur.execute('SELECT Model FROM Panelspecifications where Panel=?', panelspec)
             arraymodelnumber = cur.fetchone()[0]
@@ -1044,7 +1039,7 @@ def create_SLD(fname, inverterno, battery, array, phase, current, reposit):
             arraymanufacturer = cur.fetchone()[0]
             c.drawString(x + 5, y + 80, '%s' % arraymanufacturer)
 
-            c.drawString(x + 5, y + 90, '%d/ String/s of:' % strings2)
+            c.drawString(x + 5, y + 90, '%d/ String/s of:' % system.string3.strings)
 
             draw_switch(x + 35, y - 40, 180)
             draw_switch(x + 65, y - 40, 180)
@@ -2873,10 +2868,8 @@ def create_SLD(fname, inverterno, battery, array, phase, current, reposit):
                     pass
 
             if array == 4:
-                draw_small_array(10, 660, 1, array_1_length, array_2_length, panelspec, array_1_strings,
-                                 array_2_strings)
-                draw_small_array(335, 660, 3, array_3_length, array_4_length, panelspec2, array_3_strings,
-                                 array_4_strings)
+                draw_small_array(10, 660, 1, system_1)
+                draw_small_array(335, 660, 3, system_2)
                 draw_inverter(75, 400, inverter1, inverterno, 'N')
                 draw_inverter(400, 400, inverter2, inverterno, 'N')
                 if battery == 1 and current == 'DC':
