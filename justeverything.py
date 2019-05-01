@@ -613,6 +613,7 @@ def name_address(customer_ID):
 check which layouts work
 
 to make a new layout, best to copy paste the most similar layout under a new if statements, and change slightly
+probably do this part on excel or google sheets.
 
 Phase   Arrays  Batteries   Current Reposit     Inverters | Works?  Annotated?     
 1       1       0           -       0           1         |  Y          -
@@ -866,7 +867,7 @@ def create_SLD(fname, inverterno, battery, array, phase, current, reposit):
     ## draw array and associated switches
     def draw_array(x, y, arrayno, arraymodules, panelspec, strings):
 
-        c.rect(x, y, 150, 170)
+        c.rect(x, y, 180, 170)
         c.line(x + 35, y + 125, x + 35, y + 160)
         c.line(x + 45, y + 130, x + 45, y + 155)
         c.line(x + 35, y + 142.5, x + 5, y + 142.5)
@@ -884,10 +885,11 @@ def create_SLD(fname, inverterno, battery, array, phase, current, reposit):
         cur.execute('SELECT Model FROM Panelspecifications where Panel=?', panelspec)
         arraymodelnumber = cur.fetchone()[0]
         c.drawCentredString(x + 75, y + 80, '%s' % arraymodelnumber)
-
+        c.setFont('Helvetica', 7)
         cur.execute('SELECT Manufacturer FROM Panelspecifications where Panel=?', panelspec)
         arraymanufacturer = cur.fetchone()[0]
         c.drawString(x + 5, y + 97, '%s' % arraymanufacturer)
+        c.setFont('Helvetica', 7)
 
         c.drawString(x + 5, y + 110, '%d/ String/s of:' % strings)
 

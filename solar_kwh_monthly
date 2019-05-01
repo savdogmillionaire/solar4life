@@ -207,8 +207,8 @@ efficiency = 0.77
 
 # change the tilt azimuth factor function below
 # tilt_azimuth_factor(tilt, orientation)[0]:
-monthly_kwh_list_plot1 = monthly_kwh_list_plot * tilt_azimuth_factor(22.5, 280)[0] * efficiency * 3.6
-monthly_kwh_list_plot2 = monthly_kwh_list_plot * tilt_azimuth_factor(22.5, 100)[0] * efficiency * 2.4
+monthly_kwh_list_plot1 = monthly_kwh_list_plot * tilt_azimuth_factor(22.5, 280)[0] * efficiency * 3.3
+monthly_kwh_list_plot2 = monthly_kwh_list_plot * tilt_azimuth_factor(22.5, 100)[0] * efficiency * 3.3
 monthly_kwh_list_plot4 = monthly_kwh_list_plot1 + monthly_kwh_list_plot2
 bom_plot = (np.array(bom_old) * tilt_azimuth_factor(22.5, 100)[0] * efficiency * 2.4) + \
            (np.array(bom_old) * tilt_azimuth_factor(22.5, 280)[0] * efficiency * 3.6)
