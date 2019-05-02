@@ -207,9 +207,15 @@ efficiency = 0.77
 
 # change the tilt azimuth factor function below
 # tilt_azimuth_factor(tilt, orientation)[0]:
-monthly_kwh_list_plot1 = monthly_kwh_list_plot * tilt_azimuth_factor(22.5, 280)[0] * efficiency * 3.3
-monthly_kwh_list_plot2 = monthly_kwh_list_plot * tilt_azimuth_factor(22.5, 100)[0] * efficiency * 3.3
-monthly_kwh_list_plot4 = monthly_kwh_list_plot1 + monthly_kwh_list_plot2
+monthly_kwh_list_plot1 = monthly_kwh_list_plot * tilt_azimuth_factor(6, 350)[0] * efficiency
+monthly_kwh_list_plot2 = monthly_kwh_list_plot * tilt_azimuth_factor(6, 350)[0] * efficiency
+monthly_kwh_list_plot4 = monthly_kwh_list_plot1 + monthly_kwh_list_plot2 * kilowatts
+
+monthly_kwh_list_plot5 = monthly_kwh_list_plot * tilt_azimuth_factor(20, 350)[0] * efficiency
+monthly_kwh_list_plot6 = monthly_kwh_list_plot * tilt_azimuth_factor(20, 350)[0] * efficiency
+monthly_kwh_list_plot7 = monthly_kwh_list_plot5 + monthly_kwh_list_plot6 * kilowatts
+
+
 bom_plot = (np.array(bom_old) * tilt_azimuth_factor(22.5, 100)[0] * efficiency * 2.4) + \
            (np.array(bom_old) * tilt_azimuth_factor(22.5, 280)[0] * efficiency * 3.6)
 
@@ -218,6 +224,10 @@ bom_plot = (np.array(bom_old) * tilt_azimuth_factor(22.5, 100)[0] * efficiency *
 inverted_monthly_kwh = []
 inverted_monthly_kwh.extend(monthly_kwh_list_plot4[6:])
 inverted_monthly_kwh.extend(monthly_kwh_list_plot4[0:6])
+
+inverted_monthly_kwh2 = []
+inverted_monthly_kwh2.extend(monthly_kwh_list_plot7[6:])
+inverted_monthly_kwh2.extend(monthly_kwh_list_plot7[0:6])
 
 # same deal but calendar month name randomly has a blank space at the start
 month_names_plot = []
@@ -236,8 +246,8 @@ plt.style.use('ggplot')
 ind = np.arange(12)
 width = 0.35
 fig, ax, = plt.subplots()
-fig1 = ax.bar(ind + width / 2, inverted_monthly_kwh, width)
-fig3 = ax.bar(ind - width / 2, inverted_bom_plot, width)
+fig1 = ax.bar(ind - width / 2, inverted_monthly_kwh, width)
+fig3 = ax.bar(ind + width / 2, inverted_monthly_kwh2, width)
 plt.xticks(np.arange(12), month_names_plot)
 plt.ylabel('kWh/day')
 plt.title('Estimated Average Daily kWh Generation per Month')
